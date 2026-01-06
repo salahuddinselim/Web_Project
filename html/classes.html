@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classes - Pranayom Yoga Center</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .classes-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 20px;
+      }
+
+      .header-section {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .header-section h1 {
+        font-size: 36px;
+        color: #222;
+        margin-bottom: 15px;
+      }
+
+      .header-section p {
+        color: #555;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      /* Schedule Table */
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 60px;
+        background-color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .schedule-table th,
+      .schedule-table td {
+        text-align: left;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .schedule-table th {
+        background-color: #00d26a;
+        color: white;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .schedule-table tr:hover {
+        background-color: #f9fdf9;
+      }
+
+      .schedule-table td h4 {
+        color: #222;
+        margin-bottom: 5px;
+        font-size: 16px;
+      }
+
+      .schedule-table td span {
+        font-size: 13px;
+        color: #666;
+        display: block;
+      }
+
+      .schedule-table .time {
+        color: #00d26a;
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      /* Class Descriptions */
+      .classes-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+      }
+
+      .class-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        width: 350px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .class-card-img {
+        height: 200px;
+        background-color: #ddd;
+        /* Placeholder pattern */
+        background-image: linear-gradient(
+            45deg,
+            #f0f0f0 25%,
+            transparent 25%,
+            transparent 75%,
+            #f0f0f0 75%,
+            #f0f0f0
+          ),
+          linear-gradient(
+            45deg,
+            #f0f0f0 25%,
+            transparent 25%,
+            transparent 75%,
+            #f0f0f0 75%,
+            #f0f0f0
+          );
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+      }
+
+      .class-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .class-card-content {
+        padding: 25px;
+      }
+
+      .class-card h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #222;
+      }
+
+      .class-card p {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .class-meta {
+        margin-top: auto;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #888;
+      }
+
+      .class-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mainContent">
+      <!-- Navbar -->
+      <div class="navbar">
+        <div class="logo">
+          <h3><a href="index.html">Pranayom</a></h3>
+        </div>
+        <div class="list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="membership.html">Membership Plans</a></li>
+          <li>
+            <a href="classes.html" style="font-weight: bold; color: #000"
+              >Classes</a
+            >
+          </li>
+          <li><a href="trainers.html">Trainers</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </div>
+        <button class="btn-login" onclick="window.location.href='login.html'">
+          Login
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="secBox" style="background-color: #f8fcf8">
+        <div class="classes-container">
+          <div class="header-section">
+            <h1>Weekly Schedule</h1>
+            <p>
+              Join us for a variety of yoga classes tailored to all skill
+              levels. Find the perfect time to practice and rejuvenate your body
+              and mind.
+            </p>
+          </div>
+
+          <!-- Schedule Table -->
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="time">07:00 AM</td>
+                <td>
+                  <h4>Morning Flow</h4>
+                  <span>Billal Sheikh</span>
+                </td>
+                <td>
+                  <h4>Ashtanga</h4>
+                  <span>Diab Hossain</span>
+                </td>
+                <td>
+                  <h4>Morning Flow</h4>
+                  <span>Billal Sheikh</span>
+                </td>
+                <td>
+                  <h4>Ashtanga</h4>
+                  <span>Diab Hossain</span>
+                </td>
+                <td>
+                  <h4>Morning Flow</h4>
+                  <span>Billal Sheikh</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">09:00 AM</td>
+                <td>
+                  <h4>Hatha Yoga</h4>
+                  <span>Priya Sharma</span>
+                </td>
+                <td>-</td>
+                <td>
+                  <h4>Hatha Yoga</h4>
+                  <span>Priya Sharma</span>
+                </td>
+                <td>-</td>
+                <td>
+                  <h4>Hatha Yoga</h4>
+                  <span>Priya Sharma</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">05:00 PM</td>
+                <td>
+                  <h4>Power Yoga</h4>
+                  <span>Mamun</span>
+                </td>
+                <td>
+                  <h4>Vinyasa Flow</h4>
+                  <span>Rose Islam</span>
+                </td>
+                <td>
+                  <h4>Power Yoga</h4>
+                  <span>Mamun</span>
+                </td>
+                <td>
+                  <h4>Vinyasa Flow</h4>
+                  <span>Rose Islam</span>
+                </td>
+                <td>
+                  <h4>Restorative</h4>
+                  <span>Ehan Pathan</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="time">07:00 PM</td>
+                <td>
+                  <h4>Meditation</h4>
+                  <span>Rose Islam</span>
+                </td>
+                <td>
+                  <h4>Hatha Yoga</h4>
+                  <span>Priya Sharma</span>
+                </td>
+                <td>
+                  <h4>Meditation</h4>
+                  <span>Rose Islam</span>
+                </td>
+                <td>
+                  <h4>Hatha Yoga</h4>
+                  <span>Priya Sharma</span>
+                </td>
+                <td>
+                  <h4>Meditation</h4>
+                  <span>Rose Islam</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="header-section">
+            <h1>Our Classes</h1>
+            <p>
+              Explore our diverse range of classes designed to help you find
+              your balance.
+            </p>
+          </div>
+
+          <!-- Class Descriptions -->
+          <div class="classes-grid">
+            <div class="class-card">
+              <div class="class-card-img" style="background-color: #e3f2fd">
+                <!-- Generic placeholder image logic or reuse images -->
+                <img
+                  src="../images/full-shot-man-doing-warrior-pose-indoor.jpg"
+                  alt="Vinyasa"
+                />
+              </div>
+              <div class="class-card-content">
+                <h3>Vinyasa Flow</h3>
+                <p>
+                  A dynamic style of yoga where poses are strung together to
+                  form one fluid sequence of movement.
+                </p>
+                <div class="class-meta">
+                  <span>60 Min</span>
+                  <span>Intermediate</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="class-card">
+              <div class="class-card-img" style="background-color: #f3e5f5">
+                <img
+                  src="../images/pregnant-woman-holding-fitness-mat.jpg"
+                  alt="Hatha"
+                />
+              </div>
+              <div class="class-card-content">
+                <h3>Hatha Yoga</h3>
+                <p>
+                  A gentle introduction to basic yoga postures. You will focus
+                  on alignment and breathing techniques.
+                </p>
+                <div class="class-meta">
+                  <span>60 Min</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="class-card">
+              <div class="class-card-img" style="background-color: #e8f5e9">
+                <img
+                  src="../images/dane-wetton-t1NEMSm1rgI-unsplash.jpg"
+                  alt="Power Yoga"
+                />
+              </div>
+              <div class="class-card-content">
+                <h3>Power Yoga</h3>
+                <p>
+                  An energetic style of yoga that focuses on building strength
+                  and endurance through athletic postures.
+                </p>
+                <div class="class-meta">
+                  <span>45 Min</span>
+                  <span>Advanced</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer>
+        <div class="footer-links">
+          <span
+            ><a href="policy.html" style="color: white; text-decoration: none"
+              >Privacy Policy</a
+            ></span
+          >
+          <span
+            ><a href="terms.html" style="color: white; text-decoration: none"
+              >Terms of Service</a
+            ></span
+          >
+          <span
+            ><a href="contact.html" style="color: white; text-decoration: none"
+              >Contact Us</a
+            ></span
+          >
+        </div>
+        <p>@2024 Pranayom. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>

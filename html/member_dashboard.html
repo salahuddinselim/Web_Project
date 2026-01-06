@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Dashboard - Pranayom</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        background-color: #121712; /* Very dark green/black */
+        color: white;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: #1f261f;
+        color: white;
+      }
+
+      .icon {
+        width: 20px;
+        text-align: center;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 40px 60px;
+      }
+
+      h1 {
+        font-size: 32px;
+        margin-bottom: 40px;
+      }
+
+      h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #ddd;
+      }
+
+      /* Cards Layout */
+      .content-section {
+        margin-bottom: 50px;
+      }
+
+      .card-row {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .info-card {
+        background-color: #1a201a; /* Slightly lighter than body */
+        border-radius: 12px;
+        padding: 0; /* Padding handled inside or flexible */
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+        justify-content: space-between;
+      }
+
+      .card-text {
+        padding: 30px;
+        flex: 1;
+      }
+
+      .card-text h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .card-text p {
+        font-size: 13px;
+        color: #aaa;
+        margin-bottom: 30px;
+        line-height: 1.5;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 8px 20px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-view {
+        background-color: #2a352a;
+        color: white;
+      }
+
+      .btn-download {
+        background-color: #00d26a;
+        color: black; /* Or white depending on contrast */
+        color: #003300;
+      }
+
+      .card-image {
+        width: 250px;
+        background-color: #ffe0b2;
+        position: relative;
+      }
+
+      .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Forms */
+      .progress-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        max-width: 800px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .input-group label {
+        font-size: 13px;
+        color: #eee;
+      }
+
+      .custom-input {
+        background-color: #1f261f;
+        border: 1px solid #333;
+        padding: 15px;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+      }
+
+      .custom-input::placeholder {
+        color: #666;
+      }
+
+      .progress-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      .btn-large {
+        padding: 12px 30px;
+        font-size: 14px;
+      }
+
+      .account-settings {
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="user-profile">
+        <div class="avatar">
+          <!-- Using a random female face placeholder logic if needed, or just a generic image -->
+          <img
+            src="../images/woman-portrait-placeholder.png"
+            alt=""
+            style="background-color: #ccc"
+          />
+        </div>
+        <div class="user-name">Elma</div>
+      </div>
+
+      <div class="menu">
+        <a href="#" class="menu-item active">
+          <span class="icon">🏠</span> Dashboard
+        </a>
+        <a href="member_classes.html" class="menu-item">
+          <span class="icon">📅</span> Classes
+        </a>
+        <a href="member_routines.html" class="menu-item">
+          <span class="icon">🧘</span> Routines
+        </a>
+        <a href="#" class="menu-item"> <span class="icon">🥗</span> Diet </a>
+        <a href="#" class="menu-item">
+          <span class="icon">📈</span> Progress
+        </a>
+        <a href="#" class="menu-item"> <span class="icon">💬</span> Chat </a>
+        <a href="index.html" class="menu-item" style="margin-top: 50px">
+          <span class="icon">🚪</span> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <h1>Welcome back, Elma</h1>
+
+      <!-- Content Sections -->
+      <div class="content-section">
+        <h2>Today's Routine</h2>
+        <div class="info-card">
+          <div class="card-text">
+            <h3>Morning Yoga Flow</h3>
+            <p>A gentle flow to start your day with energy and focus.</p>
+            <div class="buttons">
+              <button
+                class="btn btn-view"
+                onclick="alert('Viewing Routine...')"
+              >
+                View
+              </button>
+              <button
+                class="btn btn-download"
+                onclick="alert('Downloading Routine...')"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+          <div class="card-image" style="background-color: #ffe0b2">
+            <!-- Yoga Illustration Placeholder -->
+            <img
+              src="../images/pregnant-woman-holding-fitness-mat.jpg"
+              alt="Yoga"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Diet Plan</h2>
+        <div class="info-card">
+          <div class="card-text">
+            <h3>Balanced Diet for the Week</h3>
+            <p>
+              A diet plan designed to complement your yoga practice and fitness
+              goals.
+            </p>
+            <div class="buttons">
+              <button
+                class="btn btn-view"
+                onclick="alert('Viewing Diet Plan...')"
+              >
+                View
+              </button>
+              <button
+                class="btn btn-download"
+                onclick="alert('Downloading Diet Plan...')"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+          <div class="card-image" style="background-color: #cfe8fc">
+            <!-- Food Image Placeholder -->
+            <img src="../images/interior-design-yoga-space.jpg" alt="Diet" />
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Track Your Progress</h2>
+        <div class="progress-grid">
+          <div class="input-group">
+            <label>Weight (lbs)</label>
+            <input
+              type="text"
+              class="custom-input"
+              placeholder="Enter weight"
+            />
+          </div>
+          <div class="input-group">
+            <label>Heart Rate (bpm)</label>
+            <input
+              type="text"
+              class="custom-input"
+              placeholder="Enter heart rate"
+            />
+          </div>
+          <div class="input-group">
+            <label>Sleep (hours)</label>
+            <input
+              type="text"
+              class="custom-input"
+              placeholder="Enter sleep hours"
+            />
+          </div>
+          <div class="input-group">
+            <label>Mood</label>
+            <input type="text" class="custom-input" placeholder="Select mood" />
+          </div>
+          <div class="progress-actions">
+            <button
+              class="btn btn-download btn-large"
+              onclick="alert('Progress Logged!')"
+            >
+              Log Progress
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-settings">
+        <h2>Account Settings</h2>
+        <button
+          class="btn btn-view btn-large"
+          onclick="alert('Going to Account Settings...')"
+        >
+          Edit Account Info
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
