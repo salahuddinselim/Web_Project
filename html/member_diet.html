@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Diet Plan - Pranayom</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        background-color: #121712; /* Very dark green/black */
+        color: white;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar (Same as Dashboard) */
+      .sidebar {
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: #1f261f;
+        color: white;
+      }
+
+      .icon {
+        width: 20px;
+        text-align: center;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 40px 60px;
+      }
+
+      h1 {
+        font-size: 32px;
+        margin-bottom: 30px;
+      }
+
+      /* Day Tabs */
+      .day-tabs {
+        display: flex;
+        gap: 30px;
+        border-bottom: 1px solid #333;
+        margin-bottom: 40px;
+        padding-bottom: 10px;
+      }
+
+      .day-tab {
+        color: #aaa;
+        cursor: pointer;
+        font-weight: bold;
+        padding-bottom: 5px;
+        position: relative;
+      }
+
+      .day-tab.active {
+        color: white;
+      }
+
+      .day-tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -11px; /* Adjust to align with border-bottom */
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: white;
+      }
+
+      .day-tab:hover {
+        color: white;
+      }
+
+      /* Meal Sections */
+      .meal-section {
+        margin-bottom: 30px;
+      }
+
+      .meal-section h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: white;
+      }
+
+      .meal-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .meal-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #1f261f;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .meal-info h4 {
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+
+      .meal-desc {
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 5px;
+      }
+
+      .meal-detail {
+        font-size: 13px;
+        color: #888;
+      }
+
+      /* Action Buttons */
+      .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 50px;
+      }
+
+      .btn {
+        padding: 10px 30px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        color: white;
+      }
+
+      .btn-view {
+        background-color: #2a352a; /* Dark green/grey */
+      }
+      .btn-view:hover {
+        background-color: #3a453a;
+      }
+
+      .btn-download {
+        background-color: #d32f2f; /* Red/Orange */
+      }
+      .btn-download:hover {
+        background-color: #b71c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="user-profile">
+        <div class="avatar">
+          <img
+            src="../images/woman-portrait-placeholder.png"
+            alt=""
+            style="background-color: #ccc"
+          />
+        </div>
+        <div class="user-name">Elma</div>
+      </div>
+
+      <div class="menu">
+        <a href="member_dashboard.html" class="menu-item">
+          <span class="icon">🏠</span> Dashboard
+        </a>
+        <a href="member_classes.html" class="menu-item">
+          <span class="icon">📅</span> Classes
+        </a>
+        <a href="member_routines.html" class="menu-item">
+          <span class="icon">🧘</span> Routines
+        </a>
+        <a href="#" class="menu-item active">
+          <span class="icon">🥗</span> Diet
+        </a>
+        <a href="member_progress.html" class="menu-item">
+          <span class="icon">📈</span> Progress
+        </a>
+        <a href="#" class="menu-item"> <span class="icon">💬</span> Chat </a>
+        <a href="index.html" class="menu-item" style="margin-top: 50px">
+          <span class="icon">🚪</span> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <h1>Your Diet Plan</h1>
+
+      <div class="day-tabs">
+        <div class="day-tab active">Monday</div>
+        <div class="day-tab">Tuesday</div>
+        <div class="day-tab">Wednesday</div>
+        <div class="day-tab">Thursday</div>
+        <div class="day-tab">Friday</div>
+        <div class="day-tab">Saturday</div>
+        <div class="day-tab">Sunday</div>
+      </div>
+
+      <div class="diet-content">
+        <!-- Breakfast -->
+        <div class="meal-section">
+          <h3>Breakfast</h3>
+          <div class="meal-card">
+            <div class="meal-icon">🥣</div>
+            <div class="meal-info">
+              <h4>Oatmeal with Berries and Nuts</h4>
+              <p class="meal-desc">Provides sustained energy and fiber.</p>
+              <p class="meal-detail">
+                1 cup cooked oatmeal, 1/2 cup berries, 1 tablespoon nuts
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="meal-section">
+          <h3>Lunch</h3>
+          <div class="meal-card">
+            <div class="meal-icon">🥗</div>
+            <div class="meal-info">
+              <h4>Grilled Chicken Salad</h4>
+              <p class="meal-desc">Lean protein and healthy fats.</p>
+              <p class="meal-detail">
+                4 oz grilled chicken, 1 cup mixed greens, 1/4 avocado, 2 tbsp
+                vinaigrette
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dinner -->
+        <div class="meal-section">
+          <h3>Dinner</h3>
+          <div class="meal-card">
+            <div class="meal-icon">🍛</div>
+            <div class="meal-info">
+              <h4>Baked Salmon with Broccoli and Quinoa</h4>
+              <p class="meal-desc">Rich in omega-3 fatty acids and protein.</p>
+              <p class="meal-detail">
+                4 oz baked salmon, 1 cup steamed broccoli, 1/2 cup quinoa
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Snacks -->
+        <div class="meal-section">
+          <h3>Snacks</h3>
+          <div class="meal-card">
+            <div class="meal-icon">🍎</div>
+            <div class="meal-info">
+              <h4>Almonds and Apple</h4>
+              <p class="meal-desc">Healthy fats and natural sugars.</p>
+              <p class="meal-detail">1/4 cup almonds, 1 apple</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button
+          class="btn btn-view"
+          onclick="alert('Viewing Full Diet Plan...')"
+        >
+          View
+        </button>
+        <button class="btn btn-download" onclick="alert('Downloading PDF...')">
+          Download
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Simple script to handle Day Tabs (Visual Only for now)
+      const tabs = document.querySelectorAll(".day-tab");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelector(".day-tab.active").classList.remove("active");
+          tab.classList.add("active");
+          // In a real app, this would swap content.
+          // For now, it just changes the active tab style.
+        });
+      });
+    </script>
+  </body>
+</html>
