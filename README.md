@@ -1,69 +1,116 @@
-# Pranayom Yoga Center Management System
+# 🧘 Pranayom Yoga Center Management System
 
-Welcome to the **Pranayom Yoga Center Management System** project. This is a web-based interface designed to manage a yoga training center, facilitating interactions between Administrators, Trainers, and Members.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/salahuddinselim/Web_Project)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Uptime](https://img.shields.io/badge/status-online-success.svg)](#)
 
-## Project Description
+A premium, comprehensive management suite for modern yoga centers. **Pranayom** is designed to bridge the gap between administrators, trainers, and members through a unified, high-performance dark-themed interface.
 
-This project demonstrates the front-end design and basic logic for a Yoga Studio website. It focuses on a clean, modern aesthetic ("Pranayom") with specific features for different user roles. The system is built using **pure HTML, CSS, and Vanilla JavaScript** without any external frameworks, making it lightweight and easy to understand for educational purposes.
+---
 
-## Key Features
+## 🌟 Vision & Purpose
 
-### Public Pages
+Pranayom is built to provide a seamless digital experience for yoga studio management. From member progress tracking to trainer schedules and administrative control, it offers a state-of-the-art solution that prioritizes **visual excellence** and **functional simplicity**.
 
-- **Landing Page (`index.html`)**: A welcoming home page displaying the hero section, yoga offerings, and user testimonials.
-- **Membership Plans (`membership.html`)**: Detailed pricing cards for Monthly, Annual, and Class Pack subscriptions, plus non-member drop-in rates.
-- **Privacy Policy (`policy.html`)**: Comprehensive privacy policy details.
-- **Terms & Conditions (`terms.html`)**: Full terms of service and user agreements.
+> [!NOTE]
+> This project is a front-end showcase using pure HTML, CSS, and Vanilla JavaScript. It focuses on premium design aesthetics, emphasizing "glassmorphism," dark themes, and bio-inspired green accents.
 
-### Authentication
+---
 
-- **Login Page (`login.html`)**: A dark-themed, modern login interface.
-  - Includes a **Role Toggle** to switch between "Member" and "Trainer".
-  - Simulates authentication logic using JavaScript.
+## 🏗️ Portal Ecosystem
 
-## Folder Structure
+Pranayom is built on a multi-role architecture, providing specialized tools for every user level:
 
-The project is organized into clear directories to separate concerns:
+### 👑 Admin Portal
 
-```
+**Purpose**: High-level studio oversight and system configuration.
+
+- **Capabilities**:
+  - Manage the entire user database (Members & Trainers).
+  - Assign Trainers to specific Members.
+  - Monitor global system activity and KPIs.
+  - Full administrative security control.
+
+### 🏃 Trainer Portal
+
+**Purpose**: Hands-on member management and content creation.
+
+- **Capabilities**:
+  - Track assigned members and their daily progress.
+  - Create and assign custom Workout Routines and Diet Plans.
+  - Upload instructional content (Classes/Videos).
+  - Direct communication with members via private chat.
+
+### 🧘 Member Portal
+
+**Purpose**: Personal wellness journey and progress tracking.
+
+- **Capabilities**:
+  - Access assigned routines and diet plans.
+  - Log daily health metrics (Weight, Sleep, Mood).
+  - Join scheduled classes and view video content.
+  - Real-time support chat with assigned Trainers.
+
+---
+
+## 📂 Project Structure & Page Directory
+
+### 🗺️ Full Directory Tree
+
+```text
 Web_Project/
-│
+├── admin/                # Admin Portal (Redesign Complete)
+│   ├── dashboard.html    # KPI overview & Recent activity
+│   ├── add_member.html   # Member creation form
+│   ├── add_trainer.html  # Trainer creation form
+│   ├── assign_trainer.html # Mapping trainers to members
+│   ├── login.html        # Admin-specific secure login
+│   └── profile.html      # Personal settings & Password
+├── trainer/              # Trainer Portal (Consistent Design)
+│   ├── dashboard.html    # Oversight & Quick actions
+│   ├── members.html      # List of assigned members
+│   ├── routine.html      # Routine creation tool
+│   ├── diet_plan.html    # Diet management interface
+│   ├── progress_logs.html # Member health data tracking
+│   ├── content.html      # Content upload & management
+│   ├── chat.html         # Real-time messaging
+│   └── profile.html      # Trainer personal profile
+├── html/                 # Member Portal & Public Pages
+│   ├── index.html        # Hero landing page
+│   ├── member_dashboard.html # Member's central hub
+│   ├── member_routines.html # Progress-linked routine tracker
+│   ├── member_diet.html  # Tabbed weekly meal plans
+│   ├── member_progress.html # Health metrics visualization
+│   ├── member_chat.html  # Trainer-member chat interface
+│   ├── member_profile.html # Member account settings
+│   ├── membership.html   # Pricing & Plan details
+│   ├── login.html        # Unified login with role toggle
+│   ├── trainers.html     # Public trainer showcase
+│   ├── contact.html      # Center contact information
+│   └── (Legal pages)     # privacy, terms, etc.
 ├── css/
-│   └── style.css       # Global styles and shared layout classes
-│
-├── html/
-│   ├── classes.html          # Classes schedule and info
-│   ├── contact.html          # Contact form and info
-│   ├── index.html            # Home/Landing page
-│   ├── login.html            # Login interface
-│   ├── member_chat.html      # Member chat interface
-│   ├── member_classes.html   # Member booked classes
-│   ├── member_dashboard.html # Member main dashboard
-│   ├── member_diet.html      # Member diet plan
-│   ├── member_profile.html   # Member profile settings
-│   ├── member_progress.html  # Member progress tracking
-│   ├── member_routines.html  # Member daily routines
-│   ├── membership.html       # Pricing and plans
-│   ├── policy.html           # Privacy Policy
-│   ├── terms.html            # Terms and Conditions
-│   └── trainers.html         # Trainers list
-│
-├── images/             # Folder for project assets (images, icons)
-│
-└── README.md           # Project documentation
+│   └── style.css         # Core design system & utilities
+└── images/               # Optimized assets & placeholders
 ```
 
-## How to Run
+---
 
-Since this is a static site, you do not need any backend server.
+## 🚀 Getting Started
 
-1.  Navigate to the `html` folder.
-2.  Open `index.html` in your web browser (Chrome, Firefox, Edge, etc.).
-3.  Navigate through the links (Home, Membership Plans, Login).
+### Prerequisites
 
-## Login Credentials (Simulated)
+- Any modern web browser (Chrome, Firefox, Safari, Edge).
+- No server installation required (Static site).
 
-The login functionality is simulated with JavaScript. Use the following credentials to test the different roles:
+### Installation
+
+1. Clone or download the repository.
+2. Navigate to the root folder.
+3. Open `html/index.html` to start your journey.
+
+### 🔑 Authentication (Simulated)
+
+Experience different roles using the following credentials:
 
 | Role        | Username / Email | Password  |
 | :---------- | :--------------- | :-------- |
@@ -71,24 +118,18 @@ The login functionality is simulated with JavaScript. Use the following credenti
 | **Trainer** | `trainer`        | `trainer` |
 | **Admin**   | `admin`          | `admin`   |
 
-_(Note: The actual email format logic on the login page also accepts simple usernames for ease of testing)_
+---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-- **HTML5**: For semantic structure.
-- **CSS3**: For styling (Flexbox, Grid, Custom Themes).
-- **JavaScript (Vanilla)**: For simple form handling and navigation logic.
+- **Structure**: Semantic HTML5 for accessibility and SEO.
+- **Design**: Vanilla CSS3 with Custom Properties (CSS Variables) for a unified design system.
+- **Logic**: ES6+ JavaScript for interactive components and navigation.
+- **Visuals**: High-resolution photography and custom SVG icons.
 
-### Member Portal
+---
 
-- **Dashboard (`member_dashboard.html`)**: Central hub for members to view stats, schedule, and quick actions.
-- **Routines (`member_routines.html`)**: Interactive daily routine tracker with progress achievements.
-- **Diet Plan (`member_diet.html`)**: Weekly meal plan overview with day tabs.
-- **Progress (`member_progress.html`)**: Visual charts and statistics for health metrics.
-- **Chat (`member_chat.html`)**: Messaging interface for connecting with trainers and other members.
-- **Profile (`member_profile.html`)**: User profile management and password settings.
-
-## Credits
+## 🤝 Credits
 
 - **Frontend Designer (Figma)**: Afia Tasnim Ria
 - **Lead**: Salah Uddin Selim

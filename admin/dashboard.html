@@ -174,7 +174,11 @@
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
-      <div class="user-profile">
+      <div
+        class="user-profile"
+        onclick="location.href='profile.html'"
+        style="cursor: pointer"
+      >
         <div class="avatar">
           <img src="../images/woman-portrait-placeholder.png" alt="" />
         </div>
@@ -203,8 +207,27 @@
     <!-- Main Content -->
     <div class="main-content">
       <h1>Admin Dashboard</h1>
-      <div class="subHeader">
-        Central hub for managing all aspects of the Yoga Center
+      <div
+        class="subHeader"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <span>Central hub for managing all aspects of the Yoga Center</span>
+        <button
+          class="action-btn"
+          onclick="location.href='profile.html'"
+          style="
+            padding: 8px 15px;
+            background-color: #1a201a;
+            border: 1px solid #333;
+            color: white;
+          "
+        >
+          Edit Profile
+        </button>
       </div>
 
       <h2>Key Performance Indicators</h2>
