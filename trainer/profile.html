@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trainer Profile</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mainContainer {
+      display: flex;
+      width: 95%;
+      height: 90vh;
+      background-color: #121212;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 250px;
+      background-color: #0d120f;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 1px solid #1f2b23;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 15px;
+    }
+
+
+
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      background-color: #c49ba6;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .profile-info span {
+      font-size: 12px;
+      color: #4ade80;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: #a1a1aa;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      color: #ffffff;
+      background-color: #1a1f1c;
+    }
+
+    .menu-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content Styling */
+    .mainContent {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background-color: #0e0e0e;
+    }
+
+    .page-header {
+      margin-bottom: 30px;
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .page-header p {
+      margin: 5px 0 0 0;
+      color: #a1a1aa;
+      font-size: 14px;
+    }
+
+    /* Profile Top Layout */
+    .profile-header-large {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .profile-pic-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      /* Gradient representation from image */
+      background: linear-gradient(135deg, #e0e0e0 0%, #333333 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .profile-pic-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-details-large h3 {
+      margin: 0;
+      font-size: 22px;
+      color: #ffffff;
+    }
+
+    .profile-details-large span {
+      display: block;
+      font-size: 14px;
+      color: #a1a1aa;
+      margin-top: 5px;
+    }
+
+    .profile-details-large .id-text {
+      font-size: 12px;
+      color: #4ade80;
+      margin-top: 2px;
+    }
+
+
+    /* Forms */
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #ffffff;
+      margin-top: 10px;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #e5e5e5;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: #1f3b26;
+      /* Dark green background */
+      border: none;
+      border-radius: 6px;
+      color: #a0bba5;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+
+
+    .form-control::placeholder {
+      color: #a0bba5;
+      opacity: 0.6;
+    }
+
+    .form-control:focus {
+      background-color: #25462d;
+    }
+
+    textarea.form-control {
+      resize: none;
+      height: 100px;
+    }
+
+    .action-btn {
+      background-color: #22c55e;
+      color: #000000;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      float: right;
+      margin-top: 10px;
+    }
+
+    .action-btn:hover {
+      background-color: #4ade80;
+    }
+
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mainContainer">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="profile" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+        <div class="profile-pic">
+          <span style="font-size: 20px;">👩</span>
+        </div>
+        <div class="profile-info">
+          <h4>Sophia</h4>
+          <span>Trainer</span>
+        </div>
+      </div>
+
+      <div class="menu">
+        <div class="menu-item" onclick="window.location.href='dashboard.html'">
+          <i>🏠</i> Dashboard
+        </div>
+        <div class="menu-item" onclick="window.location.href='members.html'">
+          <i>👥</i> Members
+        </div>
+        <div class="menu-item" onclick="window.location.href='content.html'">
+          <i>▶️</i> Content
+        </div>
+        <div class="menu-item" onclick="window.location.href='diet_plan.html'">
+          <i>🍎</i> Diet Plans
+        </div>
+        <div class="menu-item" onclick="window.location.href='progress_logs.html'">
+          <i>📈</i> Progress Logs
+        </div>
+        <div class="menu-item" onclick="window.location.href='routine.html'">
+          <i>📅</i> Routine
+        </div>
+        <div class="menu-item" onclick="window.location.href='chat.html'">
+          <i>💬</i> Chat
+        </div>
+        <div class="menu-item" style="margin-top: auto;" onclick="window.location.href='../html/index.html'">
+          <i>🚪</i> Logout
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="mainContent">
+
+      <div class="page-header">
+        <h2>Trainer Profile & Settings</h2>
+        <p>Manage your profile information and settings.</p>
+      </div>
+
+      <div class="profile-header-large">
+        <div class="profile-pic-large">
+          <!-- Abstract gradient placeholder similar to design -->
+        </div>
+        <div class="profile-details-large">
+          <h3>Sophia</h3>
+          <span>Trainer since 2023</span>
+          <span class="id-text">ID: 789012</span>
+        </div>
+      </div>
+
+      <!-- Edit Profile Information -->
+      <div class="section-title">Edit Profile Information</div>
+      <div class="form-section clearfix">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" value="Sophia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact Number</label>
+          <input type="text" class="form-control" value="+1 (555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea
+            class="form-control">Certified yoga instructor with 5 years of experience specializing in Hatha and Vinyasa flows.</textarea>
+        </div>
+        <button class="action-btn" onclick="alert('Profile Updated Successfully!')">Update Profile</button>
+      </div>
+
+      <!-- Change Password -->
+      <div class="section-title">Change Password</div>
+      <div class="form-section clearfix">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-control" placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-control" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-control" placeholder="Confirm new password">
+        </div>
+        <button class="action-btn" onclick="alert('Password Changed Successfully!')">Change Password</button>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

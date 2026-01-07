@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Details Trainer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mainContainer {
+      display: flex;
+      width: 95%;
+      height: 90vh;
+      background-color: #121212;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 250px;
+      background-color: #0d120f;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 1px solid #1f2b23;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 15px;
+    }
+
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      background-color: #c49ba6;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .profile-info span {
+      font-size: 12px;
+      color: #4ade80;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: #a1a1aa;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      color: #ffffff;
+      background-color: #1a1f1c;
+    }
+
+    .menu-item.active {
+      background-color: #262626;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .menu-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content Styling */
+    .mainContent {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background-color: #0e0e0e;
+    }
+
+    .page-header h2 {
+      margin: 0;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Members List Card */
+    .members-card {
+      background-color: #0d120f;
+      /* Dark background matching image */
+      border: 1px solid #1f2b23;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .members-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .members-table th {
+      text-align: left;
+      padding: 15px;
+      color: #e5e5e5;
+      border-bottom: 1px solid #2a3830;
+      font-weight: 500;
+    }
+
+    .members-table td {
+      padding: 15px;
+      border-bottom: 1px solid #1f2b23;
+      color: #a1a1aa;
+      vertical-align: middle;
+    }
+
+    .members-table tr:hover td {
+      background-color: #111a14;
+    }
+
+    .members-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Status Pills */
+    .status-pill {
+      display: inline-block;
+      padding: 6px 0;
+      width: 120px;
+      text-align: center;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-active {
+      background-color: #1f3b26;
+      /* Dark Green bg */
+      color: #ffffff;
+      border: 1px solid #2a4030;
+    }
+
+    .status-inactive {
+      background-color: transparent;
+      color: #a1a1aa;
+      border: 1px solid #2a3830;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mainContainer">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="profile" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+        <div class="profile-pic">
+          <span style="font-size: 20px;">👩</span>
+        </div>
+        <div class="profile-info">
+          <h4>Sophia</h4>
+          <span>Trainer</span>
+        </div>
+      </div>
+
+      <div class="menu">
+        <div class="menu-item" onclick="window.location.href='dashboard.html'">
+          <i>🏠</i> Dashboard
+        </div>
+        <!-- Highlight 'Members' for this page -->
+        <div class="menu-item active">
+          <i>👥</i> Members
+        </div>
+        <div class="menu-item" onclick="window.location.href='content.html'">
+          <i>▶️</i> Content
+        </div>
+        <div class="menu-item" onclick="window.location.href='diet_plan.html'">
+          <i>🍎</i> Diet Plans
+        </div>
+        <div class="menu-item" onclick="window.location.href='progress_logs.html'">
+          <i>📈</i> Progress Logs
+        </div>
+        <div class="menu-item" onclick="window.location.href='routine.html'">
+          <i>📅</i> Routine
+        </div>
+        <div class="menu-item" onclick="window.location.href='chat.html'">
+          <i>💬</i> Chat
+        </div>
+        <div class="menu-item" style="margin-top: auto;" onclick="window.location.href='../html/index.html'">
+          <i>🚪</i> Logout
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="mainContent">
+
+      <div class="page-header">
+        <h2>Assigned Members</h2>
+      </div>
+
+      <div class="members-card">
+        <table class="members-table">
+          <thead>
+            <tr>
+              <th width="70%">Name</th>
+              <th width="30%" style="text-align: right; padding-right: 60px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Dixie</td>
+              <td style="text-align: right;">
+                <span class="status-pill status-active">Active</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Ehan</td>
+              <td style="text-align: right;">
+                <span class="status-pill status-inactive">Inactive</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Mitu</td>
+              <td style="text-align: right;">
+                <span class="status-pill status-active">Active</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Liyan</td>
+              <td style="text-align: right;">
+                <span class="status-pill status-active">Active</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Javi</td>
+              <td style="text-align: right;">
+                <span class="status-pill status-inactive">Inactive</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Trainer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mainContainer {
+      display: flex;
+      width: 95%;
+      height: 90vh;
+      background-color: #121212;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 250px;
+      background-color: #0d120f;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 1px solid #1f2b23;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 15px;
+    }
+
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      background-color: #c49ba6;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .profile-info span {
+      font-size: 12px;
+      color: #4ade80;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: #a1a1aa;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      color: #ffffff;
+      background-color: #1a1f1c;
+    }
+
+    .menu-item.active {
+      background-color: #262626;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .menu-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Chat Layout */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Contacts Pane */
+    .contacts-pane {
+      width: 300px;
+      background-color: #0e0e0e;
+      border-right: 1px solid #1f2b23;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 15px;
+      background-color: #1c2620;
+      border: 1px solid #2a3830;
+      border-radius: 6px;
+      color: #a0bba5;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .contact-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .contact-item:hover {
+      background-color: #1a1f1c;
+    }
+
+    .contact-item.active {
+      background-color: #1f3b26;
+      /* Highlight active contact */
+    }
+
+    .contact-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #555;
+      margin-right: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .contact-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .online-status {
+      width: 10px;
+      height: 10px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      border: 2px solid #0e0e0e;
+    }
+
+    .contact-info h5 {
+      margin: 0;
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    .contact-info span {
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+
+    /* Conversation Pane */
+    .conversation-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #0e0e0e;
+      position: relative;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid #1f2b23;
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .messages-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Message Bubbles */
+    .message-row {
+      display: flex;
+      margin-bottom: 15px;
+    }
+
+    .message-row.received {
+      justify-content: flex-start;
+    }
+
+    .message-row.sent {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 60%;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .received .message-bubble {
+      background-color: #1a1f1c;
+      /* Dark Grey */
+      color: #d1d5db;
+      border-top-left-radius: 0;
+    }
+
+    .sent .message-bubble {
+      background-color: #22c55e;
+      /* Bright Green */
+      color: #000000;
+      border-top-right-radius: 0;
+      font-weight: 500;
+    }
+
+    .message-meta {
+      font-size: 10px;
+      margin-bottom: 4px;
+      color: #6b7280;
+    }
+
+    .sent .message-meta {
+      text-align: right;
+      color: #14532d;
+      opacity: 0.8;
+    }
+
+    /* Input Area */
+    .input-area {
+      padding: 20px;
+      background-color: #15261b;
+      /* Slightly lighter footer bg */
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      background-color: transparent;
+      border: none;
+      color: #ffffff;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .chat-input::placeholder {
+      color: #6b7280;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .send-btn {
+      background-color: #22c55e;
+      color: #000000;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .send-btn:hover {
+      background-color: #4ade80;
+    }
+
+    /* Shared Files (Static Visuals) */
+    .shared-section {
+      padding: 0 20px;
+    }
+
+    .shared-title {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #1a1f1c;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mainContainer">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="profile" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+        <div class="profile-pic">
+          <span style="font-size: 20px;">👩</span>
+        </div>
+        <div class="profile-info">
+          <h4>Sophia</h4>
+          <span>Trainer</span>
+        </div>
+      </div>
+
+      <div class="menu">
+        <div class="menu-item" onclick="window.location.href='dashboard.html'">
+          <i>🏠</i> Dashboard
+        </div>
+        <div class="menu-item" onclick="window.location.href='members.html'">
+          <i>👥</i> Members
+        </div>
+        <div class="menu-item" onclick="window.location.href='content.html'">
+          <i>▶️</i> Content
+        </div>
+        <div class="menu-item" onclick="window.location.href='diet_plan.html'">
+          <i>🍎</i> Diet Plans
+        </div>
+        <div class="menu-item" onclick="window.location.href='progress_logs.html'">
+          <i>📈</i> Progress Logs
+        </div>
+        <div class="menu-item" onclick="window.location.href='routine.html'">
+          <i>📅</i> Routine
+        </div>
+        <!-- Highlight 'Chat' -->
+        <div class="menu-item active">
+          <i>💬</i> Chat
+        </div>
+        <div class="menu-item" style="margin-top: auto;" onclick="window.location.href='../html/index.html'">
+          <i>🚪</i> Logout
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Layout -->
+    <div class="chat-container">
+      <!-- Left: Contacts -->
+      <div class="contacts-pane">
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Search">
+        </div>
+        <div class="contact-list">
+          <div class="contact-item active">
+            <div class="contact-avatar">
+              <img src="https://via.placeholder.com/40/e9d5ff/000000?text=E" alt="Elma">
+              <div class="online-status"></div>
+            </div>
+            <div class="contact-info">
+              <h5>Elma</h5>
+              <span>Active 5m ago</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-avatar">
+              <img src="https://via.placeholder.com/40/fhd5ff/000000?text=D" alt="Daniel">
+            </div>
+            <div class="contact-info">
+              <h5>Daniel Harris</h5>
+              <span>Active 3h ago</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-avatar">
+              <div class="online-status"></div>
+              <img src="https://via.placeholder.com/40/ffedd5/000000?text=C" alt="Chloe">
+            </div>
+            <div class="contact-info">
+              <h5>Chloe Foster</h5>
+              <span>Active 2h ago</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-avatar">
+              <img src="https://via.placeholder.com/40/ccfbf1/000000?text=O" alt="Owen">
+            </div>
+            <div class="contact-info">
+              <h5>Owen Mitchell</h5>
+              <span>Active 3h ago</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-avatar">
+              <img src="https://via.placeholder.com/40/fee2e2/000000?text=I" alt="Isabella">
+            </div>
+            <div class="contact-info">
+              <h5>Isabella Hayes</h5>
+              <span>Active 4h ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Conversation -->
+      <div class="conversation-pane">
+        <div class="chat-header">
+          <h3>Elma</h3>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+          <!-- Received Message -->
+          <div class="message-row received">
+            <div style="margin-right: 10px;">
+              <img src="https://via.placeholder.com/30/e9d5ff/000000?text=E"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+            <div>
+              <div class="message-meta">Emily Carter</div>
+              <div class="message-bubble">
+                Hi there! I'm looking for a yoga class that focuses on relaxation and stress relief. Do you have any
+                recommendations?
+              </div>
+            </div>
+          </div>
+
+          <!-- Sent Message -->
+          <div class="message-row sent">
+            <div>
+              <div class="message-meta">You</div>
+              <div class="message-bubble">
+                Hello Emily, we have several options! Our 'Mindful Flow' class is perfect for relaxation, and our
+                'Restorative Yoga' class is great for stress relief. Both are beginner-friendly. Would you like more
+                details?
+              </div>
+            </div>
+            <div style="margin-left: 10px;">
+              <img src="https://via.placeholder.com/30/c49ba6/000000?text=S"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+          </div>
+
+          <!-- Received Message -->
+          <div class="message-row received">
+            <div style="margin-right: 10px;">
+              <img src="https://via.placeholder.com/30/e9d5ff/000000?text=E"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+            <div>
+              <div class="message-meta">Emily Carter</div>
+              <div class="message-bubble">
+                That sounds wonderful! Could you tell me more about the 'Mindful Flow' class? What days and times is it
+                offered?
+              </div>
+            </div>
+          </div>
+
+          <!-- Sent Message -->
+          <div class="message-row sent">
+            <div>
+              <div class="message-meta">You</div>
+              <div class="message-bubble">
+                Certainly!
+              </div>
+            </div>
+            <div style="margin-left: 10px;">
+              <img src="https://via.placeholder.com/30/c49ba6/000000?text=S"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+          </div>
+
+          <!-- Received Message -->
+          <div class="message-row received">
+            <div style="margin-right: 10px;">
+              <img src="https://via.placeholder.com/30/e9d5ff/000000?text=E"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+            <div>
+              <div class="message-meta">Emily Carter</div>
+              <div class="message-bubble">
+                That sounds perfect for me! Is there a way to sign up for a trial class or see if there's availability?
+              </div>
+            </div>
+          </div>
+
+          <!-- Sent Message -->
+          <div class="message-row sent">
+            <div>
+              <div class="message-meta">You</div>
+              <div class="message-bubble">
+                Yes.
+              </div>
+            </div>
+            <div style="margin-left: 10px;">
+              <img src="https://via.placeholder.com/30/c49ba6/000000?text=S"
+                style="border-radius: 50%; width: 30px; height: 30px;">
+            </div>
+          </div>
+
+          <!-- Shared Files Area (Static) -->
+          <div class="shared-section">
+            <span class="shared-title">Shared Files</span>
+            <div class="file-item">
+              <i>📄</i> Class Schedule.pdf
+            </div>
+            <div class="file-item">
+              <i>📄</i> Membership Agreement.pdf
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="input-area">
+          <button class="icon-btn">➕</button>
+          <input type="text" class="chat-input" id="messageInput" placeholder="Type a message">
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const messageText = input.value.trim();
+      const messagesArea = document.getElementById('messagesArea');
+
+      if (messageText) {
+        // Construct the HTML for a new sent message
+        const newMsgHTML = `
+                    <div class="message-row sent">
+                        <div>
+                             <div class="message-meta">You</div>
+                             <div class="message-bubble">
+                                ${messageText}
+                            </div>
+                        </div>
+                         <div style="margin-left: 10px;">
+                            <img src="https://via.placeholder.com/30/c49ba6/000000?text=S" style="border-radius: 50%; width: 30px; height: 30px;">
+                        </div>
+                    </div>
+                `;
+
+        // Append and scroll
+        messagesArea.insertAdjacentHTML('beforeend', newMsgHTML);
+        input.value = '';
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      }
+    }
+
+    // Allow Enter key to send
+    document.getElementById('messageInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+
+</html>

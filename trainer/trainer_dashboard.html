@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trainer Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #E5E7EB;
+        }
+
+        .mainContainer {
+            width: 90%;
+            height: 600px;
+            margin: auto;
+            display: flex;
+            background-color: #0F1A13;
+            border-radius: 6px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 22%;
+            background-color: #122418;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .menu li {
+            list-style: none;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .menu li:hover {
+            color: #7ED957;
+        }
+
+        /* Dashboard Area */
+        .dashboard {
+            width: 78%;
+            padding: 25px;
+            box-sizing: border-box;
+            color: white;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        .subText {
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+
+        /* Quick Actions */
+        .actions {
+            margin-top: 20px;
+        }
+
+        .actions button {
+            background-color: #1F7A3F;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Overview Cards */
+        .cards {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background-color: #132D1F;
+            width: 30%;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .card p {
+            color: #9CA3AF;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .card h3 {
+            margin-top: 10px;
+        }
+
+        /* Activity Table */
+        .activity {
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #1F3B2B;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            color: #9CA3AF;
+        }
+
+        td {
+            color: #D1D5DB;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mainContainer">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <img src="trainer.png" alt="trainer">
+                <div>
+                    <strong>Sophia</strong><br>
+                    <small>Trainer</small>
+                </div>
+            </div>
+
+            <ul class="menu">
+                <li>Dashboard</li>
+                <li>Members</li>
+                <li>Content</li>
+                <li>Diet Plans</li>
+                <li>Progress Logs</li>
+                <li>Routine</li>
+                <li>Chat</li>
+                <li>Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <h2>Dashboard</h2>
+            <p class="subText">Overview of system activities and key metrics</p>
+
+            <!-- Quick Actions -->
+            <div class="actions">
+                <button>Manage Members</button>
+                <button>Edit Profile</button>
+            </div>
+
+            <!-- System Overview -->
+            <div class="cards">
+                <div class="card">
+                    <p>Today's Trainees</p>
+                    <h3>15</h3>
+                </div>
+                <div class="card">
+                    <p>Active Members</p>
+                    <h3>120</h3>
+                </div>
+                <div class="card">
+                    <p>Upcoming Classes</p>
+                    <h3>5</h3>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="activity">
+                <h3>Recent Activities</h3>
+
+                <table>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Details</th>
+                        <th>Timestamp</th>
+                    </tr>
+                    <tr>
+                        <td>New Member Joined</td>
+                        <td>Elma joined the center</td>
+                        <td>2 hours ago</td>
+                    </tr>
+                    <tr>
+                        <td>Trainer Added</td>
+                        <td>Ethan added to the system</td>
+                        <td>5 hours ago</td>
+                    </tr>
+                    <tr>
+                        <td>Class Scheduled</td>
+                        <td>Morning Yoga class scheduled</td>
+                        <td>1 day ago</td>
+                    </tr>
+                    <tr>
+                        <td>Payment Received</td>
+                        <td>1500 received from Liam</td>
+                        <td>2 days ago</td>
+                    </tr>
+                    <tr>
+                        <td>Report Generated</td>
+                        <td>Monthly report generated</td>
+                        <td>3 days ago</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
