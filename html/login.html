@@ -1,275 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Pranayom</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Login Page Specific Styles - Dark Theme */
+      body {
+        background-color: #f0f2f5;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Pranayom</title>
-  <link rel="stylesheet" href="../css/style.css" />
-  <style>
-    /* Login Page Specific Styles - Dark Theme */
-    body {
-      background-color: #f0f2f5;
-    }
+      .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        background-color: #f0f2f5;
+      }
 
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 80vh;
-      background-color: #f0f2f5;
-    }
+      .login-box {
+        background-color: #1a1a1a;
+        /* Dark background */
+        width: 500px;
+        padding: 50px;
+        border-radius: 10px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
 
-    .login-box {
-      background-color: #1a1a1a;
-      /* Dark background */
-      width: 500px;
-      padding: 50px;
-      border-radius: 10px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
+      .login-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+      }
 
-    .login-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 30px;
-    }
+      .login-header h3 {
+        margin-left: 10px;
+        font-size: 18px;
+      }
 
-    .login-header h3 {
-      margin-left: 10px;
-      font-size: 18px;
-    }
+      .welcome-text {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
 
-    .welcome-text {
-      font-size: 36px;
-      font-weight: bold;
-      margin-bottom: 40px;
-    }
+      /* Toggle Switch */
+      .role-toggle {
+        display: flex;
+        background-color: #333;
+        border-radius: 25px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #444;
+      }
 
-    /* Toggle Switch */
-    .role-toggle {
-      display: flex;
-      background-color: #333;
-      border-radius: 25px;
-      margin-bottom: 30px;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #444;
-    }
+      .role-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        color: #888;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 1;
+      }
 
-    .role-btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      color: #888;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-      z-index: 1;
-    }
+      .role-btn.active {
+        background-color: #222;
+        /* Slightly Lighter or standard active look */
+        color: white;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        /* Just for effect */
+      }
 
-    .role-btn.active {
-      background-color: #222;
-      /* Slightly Lighter or standard active look */
-      color: white;
-      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
-      /* Just for effect */
-    }
+      /* Simulating the Pill slide effect with simple active styles for this basic requirement */
+      .role-toggle .role-btn.active {
+        background-color: #333;
+        /* Keep same bg but change text? Or inverse? */
+        color: white;
+        background-image: linear-gradient(#333, #333);
+        /* visual trick */
+      }
 
-    /* Simulating the Pill slide effect with simple active styles for this basic requirement */
-    .role-toggle .role-btn.active {
-      background-color: #333;
-      /* Keep same bg but change text? Or inverse? */
-      color: white;
-      background-image: linear-gradient(#333, #333);
-      /* visual trick */
-    }
+      /* Better toggle style matching image more closely */
+      .toggle-container {
+        background-color: #2a3b2a;
+        /* Dark Greenish Tint */
+        border-radius: 5px;
+        display: flex;
+        padding: 5px;
+        margin-bottom: 20px;
+      }
 
-    /* Better toggle style matching image more closely */
-    .toggle-container {
-      background-color: #2a3b2a;
-      /* Dark Greenish Tint */
-      border-radius: 5px;
-      display: flex;
-      padding: 5px;
-      margin-bottom: 20px;
-    }
+      .toggle-btn {
+        flex: 1;
+        background: transparent;
+        color: #8f9f8f;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+      }
 
-    .toggle-btn {
-      flex: 1;
-      background: transparent;
-      color: #8f9f8f;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 14px;
-    }
+      .toggle-btn.active {
+        background-color: #1a1a1a;
+        /* Dark bg for active */
+        color: white;
+      }
 
-    .toggle-btn.active {
-      background-color: #1a1a1a;
-      /* Dark bg for active */
-      color: white;
-    }
+      /* Inputs */
+      .input-group {
+        text-align: left;
+        margin-bottom: 20px;
+      }
 
-    /* Inputs */
-    .input-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
+      .input-group input {
+        width: 100%;
+        padding: 15px;
+        background-color: #2d3830;
+        /* Dark greenish input bg */
+        border: 1px solid #3d4840;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+      }
 
-    .input-group input {
-      width: 100%;
-      padding: 15px;
-      background-color: #2d3830;
-      /* Dark greenish input bg */
-      border: 1px solid #3d4840;
-      border-radius: 5px;
-      color: white;
-      font-size: 14px;
-      outline: none;
-    }
+      .input-group input::placeholder {
+        color: #8f9f8f;
+      }
 
-    .input-group input::placeholder {
-      color: #8f9f8f;
-    }
+      .forgot-pass {
+        text-align: right;
+        font-size: 12px;
+        color: #8f9f8f;
+        margin-bottom: 30px;
+        display: block;
+        text-decoration: none;
+      }
 
-    .forgot-pass {
-      text-align: right;
-      font-size: 12px;
-      color: #8f9f8f;
-      margin-bottom: 30px;
-      display: block;
-      text-decoration: none;
-    }
+      .btn-login-main {
+        width: 100%;
+        padding: 12px;
+        background-color: #00ea6a;
+        /* Bright Green */
+        color: black;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-    .btn-login-main {
-      width: 100%;
-      padding: 12px;
-      background-color: #00ea6a;
-      /* Bright Green */
-      color: black;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+      .btn-login-main:hover {
+        background-color: #00c25a;
+      }
 
-    .btn-login-main:hover {
-      background-color: #00c25a;
-    }
+      /* Navbar overrides for dark page if needed, but we keep the mainContent structure */
+    </style>
+  </head>
 
-    /* Navbar overrides for dark page if needed, but we keep the mainContent structure */
-  </style>
-</head>
-
-<body>
-  <div class="mainContent" style="background-color: #121712">
-    <!-- Navbar -->
-    <div class="navbar" style="background-color: #121712">
-      <div class="logo">
-        <h3><a href="index.html" style="color: white">Pranayom</a></h3>
+  <body>
+    <div class="mainContent" style="background-color: #121712">
+      <!-- Navbar -->
+      <div class="navbar" style="background-color: #121712">
+        <div class="logo">
+          <h3><a href="index.html" style="color: white">Pranayom</a></h3>
+        </div>
+        <div class="list">
+          <li><a href="index.html" style="color: white">Home</a></li>
+          <li><a href="classes.html" style="color: white">Classes</a></li>
+          <li><a href="contact.html" style="color: white">Contact</a></li>
+        </div>
       </div>
-      <div class="list">
-        <li><a href="index.html" style="color: white">Home</a></li>
-        <li><a href="classes.html" style="color: white">Classes</a></li>
-        <li><a href="contact.html" style="color: white">Contact</a></li>
-      </div>
-    </div>
 
-    <div class="secBox" style="
+      <div
+        class="secBox"
+        style="
           background-color: #121712;
           min-height: 80vh;
           justify-content: center;
           align-items: center;
-        ">
-      <div class="login-box">
-        <div class="login-header">
-          <!-- icon placeholder -->
-          <span style="font-size: 20px">⚡</span>
-          <h3>Pranayom</h3>
-        </div>
+        "
+      >
+        <div class="login-box">
+          <div class="login-header">
+            <!-- icon placeholder -->
+            <span style="font-size: 20px">⚡</span>
+            <h3>Pranayom</h3>
+          </div>
 
-        <div class="welcome-text">Welcome Back</div>
+          <div class="welcome-text">Welcome Back</div>
 
-        <!-- Toggle -->
-        <div class="toggle-container">
-          <button class="toggle-btn active" id="btn-member" onclick="setRole('member')">
-            Member
-          </button>
-          <button class="toggle-btn" id="btn-trainer" onclick="setRole('trainer')">
-            Trainer
-          </button>
-        </div>
+          <!-- Toggle -->
+          <div class="toggle-container">
+            <button
+              class="toggle-btn active"
+              id="btn-member"
+              onclick="setRole('member')"
+            >
+              Member
+            </button>
+            <button
+              class="toggle-btn"
+              id="btn-trainer"
+              onclick="setRole('trainer')"
+            >
+              Trainer
+            </button>
+          </div>
 
-        <div class="input-group">
-          <input type="email" id="email" placeholder="Email" />
-        </div>
-        <div class="input-group">
-          <input type="password" id="password" placeholder="Password" />
-        </div>
+          <div class="input-group">
+            <input type="email" id="email" placeholder="Email" />
+          </div>
+          <div class="input-group">
+            <input type="password" id="password" placeholder="Password" />
+          </div>
 
-        <a href="#" class="forgot-pass">Forgot Password?</a>
+          <a href="#" class="forgot-pass">Forgot Password?</a>
 
-        <button class="btn-login-main" onclick="handleLogin()">Login</button>
-        <p id="error-msg" style="
+          <button class="btn-login-main" onclick="handleLogin()">Login</button>
+          <p
+            id="error-msg"
+            style="
               color: #ff6b6b;
               font-size: 14px;
               margin-top: 15px;
               display: none;
-            ">
-          Invalid Credentials
-        </p>
-        <p style="color: grey; font-size: 10px; margin-top: 20px"></p>
+            "
+          >
+            Invalid Credentials
+          </p>
+          <p style="color: grey; font-size: 10px; margin-top: 20px"></p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    let currentRole = "member";
+    <script>
+      let currentRole = "member";
 
-    function setRole(role) {
-      currentRole = role;
-      document
-        .getElementById("btn-member")
-        .classList.toggle("active", role === "member");
-      document
-        .getElementById("btn-trainer")
-        .classList.toggle("active", role === "trainer");
-    }
-
-    function handleLogin() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const errorMsg = document.getElementById("error-msg");
-
-      // Simple simulation
-      if (
-        currentRole === "member" &&
-        (email === "member@test.com" || email === "member") &&
-        password === "member"
-      ) {
-        window.location.href = "member_dashboard.html";
-        alert("Logged in as Member");
-      } else if (
-        currentRole === "trainer" &&
-        (email === "trainer@test.com" || email === "trainer") &&
-        password === "trainer"
-      ) {
-        window.location.href = "../dashboard.html";
-        alert("Redirecting to Trainer Dashboard...");
-      } else if (email === "admin" && password === "admin") {
-        window.location.href = "#admin"; // Backdoor
-        alert("Logged in as Admin");
-      } else {
-        errorMsg.style.display = "block";
+      function setRole(role) {
+        currentRole = role;
+        document
+          .getElementById("btn-member")
+          .classList.toggle("active", role === "member");
+        document
+          .getElementById("btn-trainer")
+          .classList.toggle("active", role === "trainer");
       }
-    }
-  </script>
-</body>
 
+      function handleLogin() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const errorMsg = document.getElementById("error-msg");
+
+        // Simple simulation
+        if (
+          currentRole === "member" &&
+          (email === "member@test.com" || email === "member") &&
+          password === "member"
+        ) {
+          window.location.href = "member_dashboard.html";
+          alert("Logged in as Member");
+        } else if (
+          currentRole === "trainer" &&
+          (email === "trainer@test.com" || email === "trainer") &&
+          password === "trainer"
+        ) {
+          window.location.href = "../dashboard.html";
+          alert("Redirecting to Trainer Dashboard...");
+        } else {
+          errorMsg.style.display = "block";
+        }
+      }
+    </script>
+  </body>
 </html>

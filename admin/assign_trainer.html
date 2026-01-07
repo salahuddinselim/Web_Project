@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assign Trainer - Pranayom</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        background-color: #121712;
+        color: white;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: #1f261f;
+        color: white;
+      }
+
+      .icon {
+        width: 20px;
+        text-align: center;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 40px 60px;
+      }
+
+      h1 {
+        font-size: 32px;
+        margin-bottom: 40px;
+      }
+
+      h2 {
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #ddd;
+      }
+
+      /* Form Styling */
+      .form-container {
+        max-width: 500px;
+        margin-bottom: 50px;
+      }
+
+      .input-group {
+        margin-bottom: 25px;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: #ddd;
+      }
+
+      .input-field {
+        width: 100%;
+        background-color: #1f261f;
+        border: 1px solid #333;
+        padding: 15px;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+      }
+
+      .input-field::placeholder {
+        color: #666;
+      }
+
+      .input-field:focus {
+        outline: none;
+        border-color: #00d26a;
+      }
+
+      select.input-field {
+        cursor: pointer;
+      }
+
+      /* Button */
+      .btn-submit {
+        background-color: #00d26a;
+        color: black;
+        font-weight: bold;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+
+      .btn-submit:hover {
+        background-color: #00b85a;
+      }
+
+      /* Table Styling */
+      .table-section {
+        margin-top: 50px;
+      }
+
+      .table-container {
+        background-color: #1a201a;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .trainer-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .trainer-table th {
+        text-align: left;
+        border-bottom: 1px solid #333;
+        padding: 10px 0;
+        color: #aaa;
+        font-weight: normal;
+      }
+
+      .trainer-table td {
+        padding: 15px 0;
+        border-bottom: 1px solid #2a2a2a;
+      }
+
+      .trainer-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .btn-edit {
+        background-color: transparent;
+        color: #00d26a;
+        border: 1px solid #00d26a;
+        padding: 5px 15px;
+        border-radius: 3px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .btn-edit:hover {
+        background-color: #00d26a;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="user-profile">
+        <div class="avatar">
+          <img src="../images/woman-portrait-placeholder.png" alt="" />
+        </div>
+        <div class="user-name">Afia</div>
+      </div>
+
+      <div class="menu">
+        <a href="dashboard.html" class="menu-item">
+          <span class="icon">🏠</span> Dashboard
+        </a>
+        <a href="add_member.html" class="menu-item">
+          <span class="icon">👥</span> Add member
+        </a>
+        <a href="add_trainer.html" class="menu-item">
+          <span class="icon">➕</span> Add trainer
+        </a>
+        <a href="#" class="menu-item active">
+          <span class="icon">👤</span> Assign trainer
+        </a>
+        <a href="login.html" class="menu-item" style="margin-top: 50px">
+          <span class="icon">🚪</span> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <h1>Assign Trainers</h1>
+      <h2>Add New Trainer</h2>
+
+      <div class="form-container">
+        <div class="input-group">
+          <label>Trainer Name</label>
+          <select class="input-field">
+            <option value="">Enter trainer's name</option>
+            <option value="john">John Smith</option>
+            <option value="sarah">Sarah Johnson</option>
+            <option value="mike">Mike Williams</option>
+            <option value="emily">Emily Brown</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Member Name</label>
+          <select class="input-field">
+            <option value="">Enter member name</option>
+            <option value="olivia">Olivia Davis</option>
+            <option value="noah">Noah Carter</option>
+            <option value="emma">Emma Wilson</option>
+            <option value="liam">Liam Martinez</option>
+            <option value="sophia">Sophia Anderson</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Specialization</label>
+          <input
+            type="text"
+            class="input-field"
+            placeholder="Enter trainer specialization"
+          />
+        </div>
+
+        <button class="btn-submit" onclick="handleAssign()">Assign</button>
+      </div>
+
+      <div class="table-section">
+        <h2>Existing Trainers</h2>
+        <div class="table-container">
+          <table class="trainer-table">
+            <thead>
+              <tr>
+                <th width="25%">Name</th>
+                <th width="30%">Email</th>
+                <th width="25%">Specialization</th>
+                <th width="20%" style="text-align: center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Emma</td>
+                <td>emma@example.com</td>
+                <td>Hatha Yoga</td>
+                <td style="text-align: center">
+                  <button class="btn-edit" onclick="handleEdit('Emma')">
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>Olivia Lila</td>
+                <td>olivia.lila@example.com</td>
+                <td>Vinyasa Flow</td>
+                <td style="text-align: center">
+                  <button class="btn-edit" onclick="handleEdit('Olivia Lila')">
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>Sarah Jones</td>
+                <td>sarah.jones@example.com</td>
+                <td>Ashtanga Yoga</td>
+                <td style="text-align: center">
+                  <button class="btn-edit" onclick="handleEdit('Sarah Jones')">
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>Michael Brown</td>
+                <td>michael.brown@example.com</td>
+                <td>Yin Yoga</td>
+                <td style="text-align: center">
+                  <button
+                    class="btn-edit"
+                    onclick="handleEdit('Michael Brown')"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>Jessica Wilson</td>
+                <td>jessica.wilson@example.com</td>
+                <td>Restorative Yoga</td>
+                <td style="text-align: center">
+                  <button
+                    class="btn-edit"
+                    onclick="handleEdit('Jessica Wilson')"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function handleAssign() {
+        alert("Trainer assigned successfully!");
+      }
+
+      function handleEdit(name) {
+        alert("Editing trainer: " + name);
+      }
+    </script>
+  </body>
+</html>

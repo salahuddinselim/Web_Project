@@ -1,340 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Routine</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0e0e0e;
+        color: #ffffff;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Routine</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0e0e0e;
-      color: #ffffff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+      .mainContainer {
+        display: flex;
+        width: 95%;
+        height: 90vh;
+        background-color: #121212;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
 
-    .mainContainer {
-      display: flex;
-      width: 95%;
-      height: 90vh;
-      background-color: #121212;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
+      }
 
-    /* Sidebar Styling */
-    .sidebar {
-      width: 250px;
-      background-color: #0d120f;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      border-right: 1px solid #1f2b23;
-    }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      margin-bottom: 40px;
-      gap: 15px;
-    }
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
+      }
 
-    .profile-pic {
-      width: 40px;
-      height: 40px;
-      background-color: #c49ba6;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-    .profile-pic img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+      }
 
-    .profile-info h4 {
-      margin: 0;
-      font-size: 16px;
-      color: #ffffff;
-    }
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-    .profile-info span {
-      font-size: 12px;
-      color: #4ade80;
-    }
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
 
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: #1f261f;
+        color: white;
+      }
 
-    .menu-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 15px;
-      color: #a1a1aa;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: background-color 0.2s;
-      cursor: pointer;
-    }
+      .icon {
+        width: 20px;
+        text-align: center;
+      }
 
-    .menu-item:hover {
-      color: #ffffff;
-      background-color: #1a1f1c;
-    }
+      /* Main Content Styling */
+      .mainContent {
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+        background-color: #0e0e0e;
+      }
 
-    .menu-item.active {
-      background-color: #262626;
-      color: #ffffff;
-      font-weight: 500;
-    }
+      .page-header {
+        margin-bottom: 30px;
+      }
 
-    .menu-item i {
-      margin-right: 10px;
-      width: 20px;
-      text-align: center;
-    }
+      .page-header h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
 
-    /* Main Content Styling */
-    .mainContent {
-      flex: 1;
-      padding: 40px;
-      overflow-y: auto;
-      background-color: #0e0e0e;
-    }
+      .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        margin-top: 30px;
+        color: #e5e5e5;
+      }
 
-    .page-header {
-      margin-bottom: 30px;
-    }
+      /* Form Styling */
+      .form-group {
+        margin-bottom: 20px;
+        max-width: 600px;
+      }
 
-    .page-header h2 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: bold;
-    }
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #e5e5e5;
+        font-size: 14px;
+        font-weight: 500;
+      }
 
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-      margin-top: 30px;
-      color: #e5e5e5;
-    }
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #1f3b26;
+        /* Dark green background */
+        border: none;
+        border-radius: 6px;
+        color: #a0bba5;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+        font-family: inherit;
+      }
 
-    /* Form Styling */
-    .form-group {
-      margin-bottom: 20px;
-      max-width: 600px;
-    }
+      .form-control::placeholder {
+        color: #a0bba5;
+        opacity: 0.7;
+      }
 
-    .form-label {
-      display: block;
-      margin-bottom: 8px;
-      color: #e5e5e5;
-      font-size: 14px;
-      font-weight: 500;
-    }
+      .form-control:focus {
+        background-color: #25462d;
+      }
 
-    .form-control {
-      width: 100%;
-      padding: 12px 15px;
-      background-color: #1f3b26;
-      /* Dark green background */
-      border: none;
-      border-radius: 6px;
-      color: #a0bba5;
-      font-size: 14px;
-      outline: none;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
+      textarea.form-control {
+        resize: none;
+      }
 
-    .form-control::placeholder {
-      color: #a0bba5;
-      opacity: 0.7;
-    }
+      /* Exercise Block Styling */
+      .exercise-block {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+      }
 
-    .form-control:focus {
-      background-color: #25462d;
-    }
+      .exercise-count {
+        color: #4ade80;
+        font-size: 12px;
+        margin-bottom: 15px;
+        display: none;
+        /* Hidden for refined look, or can be shown */
+      }
 
-    textarea.form-control {
-      resize: none;
-    }
+      /* Buttons */
+      .btn-container {
+        margin-top: 40px;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-end;
+      }
 
-    /* Exercise Block Styling */
-    .exercise-block {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-    }
+      .add-exercise-btn {
+        background-color: #2d4a36;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 14px;
+      }
 
-    .exercise-count {
-      color: #4ade80;
-      font-size: 12px;
-      margin-bottom: 15px;
-      display: none;
-      /* Hidden for refined look, or can be shown */
-    }
+      .add-exercise-btn:hover {
+        background-color: #3d5a46;
+      }
 
-    /* Buttons */
-    .btn-container {
-      margin-top: 40px;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: flex-end;
-    }
+      .save-btn {
+        background-color: #22c55e;
+        color: #000000;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 14px;
+        width: 200px;
+      }
 
-    .add-exercise-btn {
-      background-color: #2d4a36;
-      color: #ffffff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-    }
+      .save-btn:hover {
+        background-color: #4ade80;
+      }
+    </style>
+  </head>
 
-    .add-exercise-btn:hover {
-      background-color: #3d5a46;
-    }
-
-    .save-btn {
-      background-color: #22c55e;
-      color: #000000;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-      width: 200px;
-    }
-
-    .save-btn:hover {
-      background-color: #4ade80;
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="mainContainer">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="profile" onclick="window.location.href='profile.html'" style="cursor: pointer;">
-        <div class="profile-pic">
-          <span style="font-size: 20px;">👩</span>
+  <body>
+    <div class="mainContainer">
+      <div class="sidebar">
+        <div
+          class="user-profile"
+          onclick="window.location.href='profile.html'"
+          style="cursor: pointer"
+        >
+          <div class="avatar">
+            <img src="../images/woman-portrait-placeholder.png" alt="" />
+          </div>
+          <div class="user-name">Sophia</div>
         </div>
-        <div class="profile-info">
-          <h4>Sophia</h4>
-          <span>Trainer</span>
+
+        <div class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <span class="icon">🏠</span> Dashboard
+          </a>
+          <a href="members.html" class="menu-item">
+            <span class="icon">👥</span> Members
+          </a>
+          <a href="content.html" class="menu-item">
+            <span class="icon">▶️</span> Content
+          </a>
+          <a href="diet_plan.html" class="menu-item">
+            <span class="icon">🍎</span> Diet Plans
+          </a>
+          <a href="progress_logs.html" class="menu-item">
+            <span class="icon">📈</span> Progress Logs
+          </a>
+          <a href="routine.html" class="menu-item active">
+            <span class="icon">📅</span> Routine
+          </a>
+          <a href="chat.html" class="menu-item">
+            <span class="icon">💬</span> Chat
+          </a>
+          <a
+            href="../html/index.html"
+            class="menu-item"
+            style="margin-top: auto"
+          >
+            <span class="icon">🚪</span> Logout
+          </a>
         </div>
       </div>
 
-      <div class="menu">
-        <div class="menu-item" onclick="window.location.href='dashboard.html'">
-          <i>🏠</i> Dashboard
+      <!-- Main Content -->
+      <div class="mainContent">
+        <div class="page-header">
+          <h2>Create Custom Yoga Routine</h2>
         </div>
-        <div class="menu-item" onclick="window.location.href='members.html'">
-          <i>👥</i> Members
+
+        <div class="form-group">
+          <label class="form-label">Routine Name</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="e.g., Morning Flow"
+          />
         </div>
-        <div class="menu-item" onclick="window.location.href='content.html'">
-          <i>▶️</i> Content
+
+        <div class="form-group">
+          <label class="form-label">Routine Description</label>
+          <textarea class="form-control" rows="4"></textarea>
         </div>
-        <div class="menu-item" onclick="window.location.href='diet_plan.html'">
-          <i>🍎</i> Diet Plans
+
+        <div class="section-title">Exercises</div>
+
+        <div id="exercises-container">
+          <!-- Initial Exercise Block -->
+          <div class="exercise-block">
+            <div class="form-group">
+              <label class="form-label">Exercise Name</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="e.g., Sun Salutation"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Exercise Description</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration (minutes)</label>
+              <input type="text" class="form-control" placeholder="e.g., 5" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sets/Reps</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="e.g., 3 sets of 10 reps"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes/Instructions</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+          </div>
         </div>
-        <div class="menu-item" onclick="window.location.href='progress_logs.html'">
-          <i>📈</i> Progress Logs
-        </div>
-        <div class="menu-item active">
-          <i>📅</i> Routine
-        </div>
-        <div class="menu-item" onclick="window.location.href='chat.html'">
-          <i>💬</i> Chat
-        </div>
-        <div class="menu-item" style="margin-top: auto;" onclick="window.location.href='../html/index.html'">
-          <i>🚪</i> Logout
+
+        <div class="btn-container">
+          <button
+            type="button"
+            class="add-exercise-btn"
+            onclick="addExercise()"
+          >
+            Add Exercise
+          </button>
+          <button type="button" class="save-btn" onclick="saveRoutine()">
+            Save Yoga Routine
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="mainContent">
+    <script>
+      function addExercise() {
+        const container = document.getElementById("exercises-container");
+        const exerciseBlock = document.createElement("div");
+        exerciseBlock.className = "exercise-block";
 
-      <div class="page-header">
-        <h2>Create Custom Yoga Routine</h2>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Routine Name</label>
-        <input type="text" class="form-control" placeholder="e.g., Morning Flow">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Routine Description</label>
-        <textarea class="form-control" rows="4"></textarea>
-      </div>
-
-      <div class="section-title">Exercises</div>
-
-      <div id="exercises-container">
-        <!-- Initial Exercise Block -->
-        <div class="exercise-block">
-          <div class="form-group">
-            <label class="form-label">Exercise Name</label>
-            <input type="text" class="form-control" placeholder="e.g., Sun Salutation">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Exercise Description</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Duration (minutes)</label>
-            <input type="text" class="form-control" placeholder="e.g., 5">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sets/Reps</label>
-            <input type="text" class="form-control" placeholder="e.g., 3 sets of 10 reps">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Notes/Instructions</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="btn-container">
-        <button type="button" class="add-exercise-btn" onclick="addExercise()">Add Exercise</button>
-        <button type="button" class="save-btn" onclick="saveRoutine()">Save Yoga Routine</button>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    function addExercise() {
-      const container = document.getElementById('exercises-container');
-      const exerciseBlock = document.createElement('div');
-      exerciseBlock.className = 'exercise-block';
-
-      // Add a visual separator or margin
-      exerciseBlock.style.marginTop = "30px";
-      exerciseBlock.innerHTML = `
+        // Add a visual separator or margin
+        exerciseBlock.style.marginTop = "30px";
+        exerciseBlock.innerHTML = `
                 <div style="border-top: 1px solid #1f2b23; margin-bottom: 20px;"></div>
                 <div class="form-group">
                     <label class="form-label">Exercise Name</label>
@@ -358,17 +361,18 @@
                 </div>
             `;
 
-      container.appendChild(exerciseBlock);
-      // Optionally scroll to the new block
-      exerciseBlock.scrollIntoView({ behavior: 'smooth' });
-    }
+        container.appendChild(exerciseBlock);
+        // Optionally scroll to the new block
+        exerciseBlock.scrollIntoView({ behavior: "smooth" });
+      }
 
-    function saveRoutine() {
-      const name = document.querySelector('input[placeholder="e.g., Morning Flow"]').value;
-      alert('Routine "' + (name || 'New Routine') + '" saved successfully!');
-      // Logic to clear form or redirect could go here
-    }
-  </script>
-</body>
-
+      function saveRoutine() {
+        const name = document.querySelector(
+          'input[placeholder="e.g., Morning Flow"]'
+        ).value;
+        alert('Routine "' + (name || "New Routine") + '" saved successfully!');
+        // Logic to clear form or redirect could go here
+      }
+    </script>
+  </body>
 </html>
