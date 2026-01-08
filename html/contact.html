@@ -1,254 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact Us - Pranayom Yoga Center</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <style>
-      .contact-container {
-        max-width: 1000px; /* Constrain width like design */
-        margin: 0 auto;
-        padding: 50px 20px;
-      }
 
-      .contact-header {
-        margin-bottom: 40px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Pranayom Yoga Center</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .contact-container {
+      max-width: 1000px;
+      /* Constrain width like design */
+      margin: 0 auto;
+      padding: 50px 20px;
+    }
 
-      .contact-header h1 {
-        font-size: 36px;
-        color: #222;
-        margin-bottom: 20px;
-      }
+    .contact-header {
+      margin-bottom: 40px;
+    }
 
-      .contact-header p {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 40px;
-      }
+    .contact-header h1 {
+      font-size: 36px;
+      color: #222;
+      margin-bottom: 20px;
+    }
 
-      .section-title {
-        font-size: 20px;
-        font-weight: bold;
-        color: #222;
-        margin-bottom: 20px;
-        margin-top: 40px;
-      }
+    .contact-header p {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
 
-      .map-container {
-        width: 100%;
-        height: 400px;
-        background-color: #e0e0e0;
-        margin-bottom: 40px;
-        position: relative;
-        overflow: hidden;
-        border-radius: 5px;
-      }
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
 
-      .map-placeholder {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* In a real scenario, this would be an iframe or actual map image. 
+    .map-container {
+      width: 100%;
+      height: 400px;
+      background-color: #e0e0e0;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 5px;
+    }
+
+    .map-placeholder {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* In a real scenario, this would be an iframe or actual map image. 
                Using a colored div with text for now as per "basics" constraint 
                and lack of specific assets. */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #888;
-        font-size: 24px;
-        background: url("../images/map-placeholder.png") no-repeat center center;
-        background-size: cover;
-      }
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 24px;
+      background: url("../images/map-placeholder.png") no-repeat center center;
+      background-size: cover;
+    }
 
-      .info-grid {
-        display: flex;
-        gap: 50px;
-        margin-bottom: 50px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 40px;
-      }
+    .info-grid {
+      display: flex;
+      gap: 50px;
+      margin-bottom: 50px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 40px;
+    }
 
-      .info-item h4 {
-        color: #00d26a; /* Green accent color */
-        font-size: 16px;
-        margin-bottom: 10px;
-      }
+    .info-item h4 {
+      color: #00d26a;
+      /* Green accent color */
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
 
-      .info-item p {
-        font-size: 14px;
-        color: #333;
-        line-height: 1.5;
-      }
+    .info-item p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
 
-      .contact-form {
-        max-width: 600px; /* Form width */
-      }
+    .contact-form {
+      max-width: 600px;
+      /* Form width */
+    }
 
-      .form-group {
-        margin-bottom: 20px;
-      }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-      .form-group label {
-        display: block;
-        margin-bottom: 10px;
-        color: #333;
-        font-weight: bold;
-        font-size: 14px;
-      }
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: bold;
+      font-size: 14px;
+    }
 
-      .form-control {
-        width: 100%;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9fdf9; /* Light green tint */
-        font-size: 14px;
-      }
+    .form-control {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9fdf9;
+      /* Light green tint */
+      font-size: 14px;
+    }
 
-      textarea.form-control {
-        height: 150px;
-        resize: vertical;
-      }
+    textarea.form-control {
+      height: 150px;
+      resize: vertical;
+    }
 
-      .btn-send {
-        background-color: #00d26a;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 14px;
-      }
+    .btn-send {
+      background-color: #00d26a;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
 
-      .btn-send:hover {
-        background-color: #00b05a;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="mainContent">
-      <!-- Navbar -->
-      <div class="navbar">
-        <div class="logo">
-          <h3><a href="index.html">Pranayom</a></h3>
-        </div>
-        <div class="list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="membership.html">Membership Plans</a></li>
-          <li><a href="classes.html">Classes</a></li>
-          <li><a href="trainers.html">Trainers</a></li>
-          <li>
-            <a href="contact.html" style="font-weight: bold; color: #000"
-              >Contact</a
-            >
-          </li>
-        </div>
-        <button class="btn-login" onclick="window.location.href='login.html'">
-          Login
-        </button>
+    .btn-send:hover {
+      background-color: #00b05a;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainContent">
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="logo">
+        <h3><a href="index.html">Pranayom</a></h3>
       </div>
+      <div class="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="membership.html">Membership Plans</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="trainers.html">Trainers</a></li>
+        <li>
+          <a href="contact.html" style="font-weight: bold; color: #000">Contact</a>
+        </li>
+      </div>
+      <button class="btn-login" onclick="window.location.href='login.html'">
+        Login
+      </button>
+    </div>
 
-      <!-- Content -->
-      <div class="secBox" style="background-color: #f8fcf8">
-        <div class="contact-container">
-          <div class="contact-header">
-            <h1>Contact Us</h1>
-            <p>
-              We'd love to hear from you! Whether you have questions about our
-              classes, trainers, or membership options, feel free to reach out
-              using the contact information below or by filling out the form.
-            </p>
-          </div>
-
-          <div class="section-title">Our Location</div>
-          <p style="margin-bottom: 20px; color: #333">
-            123 Progoti Shoroni, Madani Avenue, Badda
+    <!-- Content -->
+    <div class="secBox" style="background-color: #f8fcf8">
+      <div class="contact-container">
+        <div class="contact-header">
+          <h1>Contact Us</h1>
+          <p>
+            We'd love to hear from you! Whether you have questions about our
+            classes, trainers, or membership options, feel free to reach out
+            using the contact information below or by filling out the form.
           </p>
+        </div>
 
-          <div class="map-container">
-            <!-- Since I don't have the map image, I will use an iframe for Google Maps to look good, or just a placeholder div if offline.
+        <div class="section-title">Our Location</div>
+        <p style="margin-bottom: 20px; color: #333">
+          123 Progoti Shoroni, Madani Avenue, Badda
+        </p>
+
+        <div class="map-container">
+          <!-- Since I don't have the map image, I will use an iframe for Google Maps to look good, or just a placeholder div if offline.
                           Given instructions "no extra things", an iframe is standard HTML. 
                           However, to be safe and simple, I'll use a div that looks like a map container. -->
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.598346098804!2d90.4219536153634!3d23.79730079290075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c7ba21e7d237%3A0xe707f10b27af80e1!2sProgoti%20Sarani%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1677703000000!5m2!1sen!2sbd"
-              width="100%"
-              height="100%"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            >
-            </iframe>
-          </div>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.598346098804!2d90.4219536153634!3d23.79730079290075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c7ba21e7d237%3A0xe707f10b27af80e1!2sProgoti%20Sarani%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1677703000000!5m2!1sen!2sbd"
+            width="100%" height="100%" style="border: 0" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
 
-          <div class="section-title">Contact Information</div>
-          <div class="info-grid">
-            <div class="info-item">
-              <h4>Phone</h4>
-              <p>8801721212121</p>
-            </div>
-            <div class="info-item">
-              <h4>Email</h4>
-              <p>info@pranayom.com</p>
-            </div>
+        <div class="section-title">Contact Information</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>Phone</h4>
+            <p>8801721212121</p>
           </div>
+          <div class="info-item">
+            <h4>Email</h4>
+            <p>info@pranayom.com</p>
+          </div>
+        </div>
 
-          <div class="info-item" style="margin-bottom: 40px">
-            <h4>Hours</h4>
-            <p>Mon-Fri: 9am-8pm, Sat: 10am-6pm, Sun: Closed</p>
-          </div>
+        <div class="info-item" style="margin-bottom: 40px">
+          <h4>Hours</h4>
+          <p>Mon-Fri: 9am-8pm, Sat: 10am-6pm, Sun: Closed</p>
+        </div>
 
-          <div class="section-title">Send Us a Message</div>
-          <div class="contact-form">
-            <div class="form-group">
-              <label>Your Name</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your name"
-              />
-            </div>
-            <div class="form-group">
-              <label>Your Email</label>
-              <input
-                type="email"
-                class="form-control"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div class="form-group">
-              <label>Your Message</label>
-              <textarea class="form-control" placeholder=""></textarea>
-            </div>
-            <button type="button" class="btn-send">Send Message</button>
+        <div class="section-title">Send Us a Message</div>
+        <div class="contact-form">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" class="form-control" placeholder="Enter your name" />
           </div>
+          <div class="form-group">
+            <label>Your Email</label>
+            <input type="email" class="form-control" placeholder="Enter your email" />
+          </div>
+          <div class="form-group">
+            <label>Your Message</label>
+            <textarea class="form-control" placeholder=""></textarea>
+          </div>
+          <button type="button" class="btn-send">Send Message</button>
         </div>
       </div>
-
-      <!-- Footer -->
-      <footer>
-        <div class="footer-links">
-          <span
-            ><a href="policy.html" style="color: white; text-decoration: none"
-              >Privacy Policy</a
-            ></span
-          >
-          <span
-            ><a href="terms.html" style="color: white; text-decoration: none"
-              >Terms of Service</a
-            ></span
-          >
-          <span
-            ><a href="contact.html" style="color: white; text-decoration: none"
-              >Contact Us</a
-            ></span
-          >
-        </div>
-        <p>@2024 Pranayom. All rights reserved.</p>
-      </footer>
     </div>
-  </body>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <span><a href="policy.html" style="color: white; text-decoration: none">Privacy Policy</a></span>
+        <span><a href="terms.html" style="color: white; text-decoration: none">Terms of Service</a></span>
+        <span><a href="contact.html" style="color: white; text-decoration: none">Contact Us</a></span>
+      </div>
+      <p>@2024 Pranayom. All rights reserved.</p>
+    </footer>
+  </div>
+  <!-- Popup Modal -->
+  <div class="popup-overlay" id="messagePopup">
+    <div class="popup-content">
+      <h2>Message Sent!</h2>
+      <p>Thank you for reaching out. We will get back to you shortly.</p>
+      <button class="popup-btn-close" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const sendBtn = document.querySelector('.btn-send');
+    const popup = document.getElementById('messagePopup');
+
+    sendBtn.addEventListener('click', function () {
+      // In a real app, you would validate the form here
+      popup.style.display = 'flex';
+    });
+
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+
+    // Close when clicking outside
+    window.onclick = function (event) {
+      if (event.target == popup) {
+        popup.style.display = "none";
+      }
+    }
+  </script>
+</body>
+
 </html>
