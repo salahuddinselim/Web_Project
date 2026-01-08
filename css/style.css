@@ -11,8 +11,10 @@ body {
 }
 
 .mainContent {
-    background-color: azure; /* As per sample */
-    width: 100%; /* Or fixed if they insist, but 100% is better for landing */
+    background-color: azure;
+    /* As per sample */
+    width: 100%;
+    /* Or fixed if they insist, but 100% is better for landing */
     min-height: 100vh;
     margin: auto;
     display: flex;
@@ -26,7 +28,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    background-color: white;
+    background-color: rgb(222, 237, 222);
 }
 
 .navbar a {
@@ -55,7 +57,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0; 
+    padding: 0;
 }
 
 /* Hero Section */
@@ -68,13 +70,13 @@ body {
     align-items: center;
     color: white;
     text-align: center;
-    background-color: #333;
+    background-color: white;
 }
 
 .hero img {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 90%;
     object-fit: cover;
     z-index: 1;
     opacity: 0.8;
@@ -91,8 +93,10 @@ body {
     margin-bottom: 20px;
 }
 
-.btn-cta, .btn-login {
-    background-color: #00d26a; /* Green */
+.btn-cta,
+.btn-login {
+    background-color: #00d26a;
+    /* Green */
     color: white;
     padding: 10px 20px;
     border: none;
@@ -111,16 +115,17 @@ body {
 .cardBox {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 50px;
     flex-wrap: wrap;
     padding: 50px;
 }
 
-.cardBox1, .card {
+.cardBox1,
+.card {
     background-color: white;
-    width: 300px;
+    width: 350px;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     margin-bottom: 20px;
 }
@@ -131,7 +136,8 @@ body {
     object-fit: cover;
 }
 
-.card-content, .details {
+.card-content,
+.details {
     padding: 20px;
 }
 
@@ -176,7 +182,7 @@ body {
 
 /* Footer */
 footer {
-    background-color: #2c3e50;
+    background-color: #2c503f;
     color: white;
     padding: 40px;
     text-align: center;
@@ -191,3 +197,51 @@ footer {
 }
 
 /* CSS cleaned up: Page specific styles moved to HTML files */
+
+/* Popup Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.popup-content h2 {
+    color: #00d26a;
+    margin-bottom: 15px;
+}
+
+.popup-content p {
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.popup-btn-close {
+    background-color: #00d26a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.popup-btn-close:hover {
+    background-color: #00b05a;
+}
