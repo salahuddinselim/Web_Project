@@ -1,642 +1,962 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Yoga Routines - Pranayom</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: sans-serif;
-      }
 
-      body {
-        background-color: #121712; /* Very dark green/black */
-        color: white;
-        display: flex;
-        min-height: 100vh;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Yoga Routines - Pranayom</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
 
-      /* Sidebar (Same as Dashboard) */
-      .sidebar {
-        width: 250px;
-        background-color: #0d110d;
-        padding: 30px 20px;
-        border-right: 1px solid #222;
-      }
+    body {
+      background-color: #121712;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+    }
 
-      .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 50px;
-      }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #0d110d;
+      padding: 30px 20px;
+      border-right: 1px solid #222;
+      flex-shrink: 0;
+    }
 
-      .avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #333;
-        overflow: hidden;
-      }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 50px;
+    }
 
-      .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #333;
+      overflow: hidden;
+    }
 
-      .user-name {
-        font-weight: bold;
-        font-size: 16px;
-      }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      .menu {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
+    .user-name {
+      font-weight: bold;
+      font-size: 16px;
+    }
 
-      .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: #aaa;
-        text-decoration: none;
-        font-size: 14px;
-        padding: 10px;
-        border-radius: 5px;
-        transition: 0.3s;
-      }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-      .menu-item:hover,
-      .menu-item.active {
-        background-color: #1f261f;
-        color: white;
-      }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
 
-      .icon {
-        width: 20px;
-        text-align: center;
-      }
+    .menu-item:hover,
+    .menu-item.active {
+      background-color: #1f261f;
+      color: white;
+    }
 
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        padding: 40px 60px;
-      }
+    .icon {
+      width: 20px;
+      text-align: center;
+    }
 
-      h1 {
-        font-size: 32px;
-        margin-bottom: 30px;
-      }
+    /* Main Content Layout */
+    .main-content {
+      flex: 1;
+      padding: 40px 30px;
+      display: flex;
+      gap: 30px;
+      overflow-y: auto;
+    }
 
-      h2 {
-        font-size: 18px;
-        margin-bottom: 20px;
-        color: white;
-      }
+    /* Left Panel - Days & Details */
+    .left-panel {
+      flex: 1;
+      max-width: 700px;
+    }
 
-      /* Calendar Section */
-      .calendar-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 50px;
-      }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, #00d26a, #00a854);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-      .calendar-header {
-        font-weight: bold;
-        margin-bottom: 20px;
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        max-width: 600px;
-      }
+    h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-      .calendar-nav-btn {
-        cursor: pointer;
-        padding: 5px 10px;
-        user-select: none;
-        color: #888;
-      }
-      .calendar-nav-btn:hover {
-        color: white;
-        background-color: #333;
-        border-radius: 5px;
-      }
+    /* Day Selector */
+    .day-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
 
-      .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 20px;
-        text-align: center;
-        font-size: 14px;
-        width: 100%;
-        max-width: 600px;
-      }
+    .day-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      min-width: 90px;
+      text-align: center;
+    }
 
-      .calendar-day-header {
-        color: #aaa;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
+    .day-btn.completed {
+      background: linear-gradient(135deg, #1a3d2a, #0d2818);
+      color: #00d26a;
+      border: 1px solid #00d26a;
+    }
 
-      .calendar-day {
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: auto;
-      }
+    .day-btn.completed::after {
+      content: "✓";
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #00d26a;
+      color: #000;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .calendar-day:hover {
-        background-color: #333;
-      }
+    .day-btn.ongoing {
+      background: linear-gradient(135deg, #3d3a1a, #282518);
+      color: #f0c040;
+      border: 1px solid #f0c040;
+    }
 
-      .calendar-day.active {
-        background-color: #00d26a;
-        color: black;
-        font-weight: bold;
-      }
+    .day-btn.ongoing::after {
+      content: "⏳";
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f0c040;
+      color: #000;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .calendar-day.empty {
-        cursor: default;
-      }
-      .calendar-day.empty:hover {
-        background-color: transparent;
-      }
+    .day-btn.upcoming {
+      background: linear-gradient(135deg, #1f261f, #151a15);
+      color: #888;
+      border: 1px solid #333;
+    }
 
-      /* Content Sections */
-      .content-section {
-        margin-bottom: 50px;
-      }
+    .day-btn.active {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0, 210, 106, 0.3);
+    }
 
-      .info-card {
-        background-color: #1a201a;
-        border-radius: 12px;
-        display: flex;
-        overflow: hidden;
-        justify-content: space-between;
-      }
+    .day-btn:hover {
+      transform: translateY(-2px);
+    }
 
-      .card-text {
-        padding: 30px;
-        flex: 1;
-      }
+    /* Day Details Card */
+    .day-details {
+      background: linear-gradient(145deg, #1a201a, #151915);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #2a352a;
+      margin-bottom: 25px;
+    }
 
-      .card-text h3 {
-        font-size: 18px;
-        margin-bottom: 10px;
-      }
+    .day-details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #2a352a;
+    }
 
-      .card-text p {
-        font-size: 13px;
-        color: #aaa;
-        margin-bottom: 30px;
-      }
+    .day-title {
+      font-size: 22px;
+      font-weight: bold;
+    }
 
-      .btn {
-        padding: 8px 25px;
-        border-radius: 5px;
-        font-size: 12px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-      }
+    .day-status {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-      .btn-start,
-      .btn-view {
-        background-color: #2a352a;
-        color: white;
-      }
+    .day-status.completed {
+      background: rgba(0, 210, 106, 0.15);
+      color: #00d26a;
+    }
 
-      .btn-start:hover,
-      .btn-view:hover {
-        background-color: #3a453a;
-      }
+    .day-status.ongoing {
+      background: rgba(240, 192, 64, 0.15);
+      color: #f0c040;
+    }
 
-      .card-image {
-        width: 300px;
-        background-color: #ffe0b2;
-      }
+    .day-status.upcoming {
+      background: rgba(136, 136, 136, 0.15);
+      color: #888;
+    }
 
-      .card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    /* Routine Items */
+    .routine-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-      /* Progress Form */
-      .progress-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        max-width: 800px;
-        margin-bottom: 20px;
-      }
+    .routine-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: #1f261f;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
 
-      .checkbox-section {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
+    .routine-item:hover {
+      background: #252d25;
+      transform: translateX(5px);
+    }
 
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background-color: #1f261f;
-        padding: 10px 15px;
-        border-radius: 5px;
-        border: 1px solid #333;
-      }
+    .routine-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
 
-      .checkbox-group label {
-        font-size: 14px;
-        cursor: pointer;
-      }
+    .routine-icon.yoga {
+      background: linear-gradient(135deg, #00d26a33, #00a85433);
+    }
 
-      .custom-checkbox {
-        accent-color: #00d26a;
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-      }
+    .routine-icon.meditation {
+      background: linear-gradient(135deg, #6b5bff33, #4f42cc33);
+    }
 
-      .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
+    .routine-icon.breathing {
+      background: linear-gradient(135deg, #00bcd433, #00838f33);
+    }
 
-      .input-group label {
-        font-size: 13px;
-        color: #eee;
-      }
+    .routine-info {
+      flex: 1;
+    }
 
-      .custom-input {
-        background-color: #1f261f;
-        border: 1px solid #333;
-        padding: 15px;
-        border-radius: 5px;
-        color: white;
-        font-size: 14px;
-      }
+    .routine-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
 
-      .progress-actions {
-        grid-column: span 2;
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-      }
+    .routine-duration {
+      font-size: 12px;
+      color: #888;
+    }
 
-      .btn-log {
-        background-color: #00d26a;
-        color: #003300;
-        padding: 12px 30px;
-        font-size: 14px;
-      }
+    .routine-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-      .btn-log:hover {
-        background-color: #00b05a;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="user-profile">
-        <div class="avatar">
-          <img
-            src="../images/woman-portrait-placeholder.png"
-            alt=""
-            style="background-color: #ccc"
-          />
-        </div>
-        <div class="user-name">Elma</div>
+    .routine-check.done {
+      background: #00d26a;
+      border-color: #00d26a;
+      color: #000;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d26a, #00a854);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 210, 106, 0.4);
+    }
+
+    .btn-secondary {
+      background: #2a352a;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #3a453a;
+    }
+
+    /* Right Panel - Mini Calendar */
+    .right-panel {
+      width: 280px;
+      flex-shrink: 0;
+    }
+
+    .mini-calendar {
+      background: linear-gradient(145deg, #1a201a, #151915);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #2a352a;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 5px;
+    }
+
+    .calendar-nav-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2a352a;
+      border: none;
+      color: #aaa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .calendar-nav-btn:hover {
+      background: #3a453a;
+      color: #fff;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .weekday {
+      font-size: 10px;
+      color: #666;
+      padding: 5px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #aaa;
+    }
+
+    .cal-day:hover:not(.empty) {
+      background: #2a352a;
+    }
+
+    .cal-day.today {
+      background: #00d26a;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .cal-day.has-routine {
+      position: relative;
+    }
+
+    .cal-day.has-routine::after {
+      content: "";
+      position: absolute;
+      bottom: 2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #00d26a;
+    }
+
+    .cal-day.empty {
+      cursor: default;
+    }
+
+    /* Progress Summary */
+    .progress-summary {
+      background: linear-gradient(145deg, #1a201a, #151915);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #2a352a;
+      margin-top: 20px;
+    }
+
+    .progress-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .progress-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00d26a;
+    }
+
+    .progress-bar-container {
+      margin-top: 15px;
+    }
+
+    .progress-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .progress-bar-label span:first-child {
+      color: #888;
+    }
+
+    .progress-bar-label span:last-child {
+      color: #00d26a;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #2a352a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00d26a, #00a854);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      background: linear-gradient(145deg, #1a201a, #151915);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #2a352a;
+      margin-top: 20px;
+    }
+
+    .quick-action-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2a352a;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quick-action-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .quick-action-btn:hover {
+      background: #3a453a;
+      transform: translateX(3px);
+    }
+
+    .quick-action-btn span {
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="user-profile">
+      <div class="avatar">
+        <img src="../images/IMG_1543.JPG" alt="" style="background-color: #ccc" />
       </div>
-
-      <div class="menu">
-        <a href="member_dashboard.html" class="menu-item">
-          <span class="icon">🏠</span> Dashboard
-        </a>
-        <a href="member_classes.html" class="menu-item">
-          <span class="icon">📅</span> Classes
-        </a>
-        <a href="#" class="menu-item active">
-          <span class="icon">🧘</span> Routines
-        </a>
-        <a href="member_diet.html" class="menu-item">
-          <span class="icon">🥗</span> Diet
-        </a>
-        <a href="member_progress.html" class="menu-item">
-          <span class="icon">📈</span> Progress
-        </a>
-        <a href="member_chat.html" class="menu-item">
-          <span class="icon">💬</span> Chat
-        </a>
-        <a href="index.html" class="menu-item" style="margin-top: 50px">
-          <span class="icon">🚪</span> Logout
-        </a>
-      </div>
+      <div class="user-name">Afia</div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+    <div class="menu">
+      <a href="member_dashboard.html" class="menu-item">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      <a href="member_classes.html" class="menu-item">
+        <span class="icon">📅</span> Classes
+      </a>
+      <a href="#" class="menu-item active">
+        <span class="icon">🧘</span> Routines
+      </a>
+      <a href="member_diet.html" class="menu-item">
+        <span class="icon">🥗</span> Diet
+      </a>
+      <a href="member_progress.html" class="menu-item">
+        <span class="icon">📈</span> Progress
+      </a>
+      <a href="member_chat.html" class="menu-item">
+        <span class="icon">💬</span> Chat
+      </a>
+      <a href="index.html" class="menu-item" style="margin-top: 50px">
+        <span class="icon">🚪</span> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Left Panel -->
+    <div class="left-panel">
       <h1>Your Yoga Routines</h1>
 
       <h2>Select Day</h2>
-
-      <div class="calendar-section">
-        <div class="calendar-header">
-          <span id="prevMonth" class="calendar-nav-btn">&lt;</span>
-          <span id="monthYear">Nov 2025</span>
-          <span id="nextMonth" class="calendar-nav-btn">&gt;</span>
-        </div>
-        <div class="calendar-grid" id="calendarGrid">
-          <div class="calendar-day-header">S</div>
-          <div class="calendar-day-header">M</div>
-          <div class="calendar-day-header">T</div>
-          <div class="calendar-day-header">W</div>
-          <div class="calendar-day-header">T</div>
-          <div class="calendar-day-header">F</div>
-          <div class="calendar-day-header">S</div>
-          <!-- Dynamic Days will be inserted here -->
-        </div>
+      <div class="day-selector" id="daySelector">
+        <!-- Day buttons will be generated by JS -->
       </div>
 
-      <div class="content-section">
-        <h2>Today's Routine</h2>
-        <div class="info-card">
-          <div class="card-text">
-            <h3>Morning Yoga Flow</h3>
-            <p>A gentle flow to start your day with energy and focus.</p>
-            <button
-              class="btn btn-start"
-              onclick="alert('Starting Morning Yoga Flow...')"
-            >
-              Start
-            </button>
-          </div>
-          <div class="card-image" style="background-color: #ffe0b2">
-            <img
-              src="../images/pregnant-woman-holding-fitness-mat.jpg"
-              alt="Yoga"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="content-section">
-        <h2>Diet Plan</h2>
-        <div class="info-card">
-          <div class="card-text">
-            <h3>Balanced Diet for the Week</h3>
-            <p>
-              A diet plan designed to complement your yoga practice and fitness
-              goals.
-            </p>
-            <button
-              class="btn btn-view"
-              onclick="alert('Opening Diet Plan...')"
-            >
-              View
-            </button>
-          </div>
-          <!-- Image shows blue/green tone -->
-          <div class="card-image" style="background-color: #0d2c3e">
-            <img src="../images/interior-design-yoga-space.jpg" alt="Diet" />
-          </div>
-        </div>
-      </div>
-
-      <div class="content-section">
-        <h2>Track Your Progress</h2>
-        <div class="progress-grid">
-          <div class="input-group">
-            <label>Stress level</label>
-            <input
-              type="text"
-              class="custom-input"
-              placeholder="Enter stress level"
-            />
-          </div>
-          <div class="input-group">
-            <label>Heart Rate (bpm)</label>
-            <input
-              type="text"
-              class="custom-input"
-              placeholder="Enter heart rate"
-            />
-          </div>
-          <div class="input-group">
-            <label>Duration</label>
-            <input
-              type="text"
-              class="custom-input"
-              placeholder="Enter duration"
-            />
-          </div>
-          <div class="input-group">
-            <label>Mood</label>
-            <input
-              type="text"
-              class="custom-input"
-              id="moodInput"
-              placeholder="Select mood"
-            />
-          </div>
+      <!-- Day Details -->
+      <div class="day-details" id="dayDetails">
+        <div class="day-details-header">
+          <span class="day-title" id="dayTitle">Day 1 - Foundation</span>
+          <span class="day-status completed" id="dayStatus">Completed</span>
         </div>
 
-        <!-- New Checkbox Section -->
-        <h3>Daily Achievements</h3>
-        <div class="checkbox-section">
-          <div class="checkbox-group">
-            <input type="checkbox" id="checkRoutine" class="custom-checkbox" />
-            <label for="checkRoutine">Completed Routine</label>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="checkDiet" class="custom-checkbox" />
-            <label for="checkDiet">Followed Diet</label>
-          </div>
-          <div class="checkbox-group">
-            <input type="checkbox" id="checkWater" class="custom-checkbox" />
-            <label for="checkWater">Water Intake Met</label>
-          </div>
-          <div class="checkbox-group">
-            <input
-              type="checkbox"
-              id="checkMeditation"
-              class="custom-checkbox"
-            />
-            <label for="checkMeditation">10m Meditation</label>
-          </div>
+        <div class="routine-list" id="routineList">
+          <!-- Routine items will be generated by JS -->
         </div>
 
-        <div class="progress-actions">
-          <button
-            class="btn btn-log"
-            onclick="alert('Progress (including Achievements) Logged Successfully!')"
-          >
-            Log Progress
-          </button>
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="startBtn">Start Routine</button>
+          <button class="btn btn-secondary" onclick="markDayComplete()">Mark Complete</button>
         </div>
       </div>
     </div>
 
-    <!-- Modal Removed -->
+    <!-- Right Panel - Mini Calendar & Stats -->
+    <div class="right-panel">
+      <!-- Mini Calendar -->
+      <div class="mini-calendar">
+        <div class="calendar-header">
+          <span class="calendar-title" id="calendarTitle">January 2026</span>
+          <div class="calendar-nav">
+            <button class="calendar-nav-btn" id="prevMonth">‹</button>
+            <button class="calendar-nav-btn" id="nextMonth">›</button>
+          </div>
+        </div>
+        <div class="calendar-weekdays">
+          <span class="weekday">S</span>
+          <span class="weekday">M</span>
+          <span class="weekday">T</span>
+          <span class="weekday">W</span>
+          <span class="weekday">T</span>
+          <span class="weekday">F</span>
+          <span class="weekday">S</span>
+        </div>
+        <div class="calendar-days" id="calendarDays">
+          <!-- Calendar days will be generated by JS -->
+        </div>
+      </div>
 
-    <script>
-      // Calendar Logic
-      const date = new Date();
-      let currYear = date.getFullYear();
-      let currMonth = date.getMonth(); // 0-11
+      <!-- Progress Summary -->
+      <div class="progress-summary">
+        <div class="progress-title">Weekly Progress</div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">Days Completed</span>
+            <span class="stat-value" id="completedCount">3/7</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Current Streak</span>
+            <span class="stat-value">🔥 5 days</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total Minutes</span>
+            <span class="stat-value">145 min</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-label">
+            <span>Week Progress</span>
+            <span id="weekProgress">43%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressFill" style="width: 43%"></div>
+          </div>
+        </div>
+      </div>
 
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="progress-title">Quick Actions</div>
+        <button class="quick-action-btn" onclick="window.location.href='member_diet.html'">
+          <span>🥗</span> View Today's Diet
+        </button>
+        <button class="quick-action-btn" onclick="window.location.href='member_progress.html'">
+          <span>📊</span> Track Progress
+        </button>
+        <button class="quick-action-btn" onclick="window.location.href='member_chat.html'">
+          <span>💬</span> Ask Trainer
+        </button>
+      </div>
+    </div>
+  </div>
 
-      const monthYearText = document.getElementById("monthYear");
-      const calendarGrid = document.getElementById("calendarGrid");
-      const prevBtn = document.getElementById("prevMonth");
-      const nextBtn = document.getElementById("nextMonth");
+  <script>
+    // Routine Data for each day
+    const routineData = {
+      1: {
+        title: "Day 1 - Foundation",
+        status: "completed",
+        routines: [
+          { name: "Sun Salutation A", duration: "10 min", icon: "🧘", type: "yoga", done: true },
+          { name: "Basic Breathing", duration: "5 min", icon: "🌬️", type: "breathing", done: true },
+          { name: "Guided Meditation", duration: "10 min", icon: "🧠", type: "meditation", done: true }
+        ]
+      },
+      2: {
+        title: "Day 2 - Flexibility",
+        status: "completed",
+        routines: [
+          { name: "Hip Openers Flow", duration: "15 min", icon: "🧘", type: "yoga", done: true },
+          { name: "Hamstring Stretches", duration: "10 min", icon: "🦵", type: "yoga", done: true },
+          { name: "Cool Down", duration: "5 min", icon: "❄️", type: "breathing", done: true }
+        ]
+      },
+      3: {
+        title: "Day 3 - Strength",
+        status: "completed",
+        routines: [
+          { name: "Warrior Series", duration: "15 min", icon: "⚔️", type: "yoga", done: true },
+          { name: "Core Activation", duration: "10 min", icon: "💪", type: "yoga", done: true },
+          { name: "Balance Poses", duration: "10 min", icon: "🤸", type: "yoga", done: true }
+        ]
+      },
+      4: {
+        title: "Day 4 - Energy Flow",
+        status: "ongoing",
+        routines: [
+          { name: "Sun Salutation B", duration: "12 min", icon: "☀️", type: "yoga", done: true },
+          { name: "Vinyasa Flow", duration: "15 min", icon: "🌊", type: "yoga", done: false },
+          { name: "Energy Breathing", duration: "8 min", icon: "⚡", type: "breathing", done: false }
+        ]
+      },
+      5: {
+        title: "Day 5 - Restoration",
+        status: "upcoming",
+        routines: [
+          { name: "Gentle Stretches", duration: "10 min", icon: "🌸", type: "yoga", done: false },
+          { name: "Restorative Poses", duration: "20 min", icon: "🛏️", type: "yoga", done: false },
+          { name: "Deep Relaxation", duration: "15 min", icon: "😌", type: "meditation", done: false }
+        ]
+      },
+      6: {
+        title: "Day 6 - Advanced",
+        status: "upcoming",
+        routines: [
+          { name: "Advanced Asanas", duration: "20 min", icon: "🔥", type: "yoga", done: false },
+          { name: "Arm Balances", duration: "10 min", icon: "🤲", type: "yoga", done: false },
+          { name: "Pranayama", duration: "10 min", icon: "🌬️", type: "breathing", done: false }
+        ]
+      },
+      7: {
+        title: "Day 7 - Integration",
+        status: "upcoming",
+        routines: [
+          { name: "Full Body Flow", duration: "25 min", icon: "🌟", type: "yoga", done: false },
+          { name: "Mindfulness Practice", duration: "15 min", icon: "🧘", type: "meditation", done: false },
+          { name: "Gratitude Meditation", duration: "10 min", icon: "🙏", type: "meditation", done: false }
+        ]
+      }
+    };
 
-      function renderCalendar() {
-        // Update Header
-        monthYearText.innerText = `${months[currMonth]} ${currYear}`;
+    let selectedDay = 4; // Current day (ongoing)
 
-        // Clear Days (keep headers)
-        // Select only .calendar-day elements to remove, or rebuild entire grid string
-        // Easier to just rebuild the day cells
+    // Generate Day Buttons
+    function renderDaySelector() {
+      const container = document.getElementById('daySelector');
+      container.innerHTML = '';
 
-        // Get all existing day cells and remove them
-        // const existingDays = document.querySelectorAll(".calendar-day");
-        // existingDays.forEach((day) => day.remove());
+      for (let i = 1; i <= 7; i++) {
+        const data = routineData[i];
+        const btn = document.createElement('button');
+        btn.className = `day-btn ${data.status}`;
+        if (i === selectedDay) btn.classList.add('active');
+        btn.innerHTML = `Day ${i}`;
+        btn.onclick = () => selectDay(i);
+        container.appendChild(btn);
+      }
+    }
 
-        // The safest way is to clear innerHTML and re-add headers + days.
-        calendarGrid.innerHTML = `
-                <div class="calendar-day-header">S</div>
-                <div class="calendar-day-header">M</div>
-                <div class="calendar-day-header">T</div>
-                <div class="calendar-day-header">W</div>
-                <div class="calendar-day-header">T</div>
-                <div class="calendar-day-header">F</div>
-                <div class="calendar-day-header">S</div>
-            `;
+    // Select a day and show details
+    function selectDay(day) {
+      selectedDay = day;
+      renderDaySelector();
+      renderDayDetails();
+    }
 
-        // Get first day of month (0-6, Sun-Sat)
-        let firstDayofMonth = new Date(currYear, currMonth, 1).getDay();
-        // Get last date of month
-        let lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate();
+    // Render Day Details
+    function renderDayDetails() {
+      const data = routineData[selectedDay];
 
-        // Create day elements
-        // let liTag = ""; // This variable is not used in the current logic
+      document.getElementById('dayTitle').textContent = data.title;
 
-        // Add empty divs for days before start
-        for (let i = 0; i < firstDayofMonth; i++) {
-          const emptyDiv = document.createElement("div");
-          emptyDiv.classList.add("calendar-day", "empty");
-          calendarGrid.appendChild(emptyDiv);
-        }
+      const statusEl = document.getElementById('dayStatus');
+      statusEl.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+      statusEl.className = `day-status ${data.status}`;
 
-        // Add actual days
-        for (let i = 1; i <= lastDateofMonth; i++) {
-          const dayDiv = document.createElement("div");
-          dayDiv.classList.add("calendar-day");
-          dayDiv.innerText = i;
+      const listEl = document.getElementById('routineList');
+      listEl.innerHTML = '';
 
-          // Highlight today
-          if (
-            i === date.getDate() &&
-            currMonth === new Date().getMonth() &&
-            currYear === new Date().getFullYear()
-          ) {
-            dayDiv.classList.add("active");
-          }
+      data.routines.forEach((routine, index) => {
+        const item = document.createElement('div');
+        item.className = 'routine-item';
+        item.innerHTML = `
+            <div class="routine-icon ${routine.type}">${routine.icon}</div>
+            <div class="routine-info">
+              <div class="routine-name">${routine.name}</div>
+              <div class="routine-duration">${routine.duration}</div>
+            </div>
+            <div class="routine-check ${routine.done ? 'done' : ''}" onclick="toggleRoutine(${index})">
+              ${routine.done ? '✓' : ''}
+            </div>
+          `;
+        listEl.appendChild(item);
+      });
 
-          // Make clickable
-          dayDiv.addEventListener("click", function () {
-            // Remove active from others
-            document
-              .querySelectorAll(".calendar-day")
-              .forEach((d) => d.classList.remove("active"));
-            this.classList.add("active");
-          });
-
-          calendarGrid.appendChild(dayDiv);
-        }
+      // Update button text based on status
+      const startBtn = document.getElementById('startBtn');
+      if (data.status === 'completed') {
+        startBtn.textContent = 'Review Routine';
+      } else if (data.status === 'ongoing') {
+        startBtn.textContent = 'Continue Routine';
+      } else {
+        startBtn.textContent = 'Start Routine';
       }
 
+      updateProgress();
+    }
+
+    // Toggle routine completion
+    function toggleRoutine(index) {
+      routineData[selectedDay].routines[index].done = !routineData[selectedDay].routines[index].done;
+
+      // Update day status based on routines
+      const routines = routineData[selectedDay].routines;
+      const allDone = routines.every(r => r.done);
+      const someDone = routines.some(r => r.done);
+
+      if (allDone) {
+        routineData[selectedDay].status = 'completed';
+      } else if (someDone) {
+        routineData[selectedDay].status = 'ongoing';
+      } else {
+        routineData[selectedDay].status = 'upcoming';
+      }
+
+      renderDaySelector();
+      renderDayDetails();
+    }
+
+    // Mark entire day as complete
+    function markDayComplete() {
+      routineData[selectedDay].routines.forEach(r => r.done = true);
+      routineData[selectedDay].status = 'completed';
+      renderDaySelector();
+      renderDayDetails();
+    }
+
+    // Update progress stats
+    function updateProgress() {
+      const completed = Object.values(routineData).filter(d => d.status === 'completed').length;
+      const total = Object.keys(routineData).length;
+      const percentage = Math.round((completed / total) * 100);
+
+      document.getElementById('completedCount').textContent = `${completed}/${total}`;
+      document.getElementById('weekProgress').textContent = `${percentage}%`;
+      document.getElementById('progressFill').style.width = `${percentage}%`;
+    }
+
+    // Mini Calendar Logic
+    const date = new Date();
+    let currYear = date.getFullYear();
+    let currMonth = date.getMonth();
+
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    function renderCalendar() {
+      document.getElementById('calendarTitle').textContent = `${months[currMonth]} ${currYear}`;
+
+      const container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+
+      const firstDay = new Date(currYear, currMonth, 1).getDay();
+      const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
+      const today = new Date();
+
+      // Empty days before first day
+      for (let i = 0; i < firstDay; i++) {
+        const day = document.createElement('div');
+        day.className = 'cal-day empty';
+        container.appendChild(day);
+      }
+
+      // Actual days
+      for (let i = 1; i <= lastDate; i++) {
+        const day = document.createElement('div');
+        day.className = 'cal-day';
+        day.textContent = i;
+
+        // Highlight today
+        if (i === today.getDate() && currMonth === today.getMonth() && currYear === today.getFullYear()) {
+          day.classList.add('today');
+        }
+
+        // Add indicator for days with routines (first 7 days of month for demo)
+        if (i <= 7) {
+          day.classList.add('has-routine');
+        }
+
+        day.onclick = () => {
+          if (i <= 7) selectDay(i);
+        };
+
+        container.appendChild(day);
+      }
+    }
+
+    document.getElementById('prevMonth').onclick = () => {
+      currMonth--;
+      if (currMonth < 0) {
+        currMonth = 11;
+        currYear--;
+      }
       renderCalendar();
+    };
 
-      prevBtn.addEventListener("click", () => {
-        currMonth--;
-        if (currMonth < 0) {
-          currMonth = 11;
-          currYear--;
-        }
-        renderCalendar();
-      });
+    document.getElementById('nextMonth').onclick = () => {
+      currMonth++;
+      if (currMonth > 11) {
+        currMonth = 0;
+        currYear++;
+      }
+      renderCalendar();
+    };
 
-      nextBtn.addEventListener("click", () => {
-        currMonth++;
-        if (currMonth > 11) {
-          currMonth = 0;
-          currYear++;
-        }
-        renderCalendar();
-      });
+    // Initialize
+    renderDaySelector();
+    renderDayDetails();
+    renderCalendar();
+  </script>
+</body>
 
-      // Start Routine Modal Logic (Removed)
-      // const startBtn = document.getElementById("startRoutineBtn");
-      // const modal = document.getElementById("feelingModal");
-      const moodInput = document.getElementById("moodInput"); // Kept for placeholder
-
-      // startBtn.addEventListener("click", () => {
-      //   modal.style.display = "flex";
-      // });
-
-      // Close modal if clicked outside (Removed)
-      // window.onclick = function (event) {
-      //   if (event.target == modal) {
-      //     modal.style.display = "none";
-      //   }
-      // };
-
-      // function selectFeeling(feeling) {
-      //   // Set input value
-      //   moodInput.value = feeling;
-
-      //   // Close modal
-      //   modal.style.display = "none";
-
-      //   // Show alert
-      //   alert("Starting Morning Yoga Flow... Mood logged: " + feeling);
-
-      //   // Scroll to progress section to show the user it was filled
-      //   moodInput.scrollIntoView({ behavior: "smooth", block: "center" });
-      // }
-    </script>
-  </body>
 </html>
