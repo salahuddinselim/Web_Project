@@ -332,7 +332,7 @@
       <div class="avatar">
         <img src="../images/IMG_1543.JPG" alt="" style="background-color: #ccc" />
       </div>
-      <div class="user-name">Elma</div>
+      <div class="user-name">Afia</div>
     </div>
 
     <div class="menu">
@@ -481,13 +481,46 @@
             <span>📄</span>
             <span>😊</span>
           </div>
-          <button class="btn-send" onclick="alert('Message Sent!')">
+          <button class="btn-send" onclick="sendMessage()">
             Send
           </button>
         </div>
       </div>
     </div>
   </div>
+  <script>
+    function sendMessage() {
+      const input = document.querySelector('.input-box input');
+      const messageText = input.value.trim();
+      const messagesArea = document.querySelector('.messages-area');
+
+      if (messageText) {
+        const newMsgHTML = `
+        <div class="message-group sent">
+          <div class="msg-avatar">
+            <img src="../images/IMG_1543.JPG" alt="Me" />
+          </div>
+          <div class="msg-content">
+            <div class="sender-name" style="text-align: right">You</div>
+            <div class="bubble">
+              ${messageText}
+            </div>
+          </div>
+        </div>`;
+
+        messagesArea.insertAdjacentHTML('beforeend', newMsgHTML);
+        input.value = '';
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      }
+    }
+
+    // Allow Enter key to send
+    document.querySelector('.input-box input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
 </body>
 
 </html>
