@@ -1,135 +1,200 @@
-# 🧘 Pranayom Yoga Center Management System
+# Pranayom Fitness Management System - PHP & MySQL Setup Guide
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/salahuddinselim/Web_Project)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Uptime](https://img.shields.io/badge/status-online-success.svg)](#)
+## Prerequisites
 
-A premium, comprehensive management suite for modern yoga centers. **Pranayom** is designed to bridge the gap between administrators, trainers, and members through a unified, high-performance dark-themed interface.
+- XAMPP installed with Apache and MySQL running
+- Web browser
+- Text editor (optional, for configuration)
 
----
+## Database Setup Instructions
 
-## 🌟 Vision & Purpose
+### Step 1: Start XAMPP Services
 
-Pranayom is built to provide a seamless digital experience for yoga studio management. From member progress tracking to trainer schedules and administrative control, it offers a state-of-the-art solution that prioritizes **visual excellence** and **functional simplicity**.
+1. Open XAMPP Control Panel
+2. Start **Apache** service
+3. Start **MySQL** service
 
-> [!NOTE]
-> This project is a front-end showcase using pure HTML, CSS, and Vanilla JavaScript. It focuses on premium design aesthetics, emphasizing "glassmorphism," dark themes, and bio-inspired green accents.
+### Step 2: Import Database Schema
 
----
+1. Open your web browser and go to: `http://localhost/phpmyadmin`
+2. Click on "SQL" tab at the top
+3. Open the file: `Web_Project/database/schema.sql`
+4. Copy all the contents and paste into the SQL query box
+5. Click "Go" button to execute
+6. You should see a success message: "Database schema created successfully!"
 
-## 🏗️ Portal Ecosystem
+### Step 3: Import Sample Data
 
-Pranayom is built on a multi-role architecture, providing specialized tools for every user level:
+1. Still in phpMyAdmin, make sure you're in the SQL tab
+2. Open the file: `Web_Project/database/sample_data.sql`
+3. Copy all the contents and paste into the SQL query box
+4. Click "Go" button to execute
+5. You should see success messages with test login credentials
 
-### 👑 Admin Portal
+## Test Login Credentials
 
-**Purpose**: High-level studio oversight and system configuration.
+### Member Login
 
-- **Capabilities**:
-  - Manage the entire user database (Members & Trainers).
-  - Assign Trainers to specific Members.
-  - Monitor global system activity and KPIs.
-  - Full administrative security control.
+- URL: `http://localhost/Web_Project/html/login.php`
+- Username: `member_afia`
+- Password: `password123`
 
-### 🏃 Trainer Portal
+### Trainer Login
 
-**Purpose**: Hands-on member management and content creation.
+- URL: `http://localhost/Web_Project/html/login.php`
+- Username: `trainer_sarah`
+- Password: `password123`
+- (Click "Trainer" toggle before logging in)
 
-- **Capabilities**:
-  - Track assigned members and their daily progress.
-  - Create and assign custom Workout Routines and Diet Plans.
-  - Upload instructional content (Classes/Videos).
-  - Direct communication with members via private chat.
+### Admin Login
 
-### 🧘 Member Portal
+- URL: `http://localhost/Web_Project/admin/login.php`
+- Username: `admin1`
+- Password: `password123`
 
-**Purpose**: Personal wellness journey and progress tracking.
+## Project Structure
 
-- **Capabilities**:
-  - Access assigned routines and diet plans.
-  - Log daily health metrics (Weight, Sleep, Mood).
-  - Join scheduled classes and view video content.
-  - Real-time support chat with assigned Trainers.
-
----
-
-## 📂 Project Structure & Page Directory
-
-### 🗺️ Full Directory Tree
-
-```text
+```
 Web_Project/
-├── admin/                # Admin Portal (Redesign Complete)
-│   ├── dashboard.html    # KPI overview & Recent activity
-│   ├── add_member.html   # Member creation form
-│   ├── add_trainer.html  # Trainer creation form
-│   ├── assign_trainer.html # Mapping trainers to members
-│   ├── login.html        # Admin-specific secure login
-│   └── profile.html      # Personal settings & Password
-├── trainer/              # Trainer Portal (Consistent Design)
-│   ├── dashboard.html    # Oversight & Quick actions
-│   ├── members.html      # List of assigned members
-│   ├── routine.html      # Routine creation tool
-│   ├── diet_plan.html    # Diet management interface
-│   ├── progress_logs.html # Member health data tracking
-│   ├── content.html      # Content upload & management
-│   ├── chat.html         # Real-time messaging
-│   └── profile.html      # Trainer personal profile
-├── html/                 # Member Portal & Public Pages
-│   ├── index.html        # Hero landing page
-│   ├── member_dashboard.html # Member's central hub
-│   ├── member_routines.html # Progress-linked routine tracker
-│   ├── member_diet.html  # Tabbed weekly meal plans
-│   ├── member_progress.html # Health metrics visualization
-│   ├── member_chat.html  # Trainer-member chat interface
-│   ├── member_profile.html # Member account settings
-│   ├── membership.html   # Pricing & Plan details
-│   ├── login.html        # Unified login with role toggle
-│   ├── trainers.html     # Public trainer showcase
-│   ├── contact.html      # Center contact information
-│   └── (Legal pages)     # privacy, terms, etc.
-├── css/
-│   └── style.css         # Core design system & utilities
-└── images/               # Optimized assets & placeholders
+├── config/
+│   ├── database.php          # Database connection
+│   └── session.php           # Session management
+├── includes/
+│   ├── auth.php              # Authentication functions
+│   ├── db_functions.php      # Database helper functions
+│   ├── member_sidebar.php    # Member sidebar component
+│   ├── trainer_sidebar.php   # Trainer sidebar component
+│   └── admin_sidebar.php     # Admin sidebar component
+├── handlers/
+│   ├── login_handler.php     # Member/Trainer login
+│   ├── admin_login_handler.php  # Admin login
+│   ├── logout_handler.php    # Logout
+│   ├── member/               # Member-specific handlers
+│   ├── trainer/              # Trainer-specific handlers
+│   └── admin/                # Admin-specific handlers
+├── database/
+│   ├── schema.sql            # Database structure
+│   └── sample_data.sql       # Test data
+├── html/                     # Member pages
+├── trainer/                  # Trainer pages
+├── admin/                    # Admin pages
+├── css/                      # Stylesheets
+└── images/                   # Images and media
 ```
 
+## Features Implemented
+
+### Authentication System
+
+- ✅ Separate login for Member/Trainer and Admin
+- ✅ Role-based access control
+- ✅ Session management with timeout
+- ✅ Secure password hashing
+
+### Member Portal
+
+- ✅ Dashboard with dynamic data
+- ✅ View assigned routines
+- ✅ View diet plans
+- ✅ Track progress (weight, heart rate, sleep, mood)
+- ✅ Rate app and trainer
+- ✅ Calorie calculator for personal food tracking
+
+### Trainer Portal
+
+- ✅ Dashboard with statistics
+- ✅ View assigned members
+- ✅ Create routines for members
+- ✅ Create diet plans with calorie/weight input
+- ✅ View member progress logs
+- ✅ Chat with members
+
+### Admin Portal
+
+- ✅ Dashboard with system statistics
+- ✅ Add new members
+- ✅ Add new trainers
+- ✅ Assign trainers to members
+- ✅ Manage profiles
+
+## Database Tables
+
+- **users** - Unified authentication for all roles
+- **members** - Member profiles and details
+- **trainers** - Trainer profiles and specializations
+- **admins** - Admin profiles
+- **routines** - Workout routines assigned to members
+- **diet_plans** - Diet plans (trainer-created and member-created)
+- **progress_tracking** - Member health metrics tracking
+- **classes** - Available fitness classes
+- **class_bookings** - Member class reservations
+- **messages** - Chat system between members and trainers
+- **ratings** - App and trainer ratings
+- **routine_progress** - Exercise completion tracking
+- **workout_content** - Trainer's content library
+
+## Key Differences: Trainer vs Member (Calorie Logic)
+
+### Trainer - Diet Plan Creation
+
+- Trainers can create diet plans for their assigned members
+- Input fields include: meal name, food items, **weight (grams)**, **calories**
+- Trainer sets these values for the member's diet plan
+- Located in: `trainer/diet_plan.php`
+
+### Member - Food Tracking
+
+- Members can view diet plans created by their trainer
+- Members can also add their own food items with calorie calculator
+- Input fields for personal tracking: food name, weight, calories
+- Located in: `html/member_diet.php`
+
+## Troubleshooting
+
+### Database Connection Error
+
+- Check if MySQL is running in XAMPP
+- Verify database name is `pranayom_db`
+- Check `config/database.php` for correct credentials
+
+### Login Not Working
+
+- Ensure database is imported correctly
+- Clear browser cookies/cache
+- Check browser console for JavaScript errors
+
+### Page Not Found (404)
+
+- Ensure Apache is running
+- Check file paths in code match your directory structure
+- Verify `.php` extension is used, not `.html`
+
+### Session Issues
+
+- Clear browser cookies
+- Check PHP session settings in XAMPP
+- Restart Apache service
+
+## Development Notes
+
+- All passwords are hashed using PHP's `password_hash()` function
+- CSRF protection is implemented for forms
+- SQL injection protection via PDO prepared statements
+- Session timeout is set to 30 minutes
+- All user inputs are sanitized and validated
+
+## Next Steps
+
+1. Import the database schema and sample data
+2. Test login with provided credentials
+3. Explore different user roles (member, trainer, admin)
+4. Customize the application as needed
+5. Add your own data and users
+
+## Support
+
+For issues or questions, check the implementation plan document or review the code comments in each file.
+
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Any modern web browser (Chrome, Firefox, Safari, Edge).
-- No server installation required (Static site).
-
-### Installation
-
-1. Clone or download the repository.
-2. Navigate to the root folder.
-3. Open `html/index.html` to start your journey.
-
-### 🔑 Authentication (Simulated)
-
-Experience different roles using the following credentials:
-
-| Role        | Username / Email | Password  |
-| :---------- | :--------------- | :-------- |
-| **Member**  | `member`         | `member`  |
-| **Trainer** | `trainer`        | `trainer` |
-| **Admin**   | `admin`          | `admin`   |
-
----
-
-## 🛠️ Technology Stack
-
-- **Structure**: Semantic HTML5 for accessibility and SEO.
-- **Design**: Vanilla CSS3 with Custom Properties (CSS Variables) for a unified design system.
-- **Logic**: ES6+ JavaScript for interactive components and navigation.
-- **Visuals**: High-resolution photography and custom SVG icons.
-
----
-
-## 🤝 Credits
-
-- **Frontend Designer (Figma)**: Afia Tasnim Ria
-- **Lead**: Salah Uddin Selim
+**Note**: This is a development setup. For production use, ensure proper security measures including HTTPS, strong passwords, and secure server configuration.

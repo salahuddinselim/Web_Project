@@ -1,0 +1,278 @@
+<?php
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db_functions.php';
+requireLogin('admin');
+$admin_id = $_SESSION['admin_id'];
+
+// Get fresh admin data
+$admin = getAdminProfile($admin_id);
+$admin_name = $admin['full_name'];
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Profile - Pranayom</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        background-color: #121712;
+        color: white;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: #1f261f;
+        color: white;
+      }
+
+      .icon {
+        width: 20px;
+        text-align: center;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 40px 60px;
+      }
+
+      h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .subHeader {
+        color: #aaa;
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #ffffff;
+        margin-top: 30px;
+      }
+
+      /* Forms */
+      .form-section {
+        background-color: #1a201a;
+        padding: 30px;
+        border-radius: 8px;
+        max-width: 600px;
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #aaa;
+        font-size: 13px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #1f261f;
+        border: 1px solid #333;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .form-control:focus {
+        border-color: #00d26a;
+      }
+
+      .action-btn {
+        background-color: #00d26a;
+        color: #003300;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.3s;
+      }
+
+      .action-btn:hover {
+        background-color: #00f07a;
+      }
+
+      /* Profile Header Large */
+      .profile-header-large {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .profile-pic-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2a2a2a 0%, #0d110d 100%);
+        border: 2px solid #333;
+        overflow: hidden;
+      }
+
+      .profile-pic-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .profile-details-large h3 {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+
+      .profile-details-large span {
+        color: #aaa;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+<?php include __DIR__ . '/../includes/admin_sidebar.php'; ?>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <h1>Admin Profile</h1>
+      <div class="subHeader">
+        Manage your account details and security settings
+      </div>
+
+      <div class="profile-header-large">
+        <div class="profile-pic-large">
+          <img src="../images/Image_1544.jpeg" alt="<?php echo htmlspecialchars($admin_name); ?>" />
+        </div>
+        <div class="profile-details-large">
+          <h3><?php echo htmlspecialchars($admin_name); ?></h3>
+          <span>System Administrator</span>
+        </div>
+      </div>
+
+      <div class="section-title">Personal Details</div>
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" value="<?php echo htmlspecialchars($admin_name); ?>" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" value="afia@pranayom.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact Number</label>
+          <input type="text" class="form-control" value="+880 1234 567890" />
+        </div>
+        <button
+          class="action-btn"
+          onclick="alert('Profile Updated Successfully!')"
+        >
+          Update Profile
+        </button>
+      </div>
+
+      <div class="section-title">Security</div>
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-control" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Enter new password"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Confirm new password"
+          />
+        </div>
+        <button
+          class="action-btn"
+          onclick="alert('Password Changed Successfully!')"
+        >
+          Change Password
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
