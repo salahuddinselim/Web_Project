@@ -223,22 +223,17 @@ $member_name = $member['full_name'];
       <p class="page-subtitle">Manage your profile information and settings.</p>
 
       <div class="profile-header">
-        <div class="large-avatar">
-          <!-- Placeholder gradient as in design or image -->
-          <div
-            style="
-              width: 100%;
-              height: 100%;
-              background: linear-gradient(135deg, #ccc, #888);
-            "
-          >
-            <img
-              src="../images/IMG_1543.JPG"
-              alt=""
-              style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8"
-            />
+          <div class="large-avatar">
+            <div style="width: 100%; height: 100%;">
+              <img
+                src="<?php echo !empty($member['profile_picture']) && file_exists(__DIR__ . '/../uploads/profile_pics/' . $member['profile_picture']) 
+                      ? '../uploads/profile_pics/' . htmlspecialchars($member['profile_picture']) 
+                      : '../images/default_avatar.jpg'; ?>"
+                alt="Profile Picture"
+                style="width: 100%; height: 100%; object-fit: cover;"
+              />
+            </div>
           </div>
-        </div>
         <div class="profile-info">
           <h2><?php echo htmlspecialchars($member_name); ?></h2>
           <div class="profile-details">
@@ -249,7 +244,23 @@ $member_name = $member['full_name'];
       </div>
 
       <div class="settings-section clearfix">
+      <div class="settings-section clearfix">
         <h3>Edit Profile Information</h3>
+        
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div style="color: #4ade80; margin-bottom: 15px;"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div style="color: #ff4d4d; margin-bottom: 15px;"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+        <?php endif; ?>
+
+        <!-- Profile Picture Upload Form -->
+        <form action="../handlers/upload_profile_picture.php" method="POST" enctype="multipart/form-data" class="form-group" style="background: #1a201a; padding: 15px; border-radius: 5px; border: 1px solid #333;">
+            <label style="margin-bottom: 10px; display: block;">Change Profile Picture</label>
+            <input type="file" name="profile_picture" class="form-input" style="padding: 10px;" required accept="image/*">
+            <button type="submit" class="btn-update" style="margin-top: 10px;">Upload Photo</button>
+            <div style="clear: both;"></div>
+        </form>
 
         <div class="form-group">
           <label>Full Name</label>

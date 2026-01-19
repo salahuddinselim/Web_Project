@@ -214,7 +214,13 @@ $admin_name = $admin['full_name'];
 
       <div class="profile-header-large">
         <div class="profile-pic-large">
-          <img src="../images/Image_1544.jpeg" alt="<?php echo htmlspecialchars($admin_name); ?>" />
+          <img
+            src="<?php echo !empty($admin['profile_picture']) && file_exists(__DIR__ . '/../uploads/profile_pics/' . $admin['profile_picture']) 
+                  ? '../uploads/profile_pics/' . htmlspecialchars($admin['profile_picture']) 
+                  : '../images/default_avatar.jpg'; ?>"
+            alt="<?php echo htmlspecialchars($admin_name); ?>"
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
         </div>
         <div class="profile-details-large">
           <h3><?php echo htmlspecialchars($admin_name); ?></h3>
@@ -223,6 +229,22 @@ $admin_name = $admin['full_name'];
       </div>
 
       <div class="section-title">Personal Details</div>
+
+      <?php if (isset($_SESSION['success_message'])): ?>
+          <div style="color: #00d26a; margin-bottom: 15px;"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+      <?php endif; ?>
+      <?php if (isset($_SESSION['error_message'])): ?>
+          <div style="color: #ff4d4d; margin-bottom: 15px;"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+      <?php endif; ?>
+
+      <!-- Profile Picture Upload Form -->
+        <form action="../handlers/upload_profile_picture.php" method="POST" enctype="multipart/form-data" class="form-section" style="margin-bottom: 20px;">
+            <div class="form-group">
+                <label class="form-label">Change Profile Picture</label>
+                <input type="file" name="profile_picture" class="form-control" style="background: #1f261f;" required accept="image/*">
+            </div>
+            <button type="submit" class="action-btn">Upload Photo</button>
+        </form>
       <div class="form-section">
         <div class="form-group">
           <label class="form-label">Full Name</label>

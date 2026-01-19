@@ -259,8 +259,13 @@ $trainer_name = $trainer['full_name'];
 
         <div class="profile-header-large">
           <div class="profile-pic-large">
-            <img src="../images/pregnant-woman-holding-fitness-mat.jpg" alt="" />
-            <!-- Abstract gradient placeholder similar to design -->
+            <img
+              src="<?php echo !empty($trainer['profile_picture']) && file_exists(__DIR__ . '/../uploads/profile_pics/' . $trainer['profile_picture']) 
+                    ? '../uploads/profile_pics/' . htmlspecialchars($trainer['profile_picture']) 
+                    : '../images/default_avatar.jpg'; ?>"
+              alt=""
+              style="width: 100%; height: 100%; object-fit: cover;"
+            />
           </div>
           <div class="profile-details-large">
             <h3><?php echo htmlspecialchars($trainer_name); ?></h3>
@@ -271,6 +276,22 @@ $trainer_name = $trainer['full_name'];
 
         <!-- Edit Profile Information -->
         <div class="section-title">Edit Profile Information</div>
+
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div style="color: #4ade80; margin-bottom: 15px;"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div style="color: #ff4d4d; margin-bottom: 15px;"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+        <?php endif; ?>
+
+        <!-- Profile Picture Upload Form -->
+        <form action="../handlers/upload_profile_picture.php" method="POST" enctype="multipart/form-data" class="form-section clearfix" style="border: 1px solid #333; padding: 20px; border-radius: 6px;">
+            <div class="form-group">
+                <label class="form-label">Change Profile Picture</label>
+                <input type="file" name="profile_picture" class="form-control" style="background: transparent;" required accept="image/*">
+            </div>
+            <button type="submit" class="action-btn">Upload Photo</button>
+        </form>
         <div class="form-section clearfix">
           <div class="form-group">
             <label class="form-label">Full Name</label>
