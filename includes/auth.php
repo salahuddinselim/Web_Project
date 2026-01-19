@@ -4,8 +4,12 @@
  * Pranayom Fitness Management System
  */
 
-require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+
+// Session already started in config/session.php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 /**
  * Login user

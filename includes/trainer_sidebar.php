@@ -17,14 +17,14 @@ $profile_picture = $_SESSION['profile_picture'] ?? 'default_avatar.jpg';
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <div class="user-profile">
+    <a href="profile.php" class="user-profile" style="text-decoration: none; color: inherit;">
         <div class="avatar">
             <img src="/Web_Project/images/<?php echo htmlspecialchars($profile_picture); ?>" 
                  alt="<?php echo htmlspecialchars($trainer_name); ?>" 
-                 style="background-color: #ccc" />
+                 style="background-color: #ccc; width: 100%; height: 100%; object-fit: cover;" />
         </div>
         <div class="user-name"><?php echo htmlspecialchars($trainer_name); ?></div>
-    </div>
+    </a>
 
     <div class="menu">
         <a href="dashboard.php" class="menu-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">

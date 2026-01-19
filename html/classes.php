@@ -169,20 +169,20 @@
       <!-- Navbar -->
       <div class="navbar">
         <div class="logo">
-          <h3><a href="index.html">Pranayom</a></h3>
+          <h3><a href="index.php">Pranayom</a></h3>
         </div>
         <div class="list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="membership.html">Membership Plans</a></li>
+          <li><a href="index.php">Home</a></li>
+          <li><a href="membership.php">Membership Plans</a></li>
           <li>
-            <a href="classes.html" style="font-weight: bold; color: #000"
+            <a href="classes.php" style="font-weight: bold; color: #000"
               >Classes</a
             >
           </li>
-          <li><a href="trainers.html">Trainers</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="trainers.php">Trainers</a></li>
+          <li><a href="contact.php">Contact</a></li>
         </div>
-        <button class="btn-login" onclick="window.location.href='login.html'">
+        <button class="btn-login" onclick="window.location.href='login.php'">
           Login
         </button>
       </div>
@@ -379,17 +379,17 @@
       <footer>
         <div class="footer-links">
           <span
-            ><a href="policy.html" style="color: white; text-decoration: none"
+            ><a href="policy.php" style="color: white; text-decoration: none"
               >Privacy Policy</a
             ></span
           >
           <span
-            ><a href="terms.html" style="color: white; text-decoration: none"
+            ><a href="terms.php" style="color: white; text-decoration: none"
               >Terms of Service</a
             ></span
           >
           <span
-            ><a href="contact.html" style="color: white; text-decoration: none"
+            ><a href="contact.php" style="color: white; text-decoration: none"
               >Contact Us</a
             ></span
           >

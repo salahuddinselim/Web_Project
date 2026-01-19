@@ -250,14 +250,14 @@ $stats = getTrainerStats($trainer_id);
           <button
             type="button"
             class="btn btn-primary"
-            onclick="window.location.href='add_member.html'"
+            onclick="window.location.href='members.php'"
           >
             Manage Members
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            onclick="window.location.href='profile.html'"
+            onclick="window.location.href='profile.php'"
           >
             Edit Profile
           </button>

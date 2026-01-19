@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/db_functions.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../html/login.html");
+    header("Location: ../html/login.php");
     exit;
 }
 

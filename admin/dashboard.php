@@ -211,7 +211,7 @@ $stats = getAdminStats();
           align-items: center;
         ">
       <span>Central hub for managing all aspects of the Yoga Center</span>
-      <button class="action-btn" onclick="location.href='profile.html'" style="
+      <button class="action-btn" onclick="location.href='profile.php'" style="
             padding: 8px 15px;
             background-color: #1a201a;
             border: 1px solid #333;

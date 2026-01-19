@@ -376,28 +376,32 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
         <div class="info-card" style="flex-direction: column; padding: 30px; align-items: center; text-align: center;">
           <h3>Rate the App</h3>
           <p style="margin-bottom: 10px;">How is your experience with the app?</p>
-          <div class="rating-stars" id="app_stars">
-            <span onclick="submitRating('app', 1)">★</span>
-            <span onclick="submitRating('app', 2)">★</span>
-            <span onclick="submitRating('app', 3)">★</span>
-            <span onclick="submitRating('app', 4)">★</span>
-            <span onclick="submitRating('app', 5)">★</span>
+          <div class="rating-stars" id="app_stars" data-value="0">
+            <span onclick="setRating('app', 1)">★</span>
+            <span onclick="setRating('app', 2)">★</span>
+            <span onclick="setRating('app', 3)">★</span>
+            <span onclick="setRating('app', 4)">★</span>
+            <span onclick="setRating('app', 5)">★</span>
           </div>
-          <p id="app_msg" style="color: #00d26a; font-size: 12px; height: 15px;"></p>
+          <textarea id="app_comment" class="custom-input" placeholder="Leave a comment..." style="width: 100%; margin-bottom: 10px;"></textarea>
+          <button class="btn btn-download" onclick="submitRatingWithComment('app')">Submit Rating</button>
+          <p id="app_msg" style="color: #00d26a; font-size: 12px; height: 15px; margin-top: 5px;"></p>
         </div>
 
         <!-- Rate Trainer -->
         <div class="info-card" style="flex-direction: column; padding: 30px; align-items: center; text-align: center;">
           <h3>Rate Trainer</h3>
           <p style="margin-bottom: 10px;">How is your trainer performing?</p>
-          <div class="rating-stars" id="trainer_stars">
-            <span onclick="submitRating('trainer', 1)">★</span>
-            <span onclick="submitRating('trainer', 2)">★</span>
-            <span onclick="submitRating('trainer', 3)">★</span>
-            <span onclick="submitRating('trainer', 4)">★</span>
-            <span onclick="submitRating('trainer', 5)">★</span>
+          <div class="rating-stars" id="trainer_stars" data-value="0">
+            <span onclick="setRating('trainer', 1)">★</span>
+            <span onclick="setRating('trainer', 2)">★</span>
+            <span onclick="setRating('trainer', 3)">★</span>
+            <span onclick="setRating('trainer', 4)">★</span>
+            <span onclick="setRating('trainer', 5)">★</span>
           </div>
-          <p id="trainer_msg" style="color: #00d26a; font-size: 12px; height: 15px;"></p>
+          <textarea id="trainer_comment" class="custom-input" placeholder="Leave a comment for your trainer..." style="width: 100%; margin-bottom: 10px;"></textarea>
+          <button class="btn btn-download" onclick="submitRatingWithComment('trainer')">Submit Rating</button>
+          <p id="trainer_msg" style="color: #00d26a; font-size: 12px; height: 15px; margin-top: 5px;"></p>
         </div>
       </div>
     </div>
@@ -432,18 +436,33 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
     });
 
     // Rating function
-    function submitRating(type, value) {
+    // Set rating visual only
+    function setRating(type, value) {
       const container = document.getElementById(type + '_stars');
+      container.dataset.value = value;
       const stars = container.getElementsByTagName('span');
-      const msg = document.getElementById(type + '_msg');
 
-      // Update visual stars
       for (let i = 0; i < stars.length; i++) {
         if (i < value) {
           stars[i].classList.add('active');
         } else {
           stars[i].classList.remove('active');
         }
+      }
+    }
+
+    // Submit rating with comment
+    function submitRatingWithComment(type) {
+      const container = document.getElementById(type + '_stars');
+      const value = container.dataset.value;
+      const commentInput = document.getElementById(type + '_comment');
+      const comment = commentInput.value;
+      const msg = document.getElementById(type + '_msg');
+
+      if (!value || value == 0) {
+        msg.innerText = "Please select a star rating first.";
+        msg.style.color = "#ff6b6b";
+        return;
       }
 
       // Submit rating to server
@@ -452,15 +471,26 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `rating_type=${type}&rating_value=${value}`
+        body: `rating_type=${type}&rating_value=${value}&comment=${encodeURIComponent(comment)}`
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          msg.innerText = "Thanks for rating! (" + value + "/5)";
+          msg.innerText = "Thanks for your feedback!";
+          msg.style.color = "#00d26a";
+          // Clear form
+          commentInput.value = "";
+          setRating(type, 0); 
+        } else {
+            msg.innerText = "Error: " + (data.message || "Unknown error");
+            msg.style.color = "#ff6b6b";
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+          console.error('Error:', error);
+          msg.innerText = "Network error occurred.";
+          msg.style.color = "#ff6b6b";
+      });
     }
   </script>
 </body>

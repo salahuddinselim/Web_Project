@@ -243,150 +243,73 @@ $latestProgress = !empty($progressLogs) ? $progressLogs[0] : null;
     <div class="main-content">
       <h1>Your Progress</h1>
 
-      <h2>Health Metrics Over Time</h2>
+      <h2>Health Metrics (Latest)</h2>
       <div class="metrics-grid">
         <!-- Card 1: Weight -->
         <div class="metric-card">
-          <div class="metric-title">Weight (lbs)</div>
-          <div class="metric-value">150</div>
+          <div class="metric-title">Weight (kg)</div>
+          <div class="metric-value"><?php echo $latestProgress['weight_kg'] ?? 'N/A'; ?></div>
           <div class="metric-trend">
-            Last 30 Days <span class="trend-down">-2%</span>
-          </div>
-          <div class="metric-graph">
-            <!-- Fake SVG Data -->
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-              <path
-                class="line"
-                d="M0,80 Q30,20 60,60 T120,60 T180,20 T240,80 T300,50"
-                style="stroke: #aaa"
-              />
-            </svg>
-            <div class="graph-labels">
-              <span>Week 1</span><span>Week 2</span><span>Week 3</span
-              ><span>Week 4</span>
-            </div>
+            <span class="trend-up">Latest Entry</span>
           </div>
         </div>
 
         <!-- Card 2: Heart Rate -->
         <div class="metric-card">
           <div class="metric-title">Heart Rate (bpm)</div>
-          <div class="metric-value">72</div>
+          <div class="metric-value"><?php echo $latestProgress['heart_rate'] ?? 'N/A'; ?></div>
           <div class="metric-trend">
-            Last 30 Days <span class="trend-up">+1%</span>
-          </div>
-          <div class="metric-graph">
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-              <path
-                class="line"
-                d="M0,60 Q40,90 80,40 T160,50 T240,80 T300,30"
-                style="stroke: #aaa"
-              />
-            </svg>
-            <div class="graph-labels">
-              <span>Week 1</span><span>Week 2</span><span>Week 3</span
-              ><span>Week 4</span>
-            </div>
+             <span class="trend-up">Latest Entry</span>
           </div>
         </div>
 
         <!-- Card 3: Sleep -->
         <div class="metric-card">
           <div class="metric-title">Sleep (hours)</div>
-          <div class="metric-value">7.5</div>
+          <div class="metric-value"><?php echo $latestProgress['sleep_hours'] ?? 'N/A'; ?></div>
           <div class="metric-trend">
-            Last 30 Days <span class="trend-up">+5%</span>
-          </div>
-          <div class="metric-graph">
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-              <path
-                class="line"
-                d="M0,70 Q50,30 100,70 T200,80 T300,40"
-                style="stroke: #aaa"
-              />
-            </svg>
-            <div class="graph-labels">
-              <span>Week 1</span><span>Week 2</span><span>Week 3</span
-              ><span>Week 4</span>
-            </div>
+             <span class="trend-up">Latest Entry</span>
           </div>
         </div>
 
         <!-- Card 4: Mood -->
         <div class="metric-card">
           <div class="metric-title">Mood</div>
-          <div class="metric-value">Good</div>
-          <div class="metric-trend">Last 30 Days 0%</div>
-          <div class="metric-graph">
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-              <path
-                class="line"
-                d="M0,50 Q40,20 80,50 T160,50 T240,20 T300,40"
-                style="stroke: #aaa"
-              />
-            </svg>
-            <div class="graph-labels">
-              <span>Week 1</span><span>Week 2</span><span>Week 3</span
-              ><span>Week 4</span>
-            </div>
+          <div class="metric-value"><?php echo ucfirst($latestProgress['mood'] ?? 'N/A'); ?></div>
+          <div class="metric-trend">
+             <span class="trend-up">Latest Entry</span>
           </div>
         </div>
       </div>
 
-      <h2>Workout Statistics</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-title">Total Yoga Duration</div>
-          <div class="stat-value">120 hours</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Average Workout Effectiveness</div>
-          <div class="stat-value">8/10</div>
-        </div>
-      </div>
-
-      <h2>Recent Workouts</h2>
+      <h2>History Log</h2>
       <div class="workouts-table-container">
         <table>
           <thead>
             <tr>
               <th>Date</th>
-              <th>Workout Type</th>
-              <th>Duration</th>
-              <th>Effectiveness</th>
+              <th>Weight</th>
+              <th>Heart Rate</th>
+              <th>Sleep</th>
+              <th>Mood</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>2023-11-15</td>
-              <td>Morning Yoga Flow</td>
-              <td>60 mins</td>
-              <td>9/10</td>
-            </tr>
-            <tr>
-              <td>2023-11-14</td>
-              <td>Evening Relaxation</td>
-              <td>45 mins</td>
-              <td>7/10</td>
-            </tr>
-            <tr>
-              <td>2023-11-12</td>
-              <td>Power Yoga</td>
-              <td>75 mins</td>
-              <td>8/10</td>
-            </tr>
-            <tr>
-              <td>2023-11-10</td>
-              <td>Gentle Yoga</td>
-              <td>60 mins</td>
-              <td>7/10</td>
-            </tr>
-            <tr>
-              <td>2023-11-08</td>
-              <td>Yoga for Flexibility</td>
-              <td>45 mins</td>
-              <td>8/10</td>
-            </tr>
+            <?php if (empty($progressLogs)): ?>
+                <tr>
+                    <td colspan="5" style="text-align:center; color: #888;">No progress logged yet.</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($progressLogs as $log): ?>
+                <tr>
+                  <td><?php echo htmlspecialchars($log['tracking_date']); ?></td>
+                  <td><?php echo htmlspecialchars($log['weight_kg'] ?? '-'); ?> kg</td>
+                  <td><?php echo htmlspecialchars($log['heart_rate'] ?? '-'); ?> bpm</td>
+                  <td><?php echo htmlspecialchars($log['sleep_hours'] ?? '-'); ?> hrs</td>
+                  <td><?php echo ucfirst(htmlspecialchars($log['mood'] ?? '-')); ?></td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
           </tbody>
         </table>
       </div>

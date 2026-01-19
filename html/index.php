@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,16 +11,16 @@
       <!-- Navbar -->
       <div class="navbar">
         <div class="logo">
-          <h3><a href="index.html">Pranayom</a></h3>
+          <h3><a href="index.php">Pranayom</a></h3>
         </div>
         <div class="list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="membership.html">Membership Plans</a></li>
-          <li><a href="classes.html">Classes</a></li>
-          <li><a href="trainers.html">Trainers</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="index.php">Home</a></li>
+          <li><a href="membership.php">Membership Plans</a></li>
+          <li><a href="classes.php">Classes</a></li>
+          <li><a href="trainers.php">Trainers</a></li>
+          <li><a href="contact.php">Contact</a></li>
         </div>
-        <button class="btn-login" onclick="window.location.href='login.html'">
+        <button class="btn-login" onclick="window.location.href = 'login.php'">
           Login
         </button>
       </div>
@@ -39,16 +39,24 @@
               Discover the transformative power of yoga with our expert
               instructors and serene studio environment.
             </p>
-            <button class="btn-cta" onclick="window.location.href='classes.html'">Explore Classes</button>
+            <button
+              class="btn-cta"
+              onclick="window.location.href = 'classes.php'"
+            >
+              Explore Classes
+            </button>
           </div>
         </div>
 
         <!-- About -->
-        <div style="padding: 50px; text-align: center; ">
+        <div style="padding: 50px; text-align: center">
           <h1>About Us</h1>
-          <p style="padding-top: 20px;">
+          <p style="padding-top: 20px">
             Pranayom is dedicated to providing a sanctuary for personal growth
-            and well-being.Pranayom focuses on mindful breathing techniques designed to regulate energy, relax the nervous system, and promote mental clarity. It is suitable for all ages and helps create harmony between body and mind..
+            and well-being.Pranayom focuses on mindful breathing techniques
+            designed to regulate energy, relax the nervous system, and promote
+            mental clarity. It is suitable for all ages and helps create harmony
+            between body and mind..
           </p>
         </div>
 
@@ -121,16 +129,20 @@
       <footer>
         <div class="footer-links">
           <span
-            ><a href="policy.html" style="color: white; text-decoration: none"
+            ><a href="policy.php" style="color: white; text-decoration: none"
               >Privacy Policy</a
             ></span
           >
           <span
-            ><a href="terms.html" style="color: white; text-decoration: none"
+            ><a href="terms.php" style="color: white; text-decoration: none"
               >Terms of Service</a
             ></span
           >
-          <span><a href="contact.html" style="color: white; text-decoration: none">Contact Us</a></span>
+          <span
+            ><a href="contact.php" style="color: white; text-decoration: none"
+              >Contact Us</a
+            ></span
+          >
         </div>
         <p>@2024 Pranayom. All rights reserved.</p>
       </footer>

@@ -702,28 +702,29 @@ $member_name = $_SESSION['full_name'];
     <div class="stats-overview" id="statsOverview">
       <div class="stat-card">
         <div class="stat-label">Today's Target</div>
-        <div class="stat-value">1,850<span class="stat-unit">kcal</span></div>
+        <div class="stat-value"><?php echo $total_calories; ?><span class="stat-unit">kcal</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Consumed</div>
-        <div class="stat-value">1,420<span class="stat-unit">kcal</span></div>
+        <div class="stat-label">Diet Status</div>
+        <div class="stat-value"><?php echo count($todays_meals) > 0 ? 'Active' : 'No Plan'; ?></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Remaining</div>
-        <div class="stat-value">430<span class="stat-unit">kcal</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Water Intake</div>
-        <div class="stat-value">6/8<span class="stat-unit">glasses</span></div>
+        <div class="stat-label">Meals</div>
+        <div class="stat-value"><?php echo count($todays_meals); ?><span class="stat-unit">items</span></div>
       </div>
     </div>
 
-<?php
 $today = date('Y-m-d');
 $plans = getMemberDietPlans($member_id, $today);
 $todays_meals = [];
-foreach ($plans as $p) {
-    $todays_meals[$p['meal_time']] = $p;
+$total_calories = 0;
+if (is_array($plans)) {
+    foreach ($plans as $p) {
+        if (isset($p['meal_time'])) {
+            $todays_meals[$p['meal_time']] = $p;
+            $total_calories += intval($p['calories'] ?? 0);
+        }
+    }
 }
 ?>
 
@@ -771,119 +772,6 @@ foreach ($plans as $p) {
                 <?php endif; ?>
             <?php endforeach; ?>
           <?php endif; ?>
-            <div class="meal-description">
-              <p>Lean protein with complete amino acids from quinoa. Keeps you full and energized through the afternoon.
-              </p>
-            </div>
-            <div class="ingredients-list">
-              <span class="ingredient-tag">4 oz grilled chicken</span>
-              <span class="ingredient-tag">½ cup quinoa</span>
-              <span class="ingredient-tag">Mixed greens</span>
-              <span class="ingredient-tag">Cherry tomatoes</span>
-              <span class="ingredient-tag">Olive oil dressing</span>
-            </div>
-            <div class="meal-details">
-              <div class="meal-detail-item">
-                <div class="detail-value">480</div>
-                <div class="detail-label">Calories</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">38g</div>
-                <div class="detail-label">Protein</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">35g</div>
-                <div class="detail-label">Carbs</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">18g</div>
-                <div class="detail-label">Fat</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dinner -->
-          <div class="meal-card">
-            <div class="meal-header">
-              <div class="meal-title-row">
-                <div class="meal-icon dinner">🌙</div>
-                <div>
-                  <div class="meal-type">Dinner</div>
-                  <div class="meal-name">Baked Salmon with Vegetables</div>
-                </div>
-              </div>
-              <div class="meal-time">7:00 PM</div>
-            </div>
-            <div class="meal-description">
-              <p>Rich in omega-3 fatty acids for recovery and brain health. Light enough for evening without disrupting
-                sleep.</p>
-            </div>
-            <div class="ingredients-list">
-              <span class="ingredient-tag">4 oz salmon</span>
-              <span class="ingredient-tag">Steamed broccoli</span>
-              <span class="ingredient-tag">Roasted sweet potato</span>
-              <span class="ingredient-tag">Lemon & herbs</span>
-            </div>
-            <div class="meal-details">
-              <div class="meal-detail-item">
-                <div class="detail-value">420</div>
-                <div class="detail-label">Calories</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">35g</div>
-                <div class="detail-label">Protein</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">28g</div>
-                <div class="detail-label">Carbs</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">18g</div>
-                <div class="detail-label">Fat</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Snacks -->
-          <div class="meal-card">
-            <div class="meal-header">
-              <div class="meal-title-row">
-                <div class="meal-icon snack">🍎</div>
-                <div>
-                  <div class="meal-type">Snacks</div>
-                  <div class="meal-name">Healthy Snack Options</div>
-                </div>
-              </div>
-              <div class="meal-time">Anytime</div>
-            </div>
-            <div class="meal-description">
-              <p>Quick energy boosts between meals. Choose based on your hunger and activity level.</p>
-            </div>
-            <div class="ingredients-list">
-              <span class="ingredient-tag">Apple + almond butter</span>
-              <span class="ingredient-tag">Greek yogurt</span>
-              <span class="ingredient-tag">Mixed nuts</span>
-              <span class="ingredient-tag">Protein bar</span>
-            </div>
-            <div class="meal-details">
-              <div class="meal-detail-item">
-                <div class="detail-value">200</div>
-                <div class="detail-label">Calories</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">8g</div>
-                <div class="detail-label">Protein</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">22g</div>
-                <div class="detail-label">Carbs</div>
-              </div>
-              <div class="meal-detail-item">
-                <div class="detail-value">10g</div>
-                <div class="detail-label">Fat</div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Side Panel -->
@@ -1320,8 +1208,8 @@ foreach ($plans as $p) {
 
     <!-- Action Buttons -->
     <div class="action-row">
-      <button class="btn btn-primary" onclick="alert('Downloading diet plan as PDF...')">📄 Download PDF</button>
-      <button class="btn btn-secondary" onclick="window.location.href='member_chat.html'">💬 Ask Trainer</button>
+      <button class="btn btn-primary" onclick="window.location.href='../handlers/member/download_diet_report.php'">📄 Download Report</button>
+      <button class="btn btn-secondary" onclick="window.location.href='member_chat.php'">💬 Ask Trainer</button>
     </div>
   </div>
 
