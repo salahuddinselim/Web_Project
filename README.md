@@ -20,7 +20,7 @@
 2. Click on "SQL" tab at the top
 3. Open the file: `Web_Project/database/schema.sql`
 4. Copy all the contents and paste into the SQL query box
-5. Click "Go" button to execute
+5. Click "Go" button to execute the program.
 6. You should see a success message: "Database schema created successfully!"
 
 ### Step 3: Import Sample Data
