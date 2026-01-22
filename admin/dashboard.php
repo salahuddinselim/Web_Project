@@ -4,6 +4,10 @@ require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('admin');
 $admin_name = $_SESSION['full_name'];
 $stats = getAdminStats();
+
+// Get recent members and trainers for overview
+$members = getAllMembers();
+$trainers = getAllTrainers();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -253,30 +257,22 @@ $stats = getAdminStats();
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Olivia</td>
-            <td class="detailText">Jan 15, 2024</td>
-            <td class="detailText">Monthly</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
-          <tr>
-            <td>Noah Carter</td>
-            <td class="detailText">Feb 10, 2024</td>
-            <td class="detailText">Yearly</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
-          <tr>
-            <td>Emma Wilson</td>
-            <td class="detailText">Nov 05, 2023</td>
-            <td class="detailText">Weekly</td>
-            <td style="text-align: right"><span class="status-badge status-ex">Ex-Member</span></td>
-          </tr>
-          <tr>
-            <td>Lucas Brown</td>
-            <td class="detailText">Dec 20, 2023</td>
-            <td class="detailText">Monthly</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
+          <?php if (empty($members)): ?>
+            <tr>
+              <td colspan="4" style="text-align: center; color: #666;">No members found</td>
+            </tr>
+          <?php else: ?>
+            <?php foreach ($members as $member): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($member['full_name']); ?></td>
+                <td class="detailText"><?php echo date('M d, Y', strtotime($member['join_date'])); ?></td>
+                <td class="detailText"><?php echo htmlspecialchars($member['membership_type'] ?? 'N/A'); ?></td>
+                <td style="text-align: right">
+                  <span class="status-badge status-present">Active</span>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
@@ -293,30 +289,22 @@ $stats = getAdminStats();
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Liyen</td>
-            <td class="detailText">Yoga & Pilates</td>
-            <td class="detailText">5 Years</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
-          <tr>
-            <td>Marcus Johnson</td>
-            <td class="detailText">Strength Training</td>
-            <td class="detailText">8 Years</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
-          <tr>
-            <td>Sarah Lee</td>
-            <td class="detailText">Cardio & HIIT</td>
-            <td class="detailText">3 Years</td>
-            <td style="text-align: right"><span class="status-badge status-ex">Ex-Trainer</span></td>
-          </tr>
-          <tr>
-            <td>David Chen</td>
-            <td class="detailText">Meditation</td>
-            <td class="detailText">6 Years</td>
-            <td style="text-align: right"><span class="status-badge status-present">Present</span></td>
-          </tr>
+          <?php if (empty($trainers)): ?>
+            <tr>
+              <td colspan="4" style="text-align: center; color: #666;">No trainers found</td>
+            </tr>
+          <?php else: ?>
+            <?php foreach ($trainers as $trainer): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($trainer['full_name']); ?></td>
+                <td class="detailText"><?php echo htmlspecialchars($trainer['specialization'] ?? 'General Fitness'); ?></td>
+                <td class="detailText"><?php echo htmlspecialchars($trainer['experience_years'] ?? 'N/A'); ?> Years</td>
+                <td style="text-align: right">
+                  <span class="status-badge status-present">Active</span>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>

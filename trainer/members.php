@@ -262,7 +262,7 @@ $members = getTrainerMembers($trainer_id);
 
 <body>
   <div class="mainContainer">
-<?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
+    <?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="mainContent">
@@ -283,28 +283,34 @@ $members = getTrainerMembers($trainer_id);
           </thead>
           <tbody>
             <?php if (empty($members)): ?>
-            <tr>
-              <td colspan="5" style="text-align: center; padding: 30px;">No members assigned to you yet.</td>
-            </tr>
-            <?php else: ?>
-              <?php foreach ($members as $m): ?>
               <tr>
-                <td><strong><?php echo htmlspecialchars($m['full_name']); ?></strong><br>
-                    <span class="status-pill <?php echo $m['status'] == 'active' ? 'status-active' : 'status-inactive'; ?>"
-                    style="margin-top:5px; width:auto; padding: 2px 8px; font-size: 10px;">
-                    <?php echo ucfirst($m['status']); ?></span>
-                </td>
-                <td><button class="btn-view"
-                    onclick="openModal('Diet Plan', '<?php echo addslashes($m['full_name']); ?>', 'Standard diet plan for focus on health.')">View</button>
-                </td>
-                <td><button class="btn-view"
-                    onclick="openModal('Yoga Routine', '<?php echo addslashes($m['full_name']); ?>', 'Focus on Hatha Yoga and meditation.')">View</button>
-                </td>
-                <td><span class="progress-link"
-                    onclick="openModal('Progress', '<?php echo addslashes($m['full_name']); ?>', 'Status: Active and improving.')">Steady</span>
-                </td>
-                <td><button class="btn-view" style="color: #00d26a; border-color: #00d26a;">Save</button></td>
+                <td colspan="5" style="text-align: center; padding: 30px;">No members assigned to you yet.</td>
               </tr>
+            <?php else: ?>
+              <?php foreach ($members as $m):
+                // Get member's diet plans and routines for modal display
+                $dietPlans = getMemberDietPlans($m['member_id'], null);
+                $routines = getMemberRoutines($m['member_id'], true);
+                $dietDesc = !empty($dietPlans) ? 'Diet plan last updated: ' . date('M d, Y') : 'No active diet plan assigned.';
+                $routineDesc = !empty($routines) ? count($routines) . ' routine(s) assigned' : 'No routines assigned yet.';
+              ?>
+                <tr>
+                  <td><strong><?php echo htmlspecialchars($m['full_name']); ?></strong><br>
+                    <span class="status-pill status-active"
+                      style="margin-top:5px; width:auto; padding: 2px 8px; font-size: 10px;">
+                      Active</span>
+                  </td>
+                  <td><button class="btn-view"
+                      onclick="openModal('Diet Plan', '<?php echo addslashes($m['full_name']); ?>', '<?php echo addslashes($dietDesc); ?>')">View</button>
+                  </td>
+                  <td><button class="btn-view"
+                      onclick="openModal('Yoga Routine', '<?php echo addslashes($m['full_name']); ?>', '<?php echo addslashes($routineDesc); ?>')">View</button>
+                  </td>
+                  <td><span class="progress-link"
+                      onclick="openModal('Progress', '<?php echo addslashes($m['full_name']); ?>', 'Tracking member progress over time.')">View</span>
+                  </td>
+                  <td><button class="btn-view" style="color: #00d26a; border-color: #00d26a;" onclick="alert('Member data saved.')">Save</button></td>
+                </tr>
               <?php endforeach; ?>
             <?php endif; ?>
           </tbody>
@@ -355,7 +361,7 @@ $members = getTrainerMembers($trainer_id);
     }
 
     // Close if clicked outside
-    window.onclick = function (event) {
+    window.onclick = function(event) {
       if (event.target == modal) {
         closeModal();
       }

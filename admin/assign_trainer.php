@@ -3,6 +3,34 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('admin');
 $admin_name = $_SESSION['full_name'];
+
+// Get all trainers and members for dropdowns
+$trainers = getAllTrainers();
+$members = getAllMembers();
+
+// Handle Form Submission
+$success_message = '';
+$error_message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $member_id = $_POST['member_id'] ?? '';
+    $trainer_id = $_POST['trainer_id'] ?? '';
+    
+    if (empty($member_id) || empty($trainer_id)) {
+        $error_message = "Please select both member and trainer.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("UPDATE members SET trainer_id = ? WHERE member_id = ?");
+            $stmt->execute([$trainer_id, $member_id]);
+            $success_message = "Trainer assigned successfully!";
+            
+            // Refresh members list
+            $members = getAllMembers();
+        } catch (PDOException $e) {
+            $error_message = "Error assigning trainer: " . $e->getMessage();
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -217,128 +245,100 @@ $admin_name = $_SESSION['full_name'];
 
     <!-- Main Content -->
     <div class="main-content">
-      <h1>Assign Trainers</h1>
-      <h2>Add New Trainer</h2>
+    <h1>Assign Trainers</h1>
+    <h2>Assign Trainer to Member</h2>
+
+    <?php if ($success_message): ?>
+      <div style="background-color: #22c55e; color: black; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <?php echo $success_message; ?>
+      </div>
+    <?php endif; ?>
+    <?php if ($error_message): ?>
+      <div style="background-color: #ef4444; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <?php echo $error_message; ?>
+      </div>
+    <?php endif; ?>
 
       <div class="form-container">
-        <div class="input-group">
-          <label>Trainer Name</label>
-          <select class="input-field">
-            <option value="">Enter trainer's name</option>
-            <option value="john">John Smith</option>
-            <option value="sarah">Sarah Johnson</option>
-            <option value="mike">Mike Williams</option>
-            <option value="emily">Emily Brown</option>
-          </select>
-        </div>
-
+        <form method="POST" action="">
         <div class="input-group">
           <label>Member Name</label>
-          <select class="input-field">
-            <option value="">Enter member name</option>
-            <option value="olivia">Olivia Davis</option>
-            <option value="noah">Noah Carter</option>
-            <option value="emma">Emma Wilson</option>
-            <option value="liam">Liam Martinez</option>
-            <option value="sophia">Sophia Anderson</option>
+          <select name="member_id" class="input-field" required>
+            <option value="">Select member</option>
+            <?php foreach ($members as $member): ?>
+              <option value="<?php echo $member['member_id']; ?>">
+                <?php echo htmlspecialchars($member['full_name']); ?>
+                <?php if ($member['trainer_name']): ?>
+                  (Currently: <?php echo htmlspecialchars($member['trainer_name']); ?>)
+                <?php endif; ?>
+              </option>
+            <?php endforeach; ?>
           </select>
         </div>
 
         <div class="input-group">
-          <label>Specialization</label>
-          <input
-            type="text"
-            class="input-field"
-            placeholder="Enter trainer specialization"
-          />
+          <label>Trainer Name</label>
+          <select name="trainer_id" class="input-field" required>
+            <option value="">Select trainer</option>
+            <?php foreach ($trainers as $trainer): ?>
+              <option value="<?php echo $trainer['trainer_id']; ?>">
+                <?php echo htmlspecialchars($trainer['full_name']); ?>
+                <?php if ($trainer['specialization']): ?>
+                  - <?php echo htmlspecialchars($trainer['specialization']); ?>
+                <?php endif; ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
         </div>
 
-        <button class="btn-submit" onclick="handleAssign()">Assign</button>
+        <button type="submit" class="btn-submit">Assign Trainer</button>
+        </form>
       </div>
 
       <div class="table-section">
-        <h2>Existing Trainers</h2>
+        <h2>Current Trainer Assignments</h2>
         <div class="table-container">
           <table class="trainer-table">
             <thead>
               <tr>
-                <th width="25%">Name</th>
-                <th width="30%">Email</th>
-                <th width="25%">Specialization</th>
-                <th width="20%" style="text-align: center">Actions</th>
+                <th width="30%">Member Name</th>
+                <th width="30%">Assigned Trainer</th>
+                <th width="40%">Specialization</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Emma</td>
-                <td>emma@example.com</td>
-                <td>Hatha Yoga</td>
-                <td style="text-align: center">
-                  <button class="btn-edit" onclick="handleEdit('Emma')">
-                    Edit
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>Olivia Lila</td>
-                <td>olivia.lila@example.com</td>
-                <td>Vinyasa Flow</td>
-                <td style="text-align: center">
-                  <button class="btn-edit" onclick="handleEdit('Olivia Lila')">
-                    Edit
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>Sarah Jones</td>
-                <td>sarah.jones@example.com</td>
-                <td>Ashtanga Yoga</td>
-                <td style="text-align: center">
-                  <button class="btn-edit" onclick="handleEdit('Sarah Jones')">
-                    Edit
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>Michael Brown</td>
-                <td>michael.brown@example.com</td>
-                <td>Yin Yoga</td>
-                <td style="text-align: center">
-                  <button
-                    class="btn-edit"
-                    onclick="handleEdit('Michael Brown')"
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>Jessica Wilson</td>
-                <td>jessica.wilson@example.com</td>
-                <td>Restorative Yoga</td>
-                <td style="text-align: center">
-                  <button
-                    class="btn-edit"
-                    onclick="handleEdit('Jessica Wilson')"
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
+              <?php if (empty($members)): ?>
+                <tr>
+                  <td colspan="3" style="text-align: center; color: #666;">No members found</td>
+                </tr>
+              <?php else: ?>
+                <?php foreach ($members as $member): ?>
+                  <tr>
+                    <td><?php echo htmlspecialchars($member['full_name']); ?></td>
+                    <td><?php echo $member['trainer_name'] ? htmlspecialchars($member['trainer_name']) : '<span style="color: #666;">Not assigned</span>'; ?></td>
+                    <td><?php 
+                      if ($member['trainer_name']) {
+                        // Find trainer specialization
+                        $trainer_spec = '';
+                        foreach ($trainers as $t) {
+                          if ($t['full_name'] === $member['trainer_name']) {
+                            $trainer_spec = $t['specialization'] ?? 'General Fitness';
+                            break;
+                          }
+                        }
+                        echo htmlspecialchars($trainer_spec);
+                      } else {
+                        echo '<span style="color: #666;">-</span>';
+                      }
+                    ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-
-    <script>
-      function handleAssign() {
-        alert("Trainer assigned successfully!");
-      }
-
-      function handleEdit(name) {
-        alert("Editing trainer: " + name);
-      }
-    </script>
   </body>
+
 </html>

@@ -3,6 +3,58 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('admin');
 $admin_name = $_SESSION['full_name'];
+
+// Handle Form Submission
+$success_message = '';
+$error_message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $full_name = trim($_POST['full_name'] ?? '');
+    $phone = $_POST['phone'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $specialization = $_POST['specialization'] ?? '';
+    $experience_years = $_POST['experience_years'] ?? 0;
+    $certification = $_POST['certification'] ?? '';
+    $bio = $_POST['bio'] ?? '';
+    
+    $username = strtolower(str_replace(' ', '_', $full_name)) . rand(10,99); // Generate username
+    
+    if (empty($full_name) || empty($email) || empty($password)) {
+        $error_message = "Name, Email and Password are required.";
+    } else {
+        try {
+            $pdo->beginTransaction();
+            
+            // 1. Create User
+            $stmt = $pdo->prepare("INSERT INTO users (username, password_hash, email, role) VALUES (?, ?, ?, 'trainer')");
+            $stmt->execute([
+                $username,
+                password_hash($password, PASSWORD_DEFAULT),
+                $email
+            ]);
+            $user_id = $pdo->lastInsertId();
+            
+            // 2. Create Trainer (matching actual schema: no gender, certification not certifications)
+            $stmt = $pdo->prepare("INSERT INTO trainers (user_id, full_name, phone, specialization, experience_years, certification, bio) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $user_id,
+                $full_name,
+                $phone,
+                $specialization,
+                $experience_years,
+                $certification,
+                $bio
+            ]);
+            
+            $pdo->commit();
+            $success_message = "Trainer added successfully! Username: " . $username;
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            $error_message = "Error adding trainer: " . $e->getMessage();
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -161,6 +213,12 @@ $admin_name = $_SESSION['full_name'];
     .btn-submit:hover {
       background-color: #00b85a;
     }
+
+    textarea.input-field {
+      min-height: 80px;
+      resize: vertical;
+      font-family: sans-serif;
+    }
   </style>
 </head>
 
@@ -172,71 +230,63 @@ $admin_name = $_SESSION['full_name'];
     <h1>Trainer Management</h1>
     <h2>Add New Trainer</h2>
 
+    <?php if ($success_message): ?>
+      <div style="background-color: #22c55e; color: black; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <?php echo $success_message; ?>
+      </div>
+    <?php endif; ?>
+    <?php if ($error_message): ?>
+      <div style="background-color: #ef4444; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <?php echo $error_message; ?>
+      </div>
+    <?php endif; ?>
+
     <div class="form-container">
+      <form method="POST" action="">
       <div class="input-group">
         <label>Full Name</label>
-        <input type="text" class="input-field" placeholder="Enter trainer's full name" />
-      </div>
-
-      <div class="input-group">
-        <label>Age</label>
-        <input type="text" class="input-field" placeholder="Enter trainer's age" />
-      </div>
-
-      <div class="input-group">
-        <label>Gender</label>
-        <select class="input-field">
-          <option value="">Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
+        <input type="text" name="full_name" class="input-field" placeholder="Enter trainer's full name" required />
       </div>
 
       <div class="input-group">
         <label>Contact Number</label>
-        <input type="text" class="input-field" placeholder="Enter contact number" />
+        <input type="text" name="phone" class="input-field" placeholder="Enter contact number" />
       </div>
 
       <div class="input-group">
         <label>Email Address</label>
-        <input type="email" class="input-field" placeholder="Enter email address" />
+        <input type="email" name="email" class="input-field" placeholder="Enter email address" required />
       </div>
 
       <div class="input-group">
         <label>Password</label>
-        <input type="password" class="input-field" placeholder="Enter password" />
+        <input type="password" name="password" class="input-field" placeholder="Enter password" required />
       </div>
 
       <div class="input-group">
-        <label>Current Weight (kg)</label>
-        <input type="text" class="input-field" placeholder="Enter current weight" />
+        <label>Specialization</label>
+        <input type="text" name="specialization" class="input-field" placeholder="e.g., Yoga, Pilates, Strength Training" />
       </div>
 
       <div class="input-group">
-        <label>Fitness Level</label>
-        <select class="input-field">
-          <option value="">Select fitness level</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
+        <label>Experience (Years)</label>
+        <input type="number" name="experience_years" class="input-field" placeholder="Enter years of experience" min="0" />
       </div>
 
       <div class="input-group">
-        <label>Upload Certificate</label>
-        <input type="file" class="input-field" accept=".pdf,.jpg,.jpeg,.png" />
+        <label>Certification</label>
+        <input type="text" name="certification" class="input-field" placeholder="Enter certification details" />
       </div>
 
-      <button class="btn-submit" onclick="handleSubmit()">Add Trainer</button>
+      <div class="input-group">
+        <label>Bio</label>
+        <textarea name="bio" class="input-field" placeholder="Enter trainer bio" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Add Trainer</button>
+      </form>
     </div>
   </div>
-
-  <script>
-    function handleSubmit() {
-      alert("Trainer added successfully!");
-    }
-  </script>
 </body>
 
 </html>

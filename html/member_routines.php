@@ -923,111 +923,91 @@ $member_name = $_SESSION['full_name'];
   </div>
 
   <script>
-    // Routine Data for each day
-    const routineData = {
-        1: {
-          title: "Day 1 - Foundation",
-          status: "completed",
-          routines: [{
-                name: "Sun Salutation A",
-                duration: "10 min",
-                icon: "🧘",
-                type: "yoga",
-                done: true,
-              },
-              {
-                name: "Basic Breathing",
-                duration: "5 min",
-                icon: "🌬️",
-                type: "breathing",
-                done: true,
-              },
-              {
-                name: "Guided Meditation",
-                let routineData = <?php
-                                  $db_routines = getMemberRoutines($member_id, true);
-                                  $phpRoutineData = [];
-                                  // Initialize 7 days structure
-                                  for ($i = 1; $i <= 7; $i++) {
-                                    $phpRoutineData[$i] = [
-                                      'title' => "Day $i - Rest / Free Practice",
-                                      'status' => 'upcoming',
-                                      'routines' => []
-                                    ];
-                                  }
+    // Routine Data for each day - loaded from database
+    let routineData = <?php
+                      $db_routines = getMemberRoutines($member_id, true);
+                      $phpRoutineData = [];
+                      // Initialize 7 days structure
+                      for ($i = 1; $i <= 7; $i++) {
+                        $phpRoutineData[$i] = [
+                          'title' => "Day $i - Rest / Free Practice",
+                          'status' => 'upcoming',
+                          'routines' => []
+                        ];
+                      }
 
-                                  // Map DB routines to days
-                                  foreach ($db_routines as $k => $r) {
-                                    $day = $k + 1;
-                                    if ($day > 7) break;
+                      // Map DB routines to days
+                      foreach ($db_routines as $k => $r) {
+                        $day = $k + 1;
+                        if ($day > 7) break;
 
-                                    $exercises = json_decode($r['exercises'], true);
-                                    $ui_exercises = [];
-                                    if (is_array($exercises)) {
-                                      foreach ($exercises as $ex) {
-                                        $ui_exercises[] = [
-                                          'name' => $ex['name'] ?? 'Exercise',
-                                          'duration' => ($ex['duration'] ?? '0') . ' min',
-                                          'icon' => '🧘',
-                                          'type' => 'yoga',
-                                          'done' => false
-                                        ];
-                                      }
-                                    }
+                        $exercises = json_decode($r['exercises'], true);
+                        $ui_exercises = [];
+                        if (is_array($exercises)) {
+                          foreach ($exercises as $ex) {
+                            $ui_exercises[] = [
+                              'name' => $ex['name'] ?? 'Exercise',
+                              'duration' => ($ex['duration'] ?? '0') . ' min',
+                              'icon' => '🧘',
+                              'type' => 'yoga',
+                              'done' => false
+                            ];
+                          }
+                        }
 
-                                    $phpRoutineData[$day]['title'] = $r['title'];
-                                    $phpRoutineData[$day]['routines'] = $ui_exercises;
+                        $phpRoutineData[$day]['title'] = $r['title'];
+                        $phpRoutineData[$day]['routines'] = $ui_exercises;
 
-                                    // Set status logic (simple approximation for demo)
-                                    if ($day == 1) $phpRoutineData[$day]['status'] = 'ongoing';
-                                  }
+                        // Set status logic (simple approximation for demo)
+                        if ($day == 1) $phpRoutineData[$day]['status'] = 'ongoing';
+                      }
 
-                                  echo json_encode($phpRoutineData);
-                                  ?>;
+                      echo json_encode($phpRoutineData);
+                      ?>;
 
-                let selectedDay = 4; // Current day (ongoing)
+    let selectedDay = 4; // Current day (ongoing)
 
-                // Generate Day Buttons
-                function renderDaySelector() {
-                  const container = document.getElementById("daySelector");
-                  container.innerHTML = "";
+    // Generate Day Buttons
+    function renderDaySelector() {
+      const container = document.getElementById("daySelector");
+      container.innerHTML = "";
 
-                  for (let i = 1; i <= 7; i++) {
-                    const data = routineData[i];
-                    const btn = document.createElement("button");
-                    btn.className = `day-btn ${data.status}`;
-                    if (i === selectedDay) btn.classList.add("active");
-                    btn.innerHTML = `Day ${i}`;
-                    btn.onclick = () => selectDay(i);
-                    container.appendChild(btn);
-                  }
-                }
+      for (let i = 1; i <= 7; i++) {
+        const data = routineData[i];
+        const btn = document.createElement("button");
+        btn.className = `day-btn ${data.status}`;
+        if (i === selectedDay) btn.classList.add("active");
+        btn.innerHTML = `Day ${i}`;
+        btn.onclick = () => selectDay(i);
+        container.appendChild(btn);
+      }
+    }
 
-                // Select a day and show details
-                function selectDay(day) {
-                  selectedDay = day;
-                  renderDaySelector();
-                  renderDayDetails();
-                }
+    // Select a day and show details
+    function selectDay(day) {
+      selectedDay = day;
+      renderDaySelector();
+      renderDayDetails();
+    }
 
-                // Render Day Details
-                function renderDayDetails() {
-                  const data = routineData[selectedDay];
+    // Render Day Details
+    function renderDayDetails() {
+      const data = routineData[selectedDay];
 
-                  document.getElementById("dayTitle").textContent = data.title;
+      document.getElementById("dayTitle").textContent = data.title;
 
-                  const statusEl = document.getElementById("dayStatus");
-                  statusEl.textContent =
-                    data.status.charAt(0).toUpperCase() + data.status.slice(1);
-                  statusEl.className = `day-status ${data.status}`;
+      const statusEl = document.getElementById("dayStatus");
+      statusEl.textContent =
+        data.status.charAt(0).toUpperCase() + data.status.slice(1);
+      statusEl.className = `day-status ${data.status}`;
 
-                  const listEl = document.getElementById("routineList");
-                  listEl.innerHTML = "";
+      const listEl = document.getElementById("routineList");
+      listEl.innerHTML = "";
 
-                  data.routines.forEach((routine, index) => {
-                    const item = document.createElement("div");
-                    item.className = "routine-item";
-                    item.innerHTML = `
+      data.routines.forEach((routine, index) => {
+        const item = document.createElement("div");
+        item.className = "routine-item";
+        item.innerHTML = `
             <div class="routine-icon ${routine.type}">${routine.icon}</div>
             <div class="routine-info">
               <div class="routine-name">${routine.name}</div>
@@ -1039,259 +1019,259 @@ $member_name = $_SESSION['full_name'];
               ${routine.done ? "✓" : ""}
             </div>
           `;
-                    listEl.appendChild(item);
-                  });
+        listEl.appendChild(item);
+      });
 
-                  // Update button text based on status
-                  const startBtn = document.getElementById("startBtn");
-                  if (data.status === "completed") {
-                    startBtn.textContent = "Review Routine";
-                  } else if (data.status === "ongoing") {
-                    startBtn.textContent = "Continue Routine";
-                  } else {
-                    startBtn.textContent = "Start Routine";
-                  }
+      // Update button text based on status
+      const startBtn = document.getElementById("startBtn");
+      if (data.status === "completed") {
+        startBtn.textContent = "Review Routine";
+      } else if (data.status === "ongoing") {
+        startBtn.textContent = "Continue Routine";
+      } else {
+        startBtn.textContent = "Start Routine";
+      }
 
-                  updateProgress();
-                }
+      updateProgress();
+    }
 
-                // Toggle routine completion
-                function toggleRoutine(index) {
-                  routineData[selectedDay].routines[index].done = !routineData[selectedDay].routines[index].done;
+    // Toggle routine completion
+    function toggleRoutine(index) {
+      routineData[selectedDay].routines[index].done = !routineData[selectedDay].routines[index].done;
 
-                  // Update day status based on routines
-                  const routines = routineData[selectedDay].routines;
-                  const allDone = routines.every((r) => r.done);
-                  const someDone = routines.some((r) => r.done);
+      // Update day status based on routines
+      const routines = routineData[selectedDay].routines;
+      const allDone = routines.every((r) => r.done);
+      const someDone = routines.some((r) => r.done);
 
-                  if (allDone) {
-                    routineData[selectedDay].status = "completed";
-                  } else if (someDone) {
-                    routineData[selectedDay].status = "ongoing";
-                  } else {
-                    routineData[selectedDay].status = "upcoming";
-                  }
+      if (allDone) {
+        routineData[selectedDay].status = "completed";
+      } else if (someDone) {
+        routineData[selectedDay].status = "ongoing";
+      } else {
+        routineData[selectedDay].status = "upcoming";
+      }
 
-                  renderDaySelector();
-                  renderDayDetails();
-                }
+      renderDaySelector();
+      renderDayDetails();
+    }
 
-                // Mark entire day as complete
-                function markDayComplete() {
-                  routineData[selectedDay].routines.forEach((r) => (r.done = true));
-                  routineData[selectedDay].status = "completed";
-                  renderDaySelector();
-                  renderDayDetails();
-                }
+    // Mark entire day as complete
+    function markDayComplete() {
+      routineData[selectedDay].routines.forEach((r) => (r.done = true));
+      routineData[selectedDay].status = "completed";
+      renderDaySelector();
+      renderDayDetails();
+    }
 
-                // Update progress stats
-                function updateProgress() {
-                  const completed = Object.values(routineData).filter(
-                    (d) => d.status === "completed"
-                  ).length;
-                  const total = Object.keys(routineData).length;
-                  const percentage = Math.round((completed / total) * 100);
+    // Update progress stats
+    function updateProgress() {
+      const completed = Object.values(routineData).filter(
+        (d) => d.status === "completed"
+      ).length;
+      const total = Object.keys(routineData).length;
+      const percentage = Math.round((completed / total) * 100);
 
-                  document.getElementById(
-                    "completedCount"
-                  ).textContent = `${completed}/${total}`;
-                  document.getElementById("weekProgress").textContent = `${percentage}%`;
-                  document.getElementById("progressFill").style.width = `${percentage}%`;
-                }
+      document.getElementById(
+        "completedCount"
+      ).textContent = `${completed}/${total}`;
+      document.getElementById("weekProgress").textContent = `${percentage}%`;
+      document.getElementById("progressFill").style.width = `${percentage}%`;
+    }
 
-                // Mini Calendar Logic
-                const date = new Date();
-                let currYear = date.getFullYear();
-                let currMonth = date.getMonth();
+    // Mini Calendar Logic
+    const date = new Date();
+    let currYear = date.getFullYear();
+    let currMonth = date.getMonth();
 
-                const months = [
-                  "January",
-                  "February",
-                  "March",
-                  "April",
-                  "May",
-                  "June",
-                  "July",
-                  "August",
-                  "September",
-                  "October",
-                  "November",
-                  "December",
-                ];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
-                function renderCalendar() {
-                  document.getElementById(
-                    "calendarTitle"
-                  ).textContent = `${months[currMonth]} ${currYear}`;
+    function renderCalendar() {
+      document.getElementById(
+        "calendarTitle"
+      ).textContent = `${months[currMonth]} ${currYear}`;
 
-                  const container = document.getElementById("calendarDays");
-                  container.innerHTML = "";
+      const container = document.getElementById("calendarDays");
+      container.innerHTML = "";
 
-                  const firstDay = new Date(currYear, currMonth, 1).getDay();
-                  const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
-                  const today = new Date();
+      const firstDay = new Date(currYear, currMonth, 1).getDay();
+      const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
+      const today = new Date();
 
-                  // Empty days before first day
-                  for (let i = 0; i < firstDay; i++) {
-                    const day = document.createElement("div");
-                    day.className = "cal-day empty";
-                    container.appendChild(day);
-                  }
+      // Empty days before first day
+      for (let i = 0; i < firstDay; i++) {
+        const day = document.createElement("div");
+        day.className = "cal-day empty";
+        container.appendChild(day);
+      }
 
-                  // Actual days
-                  for (let i = 1; i <= lastDate; i++) {
-                    const day = document.createElement("div");
-                    day.className = "cal-day";
-                    day.textContent = i;
+      // Actual days
+      for (let i = 1; i <= lastDate; i++) {
+        const day = document.createElement("div");
+        day.className = "cal-day";
+        day.textContent = i;
 
-                    // Highlight today
-                    if (
-                      i === today.getDate() &&
-                      currMonth === today.getMonth() &&
-                      currYear === today.getFullYear()
-                    ) {
-                      day.classList.add("today");
-                    }
+        // Highlight today
+        if (
+          i === today.getDate() &&
+          currMonth === today.getMonth() &&
+          currYear === today.getFullYear()
+        ) {
+          day.classList.add("today");
+        }
 
-                    // Add indicator for days with routines (first 7 days of month for demo)
-                    if (i <= 7) {
-                      day.classList.add("has-routine");
-                    }
+        // Add indicator for days with routines (first 7 days of month for demo)
+        if (i <= 7) {
+          day.classList.add("has-routine");
+        }
 
-                    day.onclick = () => {
-                      if (i <= 7) selectDay(i);
-                    };
+        day.onclick = () => {
+          if (i <= 7) selectDay(i);
+        };
 
-                    container.appendChild(day);
-                  }
-                }
+        container.appendChild(day);
+      }
+    }
 
-                document.getElementById("prevMonth").onclick = () => {
-                  currMonth--;
-                  if (currMonth < 0) {
-                    currMonth = 11;
-                    currYear--;
-                  }
-                  renderCalendar();
-                };
+    document.getElementById("prevMonth").onclick = () => {
+      currMonth--;
+      if (currMonth < 0) {
+        currMonth = 11;
+        currYear--;
+      }
+      renderCalendar();
+    };
 
-                document.getElementById("nextMonth").onclick = () => {
-                  currMonth++;
-                  if (currMonth > 11) {
-                    currMonth = 0;
-                    currYear++;
-                  }
-                  renderCalendar();
-                };
+    document.getElementById("nextMonth").onclick = () => {
+      currMonth++;
+      if (currMonth > 11) {
+        currMonth = 0;
+        currYear++;
+      }
+      renderCalendar();
+    };
 
-                // Initialize
-                renderDaySelector();
-                renderDayDetails();
-                renderCalendar();
+    // Initialize
+    renderDaySelector();
+    renderDayDetails();
+    renderCalendar();
 
-                // Show alert when the Start/Review button is used for reviewing
-                const startBtnEl = document.getElementById("startBtn");
-                if (startBtnEl) {
-                  startBtnEl.addEventListener("click", function() {
-                    if (
-                      this.textContent &&
-                      this.textContent.toLowerCase().includes("review")
-                    ) {
-                      alert("Routine reviewing");
-                    }
-                  });
-                }
+    // Show alert when the Start/Review button is used for reviewing
+    const startBtnEl = document.getElementById("startBtn");
+    if (startBtnEl) {
+      startBtnEl.addEventListener("click", function() {
+        if (
+          this.textContent &&
+          this.textContent.toLowerCase().includes("review")
+        ) {
+          alert("Routine reviewing");
+        }
+      });
+    }
 
-                // Post-workout feedback submit -> show entered data in alert
-                const postBtn = document.getElementById("postWorkoutBtn");
-                if (postBtn) {
-                  postBtn.addEventListener("click", function() {
-                    const rating =
-                      document.getElementById("postWorkoutRating").value || "N/A";
-                    const energy =
-                      document.getElementById("postWorkoutEnergy").value || "N/A";
-                    const notes = document.getElementById("postWorkoutNotes").value || "";
-                    alert(
-                      "Post-workout saved.\\nRating: " +
-                      rating +
-                      "\\nEnergy: " +
-                      energy +
-                      "\\nNotes: " +
-                      notes
-                    );
-                    // clear inputs
-                    document.getElementById("postWorkoutRating").value = "";
-                    document.getElementById("postWorkoutEnergy").value = "";
-                    document.getElementById("postWorkoutNotes").value = "";
-                  });
-                }
+    // Post-workout feedback submit -> show entered data in alert
+    const postBtn = document.getElementById("postWorkoutBtn");
+    if (postBtn) {
+      postBtn.addEventListener("click", function() {
+        const rating =
+          document.getElementById("postWorkoutRating").value || "N/A";
+        const energy =
+          document.getElementById("postWorkoutEnergy").value || "N/A";
+        const notes = document.getElementById("postWorkoutNotes").value || "";
+        alert(
+          "Post-workout saved.\\nRating: " +
+          rating +
+          "\\nEnergy: " +
+          energy +
+          "\\nNotes: " +
+          notes
+        );
+        // clear inputs
+        document.getElementById("postWorkoutRating").value = "";
+        document.getElementById("postWorkoutEnergy").value = "";
+        document.getElementById("postWorkoutNotes").value = "";
+      });
+    }
 
-                // Calculate effectiveness based on before/after and subjective inputs
-                const calcBtn = document.getElementById("calcEffectBtn");
-                if (calcBtn) {
-                  calcBtn.addEventListener("click", function() {
-                    const fb =
-                      parseFloat(document.getElementById("flexBefore").value) || 0;
-                    const fa =
-                      parseFloat(document.getElementById("flexAfter").value) || 0;
-                    const bb =
-                      parseFloat(document.getElementById("balanceBefore").value) || 0;
-                    const ba =
-                      parseFloat(document.getElementById("balanceAfter").value) || 0;
-                    const pb = parseFloat(document.getElementById("painBefore").value);
-                    const pa = parseFloat(document.getElementById("painAfter").value);
-                    const sleep =
-                      parseFloat(document.getElementById("sleepQuality").value) || 0;
-                    const mood =
-                      parseFloat(document.getElementById("moodLevel").value) || 0;
+    // Calculate effectiveness based on before/after and subjective inputs
+    const calcBtn = document.getElementById("calcEffectBtn");
+    if (calcBtn) {
+      calcBtn.addEventListener("click", function() {
+        const fb =
+          parseFloat(document.getElementById("flexBefore").value) || 0;
+        const fa =
+          parseFloat(document.getElementById("flexAfter").value) || 0;
+        const bb =
+          parseFloat(document.getElementById("balanceBefore").value) || 0;
+        const ba =
+          parseFloat(document.getElementById("balanceAfter").value) || 0;
+        const pb = parseFloat(document.getElementById("painBefore").value);
+        const pa = parseFloat(document.getElementById("painAfter").value);
+        const sleep =
+          parseFloat(document.getElementById("sleepQuality").value) || 0;
+        const mood =
+          parseFloat(document.getElementById("moodLevel").value) || 0;
 
-                    // compute percent improvements (handle zero baseline)
-                    const flexImp = fb > 0 ? ((fa - fb) / fb) * 100 : fa > 0 ? 100 : 0;
-                    const balImp = bb > 0 ? ((ba - bb) / bb) * 100 : ba > 0 ? 100 : 0;
-                    const painImp =
-                      typeof pb === "number" && !isNaN(pb) ?
-                      ((pb - (isNaN(pa) ? pb : pa)) / (pb || 1)) * 100 :
-                      0;
+        // compute percent improvements (handle zero baseline)
+        const flexImp = fb > 0 ? ((fa - fb) / fb) * 100 : fa > 0 ? 100 : 0;
+        const balImp = bb > 0 ? ((ba - bb) / bb) * 100 : ba > 0 ? 100 : 0;
+        const painImp =
+          typeof pb === "number" && !isNaN(pb) ?
+          ((pb - (isNaN(pa) ? pb : pa)) / (pb || 1)) * 100 :
+          0;
 
-                    // subjective score 0-100 from 1-5 scale
-                    const subj =
-                      (((Math.min(Math.max(sleep, 1), 5) - 1) / 4) * 100 +
-                        ((Math.min(Math.max(mood, 1), 5) - 1) / 4) * 100) /
-                      2;
+        // subjective score 0-100 from 1-5 scale
+        const subj =
+          (((Math.min(Math.max(sleep, 1), 5) - 1) / 4) * 100 +
+            ((Math.min(Math.max(mood, 1), 5) - 1) / 4) * 100) /
+          2;
 
-                    // weighted overall effectiveness
-                    const overall =
-                      clamp(flexImp, -100, 200) * 0.3 +
-                      clamp(balImp, -100, 200) * 0.2 +
-                      clamp(painImp, -100, 100) * 0.3 +
-                      subj * 0.2;
-                    const score = Math.round(overall);
+        // weighted overall effectiveness
+        const overall =
+          clamp(flexImp, -100, 200) * 0.3 +
+          clamp(balImp, -100, 200) * 0.2 +
+          clamp(painImp, -100, 100) * 0.3 +
+          subj * 0.2;
+        const score = Math.round(overall);
 
-                    alert(
-                      "Effectiveness calculation:\\n" +
-                      "Flexibility change: " +
-                      Math.round(flexImp) +
-                      "%\\n" +
-                      "Balance change: " +
-                      Math.round(balImp) +
-                      "%\\n" +
-                      "Pain improvement: " +
-                      Math.round(painImp) +
-                      "%\\n" +
-                      "Subjective (sleep+mood): " +
-                      Math.round(subj) +
-                      "%\\n\\n" +
-                      "Overall effectiveness: " +
-                      score +
-                      "%"
-                    );
+        alert(
+          "Effectiveness calculation:\\n" +
+          "Flexibility change: " +
+          Math.round(flexImp) +
+          "%\\n" +
+          "Balance change: " +
+          Math.round(balImp) +
+          "%\\n" +
+          "Pain improvement: " +
+          Math.round(painImp) +
+          "%\\n" +
+          "Subjective (sleep+mood): " +
+          Math.round(subj) +
+          "%\\n\\n" +
+          "Overall effectiveness: " +
+          score +
+          "%"
+        );
 
-                    // helper clamp
-                    function clamp(v, a, b) {
-                      return Math.max(a, Math.min(b, v));
-                    }
-                  });
-                }
+        // helper clamp
+        function clamp(v, a, b) {
+          return Math.max(a, Math.min(b, v));
+        }
+      });
+    }
   </script>
 </body>
 

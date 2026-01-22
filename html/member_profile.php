@@ -292,35 +292,41 @@ $member_name = $member['full_name'];
       <div class="settings-section clearfix">
         <h3>Change Password</h3>
 
-        <div class="form-group">
-          <label>Current Password</label>
-          <input
-            type="password"
-            class="form-input"
-            placeholder="Enter current password" />
-        </div>
+        <form action="../handlers/member/change_password.php" method="POST">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input
+              type="password"
+              name="current_password"
+              class="form-input"
+              placeholder="Enter current password"
+              required />
+          </div>
 
-        <div class="form-group">
-          <label>New Password</label>
-          <input
-            type="password"
-            class="form-input"
-            placeholder="Enter new password" />
-        </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              name="new_password"
+              class="form-input"
+              placeholder="Enter new password"
+              required />
+          </div>
 
-        <div class="form-group">
-          <label>Confirm New Password</label>
-          <input
-            type="password"
-            class="form-input"
-            placeholder="Confirm new password" />
-        </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              name="confirm_password"
+              class="form-input"
+              placeholder="Confirm new password"
+              required />
+          </div>
 
-        <button
-          class="btn-update"
-          onclick="alert('Password Changed Successfully!')">
-          Change Password
-        </button>
+          <button type="submit" class="btn-update">
+            Change Password
+          </button>
+        </form>
       </div>
     </div>
 </body>

@@ -8,7 +8,14 @@ $member_name = $_SESSION['full_name'];
 // Get available classes from database
 $classes = getAvailableClasses();
 $member_bookings = getMemberBookings($member_id);
-$booked_class_ids = array_column($member_bookings, 'class_id');
+
+// Filter only active bookings (status = 'booked')
+$booked_class_ids = [];
+foreach ($member_bookings as $booking) {
+    if ($booking['status'] === 'booked') {
+        $booked_class_ids[] = $booking['class_id'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -4,6 +4,23 @@ require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
+
+// Get assigned trainer
+global $pdo;
+$stmt = $pdo->prepare("SELECT t.trainer_id, t.full_name, t.user_id, t.profile_picture FROM members m JOIN trainers t ON m.trainer_id = t.trainer_id WHERE m.member_id = ?");
+$stmt->execute([$member_id]);
+$trainer = $stmt->fetch();
+
+if (!$trainer) {
+  die("No assigned trainer found. Please contact admin.");
+}
+
+$trainer_name = $trainer['full_name'];
+$trainer_user_id = $trainer['user_id'];
+$trainer_picture = $trainer['profile_picture'] ?: 'default_avatar.jpg';
+
+// Get messages
+$messages = getMessages($member_id, $trainer_user_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -333,7 +350,7 @@ $member_name = $_SESSION['full_name'];
 </head>
 
 <body>
-<?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
+  <?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
 
   <!-- Chat Container -->
   <div class="chat-container">
@@ -346,11 +363,11 @@ $member_name = $_SESSION['full_name'];
 
       <div class="contact-item active">
         <div class="contact-avatar">
-          <img src="../images/spiritual-young-man-practicing-yoga-indoors.jpg" alt="Trainer" />
+          <img src="../uploads/profile_pics/<?php echo htmlspecialchars($trainer_picture); ?>" alt="<?php echo htmlspecialchars($trainer_name); ?>" />
           <div class="status-dot"></div>
         </div>
         <div class="contact-info">
-          <h4>Trainer</h4>
+          <h4><?php echo htmlspecialchars($trainer_name); ?></h4>
           <p>Active now</p>
         </div>
       </div>
@@ -358,86 +375,31 @@ $member_name = $_SESSION['full_name'];
 
     <!-- Chat Window -->
     <div class="chat-window">
-      <div class="chat-header">Trainer</div>
+      <div class="chat-header">Chat with <?php echo htmlspecialchars($trainer_name); ?></div>
 
       <div class="messages-area">
-        <!-- Received Message -->
-        <div class="message-group received">
-          <!-- <div class="msg-avatar"></div> -->
-          <!-- Avatar shown in design alongside message sometimes, here omitted for cleaner aligned look or added back if exact match needed -->
-          <div class="msg-content">
-            <div class="sender-name">Trainer</div>
-            <div class="bubble">
-              Hi there! I'm looking for a yoga class that focuses on
-              relaxation and stress relief. Do you have any recommendations?
-            </div>
-          </div>
-        </div>
+        <?php
+        // Reverse messages for display (oldest first)
+        $messages_reversed = array_reverse($messages);
+        foreach ($messages_reversed as $msg) {
+          $is_sent = $msg['sender_id'] == $member_id;
+          $sender_name = $is_sent ? 'You' : $trainer_name;
+          $class = $is_sent ? 'sent' : 'received';
+          $align = $is_sent ? 'right' : 'left';
+          echo "<div class=\"message-group {$class}\">
+                  <div class=\"msg-content\">
+                    <div class=\"sender-name\" style=\"text-align: {$align}\">{$sender_name}</div>
+                    <div class=\"bubble\">" . htmlspecialchars($msg['message_text']) . "</div>
+                  </div>
+                </div>";
+        }
+        ?>
 
-        <!-- Sent Message -->
-        <div class="message-group sent">
-          <div class="msg-avatar">
-            <img src="../images/IMG_1543.JPG" alt="Me" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name" style="text-align: right">You</div>
-            <div class="bubble">
-              Hello Emily, we have several options! Our 'Mindful Flow' class
-              is perfect for relaxation, and our 'Restorative Yoga' class is
-              great for stress relief. Both are beginner-friendly. Would you
-              like more details?
-            </div>
-          </div>
+        <div class="shared-section">
+          <div class="shared-title">Shared Media</div>
         </div>
-
-        <!-- Received Message -->
-        <div class="message-group received">
-          <div class="msg-avatar">
-            <img src="../images/spiritual-young-man-practicing-yoga-indoors.jpg" alt="Trainer" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name">Trainer</div>
-            <div class="bubble">
-              That sounds wonderful! Could you tell me more about the 'Mindful
-              Flow' class? What days and times is it offered?
-            </div>
-          </div>
-        </div>
-
-        <!-- Sent Message -->
-        <div class="message-group sent">
-          <div class="msg-avatar">
-            <img src="../images/IMG_1543.JPG" alt="Me" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name" style="text-align: right">You</div>
-            <div class="bubble">Certainly!</div>
-          </div>
-        </div>
-
-        <!-- Received Message -->
-        <div class="message-group received">
-          <div class="msg-avatar">
-            <img src="../images/spiritual-young-man-practicing-yoga-indoors.jpg" alt="Trainer" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name">Trainer</div>
-            <div class="bubble">
-              That sounds perfect for me! Is there a way to sign up for a
-              trial class or see if there's availability?
-            </div>
-          </div>
-        </div>
-
-        <!-- Sent Message -->
-        <div class="message-group sent">
-          <div class="msg-avatar">
-            <img src="../images/IMG_1543.JPG" alt="Me" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name" style="text-align: right">You</div>
-            <div class="bubble">Yes,</div>
-          </div>
+        <div class="shared-section">
+          <div class="shared-title">Shared Files</div>
         </div>
       </div>
 
@@ -467,30 +429,44 @@ $member_name = $_SESSION['full_name'];
     function sendMessage() {
       const input = document.querySelector('.input-box input');
       const messageText = input.value.trim();
-      const messagesArea = document.querySelector('.messages-area');
 
       if (messageText) {
-        const newMsgHTML = `
-        <div class="message-group sent">
-          <div class="msg-avatar">
-            <img src="../images/IMG_1543.JPG" alt="Me" />
-          </div>
-          <div class="msg-content">
-            <div class="sender-name" style="text-align: right">You</div>
-            <div class="bubble">
-              ${messageText}
-            </div>
-          </div>
-        </div>`;
-
-        messagesArea.insertAdjacentHTML('beforeend', newMsgHTML);
-        input.value = '';
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+        // Send message via AJAX
+        fetch('../handlers/send_message.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'message=' + encodeURIComponent(messageText)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Add the message to the chat immediately
+              const messagesArea = document.querySelector('.messages-area');
+              const newMsgHTML = `
+            <div class="message-group sent">
+              <div class="msg-content">
+                <div class="sender-name" style="text-align: right">You</div>
+                <div class="bubble">${messageText}</div>
+              </div>
+            </div>`;
+              messagesArea.insertAdjacentHTML('beforeend', newMsgHTML);
+              input.value = '';
+              messagesArea.scrollTop = messagesArea.scrollHeight;
+            } else {
+              alert('Failed to send message: ' + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending message');
+          });
       }
     }
 
     // Allow Enter key to send
-    document.querySelector('.input-box input').addEventListener('keypress', function (e) {
+    document.querySelector('.input-box input').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         sendMessage();
       }

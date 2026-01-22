@@ -376,7 +376,7 @@ $trainer_name = $_SESSION['full_name'];
 
 <body>
   <div class="mainContainer">
-<?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
+    <?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="mainContent">
@@ -403,16 +403,18 @@ $trainer_name = $_SESSION['full_name'];
       <div class="section-title">Generate Patient Report</div>
       <div class="form-group">
         <label class="form-label">Select Patient/Member</label>
-        <select class="form-input">
-          <option>Dixie</option>
-          <option>Ehan</option>
-          <option>Mitu</option>
-          <option>Liyan</option>
+        <select class="form-input" id="memberSelect">
+          <?php
+          $members = getTrainerMembers($trainer_id);
+          foreach ($members as $member):
+          ?>
+            <option value="<?php echo $member['member_id']; ?>"><?php echo htmlspecialchars($member['full_name']); ?></option>
+          <?php endforeach; ?>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">Report Type</label>
-        <select class="form-input">
+        <select class="form-input" id="reportTypeSelect">
           <option>Attendance Report</option>
           <option>Health Statistics</option>
           <option>Progress Summary</option>
@@ -435,29 +437,9 @@ $trainer_name = $_SESSION['full_name'];
             </tr>
           </thead>
           <tbody>
+            <!-- Dynamic recent reports will be loaded here -->
             <tr>
-              <td>Dixie</td>
-              <td>Health Statistics</td>
-              <td>2024-03-15</td>
-              <td><a class="download-link" onclick="alert('Viewing Health Stats for Dixie...')">View</a></td>
-            </tr>
-            <tr>
-              <td>Mitu</td>
-              <td>Attendance Report</td>
-              <td>2024-03-14</td>
-              <td><a class="download-link" onclick="alert('Viewing Attendance for Mitu...')">View</a></td>
-            </tr>
-            <tr>
-              <td>Liyan</td>
-              <td>Progress Summary</td>
-              <td>2024-03-12</td>
-              <td><a class="download-link" onclick="alert('Viewing Progress for Liyan...')">View</a></td>
-            </tr>
-            <tr>
-              <td>Ehan</td>
-              <td>Injury/Medical Report</td>
-              <td>2024-03-10</td>
-              <td><a class="download-link" onclick="alert('Viewing Medical Report for Ehan...')">View</a></td>
+              <td colspan="4" style="text-align:center;color:#888;">No recent reports found.</td>
             </tr>
           </tbody>
         </table>
@@ -473,95 +455,33 @@ $trainer_name = $_SESSION['full_name'];
       <div class="report-header">
         <div>
           <div class="report-title">Comprehensive Health Report</div>
-          <div class="report-meta">Generated on: <span id="reportDate">July 15, 2026</span></div>
-          <div class="report-meta">Patient: <strong style="color:white">Dixie</strong> | ID: #MEM-2024-089</div>
+          <div class="report-meta">Generated on: <span id="reportDate"></span></div>
+          <div class="report-meta">Patient: <strong style="color:white" id="reportMemberName"></strong> | ID: <span id="reportMemberId"></span></div>
         </div>
         <div style="text-align: right;">
           <button class="generate-btn" style="margin:0; padding: 8px 15px; font-size: 12px;"
-            onclick="alert('Downloading PDF...')">Download PDF</button>
+            onclick="downloadPDF()">Download PDF</button>
         </div>
       </div>
 
       <!-- Key Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">CURRENT WEIGHT</div>
-          <div style="font-size: 24px; font-weight: bold;">65.2 kg <span
-              style="font-size: 14px; color: #00d26a;">(-2.4kg)</span></div>
-        </div>
-        <div class="stat-box">
-          <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">ATTENDANCE RATE</div>
-          <div style="font-size: 24px; font-weight: bold;">92% <span
-              style="font-size: 14px; color: #00d26a;">(Excellent)</span></div>
-        </div>
-        <div class="stat-box">
-          <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">AVG HEART RATE</div>
-          <div style="font-size: 24px; font-weight: bold;">72 bpm <span
-              style="font-size: 14px; color: #aaa;">(Resting)</span></div>
-        </div>
-        <div class="stat-box">
-          <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">GOALS ACHIEVED</div>
-          <div style="font-size: 24px; font-weight: bold;">12/15 <span
-              style="font-size: 14px; color: #00d26a;">(80%)</span></div>
-        </div>
+      <div class="stats-grid" id="reportStatsGrid">
+        <!-- Dynamic stats will be loaded here -->
       </div>
 
       <!-- Chart 1: Weight Progress -->
       <div class="chart-container">
-        <div class="chart-title">Weight Progress (Last 6 Months)</div>
-        <div class="bar-chart">
-          <!-- Bars -->
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 140px;"><span class="bar-value">70</span></div>
-            <div class="bar-label">Jan</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 136px;"><span class="bar-value">69</span></div>
-            <div class="bar-label">Feb</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 134px;"><span class="bar-value">68.5</span></div>
-            <div class="bar-label">Mar</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 130px;"><span class="bar-value">67</span></div>
-            <div class="bar-label">Apr</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 126px;"><span class="bar-value">66</span></div>
-            <div class="bar-label">May</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 122px; background-color: #ffd700;"><span class="bar-value">65.2</span></div>
-            <div class="bar-label">Jun</div>
-          </div>
+        <div class="chart-title" id="weightChartTitle">Weight Progress</div>
+        <div class="bar-chart" id="weightBarChart">
+          <!-- Dynamic weight bars -->
         </div>
       </div>
 
       <!-- Chart 2: Activity Level -->
       <div class="chart-container" style="margin-bottom: 0;">
-        <div class="chart-title">Weekly Activity (Hours)</div>
-        <div class="bar-chart">
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 50px; background-color: #444;"><span class="bar-value">2h</span></div>
-            <div class="bar-label">Mon</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 80px;"><span class="bar-value">3.5h</span></div>
-            <div class="bar-label">Tue</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 40px; background-color: #444;"><span class="bar-value">1.5h</span></div>
-            <div class="bar-label">Wed</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 100px;"><span class="bar-value">4h</span></div>
-            <div class="bar-label">Thu</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="bar" style="height: 120px;"><span class="bar-value">5h</span></div>
-            <div class="bar-label">Fri</div>
-          </div>
+        <div class="chart-title" id="activityChartTitle">Weekly Activity (Hours)</div>
+        <div class="bar-chart" id="activityBarChart">
+          <!-- Dynamic activity bars -->
         </div>
       </div>
 
@@ -570,10 +490,69 @@ $trainer_name = $_SESSION['full_name'];
 
   <script>
     function showReport() {
-      // Set current date
-      const date = new Date();
-      document.getElementById('reportDate').innerText = date.toLocaleDateString();
-      document.getElementById('reportModal').style.display = 'flex';
+      const memberId = document.getElementById('memberSelect').value;
+      const reportType = document.getElementById('reportTypeSelect').value;
+      if (!memberId || !reportType) return;
+      fetch('../handlers/trainer/generate_report.php?member_id=' + memberId + '&report_type=' + encodeURIComponent(reportType))
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          document.getElementById('reportDate').innerText = new Date().toLocaleDateString();
+          document.getElementById('reportMemberName').innerText = data.member.full_name;
+          document.getElementById('reportMemberId').innerText = '#MEM-' + data.member.member_id;
+          let statsHtml = '';
+          let weightBars = '';
+          // Only show relevant data for each report type
+          if (data.report_type === 'Attendance Report' && data.data.attendance && data.data.attendance.length > 0) {
+            const attended = data.data.attendance.filter(a => a.status === 'attended').length;
+            const total = data.data.attendance.length;
+            const rate = total ? Math.round((attended / total) * 100) : 0;
+            statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>ATTENDANCE RATE</div><div style='font-size:24px;font-weight:bold;'>${rate}%</div></div>`;
+          } else if ((data.report_type === 'Health Statistics' || data.report_type === 'Progress Summary') && data.data.progress && data.data.progress.length > 0) {
+            const latest = data.data.progress[0];
+            statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>CURRENT WEIGHT</div><div style='font-size:24px;font-weight:bold;'>${latest.weight_kg || '-'} kg</div></div>`;
+            statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>AVG HEART RATE</div><div style='font-size:24px;font-weight:bold;'>${latest.heart_rate || '-'} bpm</div></div>`;
+            data.data.progress.slice(0, 6).reverse().forEach(p => {
+              const h = p.weight_kg ? Math.round(2 * p.weight_kg) : 40;
+              weightBars += `<div style='display:flex;flex-direction:column;align-items:center;'><div class='bar' style='height:${h}px;'><span class='bar-value'>${p.weight_kg || '-'}<\/span><\/div><div class='bar-label'>${p.tracking_date || ''}<\/div><\/div>`;
+            });
+          } else if (data.report_type === 'Full Profile') {
+            if (data.data.profile) {
+              statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>EMAIL</div><div style='font-size:18px;font-weight:bold;'>${data.data.profile.email}</div></div>`;
+              statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>PHONE</div><div style='font-size:18px;font-weight:bold;'>${data.data.profile.phone}</div></div>`;
+            }
+            if (data.data.progress && data.data.progress.length > 0) {
+              const latest = data.data.progress[0];
+              statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>CURRENT WEIGHT</div><div style='font-size:24px;font-weight:bold;'>${latest.weight_kg || '-'} kg</div></div>`;
+            }
+            if (data.data.attendance && data.data.attendance.length > 0) {
+              const attended = data.data.attendance.filter(a => a.status === 'attended').length;
+              const total = data.data.attendance.length;
+              const rate = total ? Math.round((attended / total) * 100) : 0;
+              statsHtml += `<div class="stat-box"><div style='color:#aaa;font-size:12px;margin-bottom:5px;'>ATTENDANCE RATE</div><div style='font-size:24px;font-weight:bold;'>${rate}%</div></div>`;
+            }
+            if (data.data.progress && data.data.progress.length > 0) {
+              data.data.progress.slice(0, 6).reverse().forEach(p => {
+                const h = p.weight_kg ? Math.round(2 * p.weight_kg) : 40;
+                weightBars += `<div style='display:flex;flex-direction:column;align-items:center;'><div class='bar' style='height:${h}px;'><span class='bar-value'>${p.weight_kg || '-'}<\/span><\/div><div class='bar-label'>${p.tracking_date || ''}<\/div><\/div>`;
+              });
+            }
+          }
+          document.getElementById('reportStatsGrid').innerHTML = statsHtml;
+          document.getElementById('weightBarChart').innerHTML = weightBars;
+          document.getElementById('activityBarChart').innerHTML = '<div style="color:#888;text-align:center;width:100%">No activity data<\/div>';
+          document.getElementById('reportModal').style.display = 'flex';
+        });
+    }
+
+    function downloadPDF() {
+      const memberId = document.getElementById('memberSelect').value;
+      const reportType = document.getElementById('reportTypeSelect').value;
+      if (!memberId || !reportType) return;
+      window.open('../handlers/trainer/download_report_pdf.php?member_id=' + memberId + '&report_type=' + encodeURIComponent(reportType), '_blank');
     }
 
     function closeReport() {
@@ -581,7 +560,7 @@ $trainer_name = $_SESSION['full_name'];
     }
 
     // Close on outside click
-    window.onclick = function (event) {
+    window.onclick = function(event) {
       const modal = document.getElementById('reportModal');
       if (event.target == modal) {
         closeReport();

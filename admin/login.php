@@ -18,169 +18,180 @@ unset($_SESSION['login_error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - Pranayom</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: #e5e7eb;
-        font-family: Arial, sans-serif;
-      }
 
-      .mainContainer {
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login - Pranayom</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* Admin Login Page Specific Styles - Dark Theme */
+    body {
+      background-color: #f0f2f5;
+    }
 
-      .loginCard {
-        background-color: #111111;
-        width: 60%;
-        height: 600px;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        color: white;
-        box-sizing: border-box;
-        position: relative;
-      }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      background-color: #f0f2f5;
+    }
 
-      .topBar {
-        width: 100%;
-        height: 50px;
-        border-bottom: 1px solid #333;
-        display: flex;
-        align-items: center;
-        padding-left: 20px;
-        box-sizing: border-box;
-      }
+    .login-box {
+      background-color: #1a1a1a;
+      width: 500px;
+      padding: 50px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
 
-      .logoText {
-        font-family: "Times New Roman", serif;
-        font-weight: bold;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
+    .login-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
 
-      .logoIcon {
-        font-size: 20px;
-      }
+    .login-header h3 {
+      margin-left: 10px;
+      font-size: 18px;
+    }
 
-      .formContainer {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
+    .welcome-text {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-      .title {
-        font-size: 40px;
-        font-weight: bold;
-        margin-bottom: 40px;
-      }
+    .admin-badge {
+      display: inline-block;
+      background-color: #22c55e;
+      color: black;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
 
-      .inputGroup {
-        display: flex;
-        flex-direction: column;
-        width: 50%;
-        gap: 20px;
-      }
+    .input-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
 
-      .input {
-        background-color: #2a3b2a;
-        border: none;
-        height: 45px;
-        border-radius: 5px;
-        color: #ccc;
-        padding-left: 15px;
-        font-size: 14px;
-        width: 100%;
-        box-sizing: border-box;
-        margin-top: 5px;
-      }
+    .input-group input {
+      width: 100%;
+      padding: 15px;
+      background-color: #2d3830;
+      border: 1px solid #3d4840;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
 
-      ::placeholder {
-        color: #6b7280;
-      }
+    .input-group input::placeholder {
+      color: #8f9f8f;
+    }
 
-      .forgotPass {
-        text-align: center;
-        color: #9ca3af;
-        font-size: 12px;
-        margin-top: 10px;
-        cursor: pointer;
-      }
+    .forgot-password {
+      text-align: center;
+      font-size: 13px;
+      color: #8f9f8f;
+      margin-bottom: 30px;
+      display: block;
+      text-decoration: none;
+      cursor: pointer;
+    }
 
-      .loginBtn {
-        background-color: #22c55e;
-        color: black;
-        font-weight: bold;
-        border: none;
-        height: 45px;
-        border-radius: 5px;
-        width: 30%;
-        margin-top: 40px;
-        cursor: pointer;
-        font-size: 16px;
-      }
+    .forgot-password:hover {
+      color: #00ea6a;
+    }
 
-      .loginBtn:hover {
-        background-color: #1ea34d;
-      }
+    .btn-login-main {
+      width: 100%;
+      padding: 12px;
+      background-color: #00ea6a;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-      .error-msg {
-        color: #ff6b6b;
-        font-size: 14px;
-        margin-top: 15px;
-        display: <?php echo $error ? 'block' : 'none'; ?>;
-      }
+    .btn-login-main:hover {
+      background-color: #00c25a;
+    }
 
-      .test-credentials {
-        color: #6b7280;
-        font-size: 12px;
-        margin-top: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="mainContainer">
-      <div class="loginCard">
-        <div class="topBar">
-          <div class="logoText"><span class="logoIcon">⚡</span> Pranayom</div>
-        </div>
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 15px;
+      display: <?php echo $error ? 'block' : 'none'; ?>;
+    }
 
-        <div class="formContainer">
-          <div class="title">Welcome Back</div>
+    .test-credentials {
+      color: #6b7280;
+      font-size: 11px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
 
-          <form method="POST" action="/Web_Project/handlers/admin_login_handler.php">
-            <div class="inputGroup">
-              <input type="text" name="username" class="input" placeholder="Username" required />
-              <input type="password" name="password" class="input" placeholder="Password" required />
-              <div class="forgotPass">Forgot Password?</div>
-            </div>
-
-            <button type="submit" class="loginBtn">
-              Login
-            </button>
-
-            <p class="error-msg">
-              <?php echo htmlspecialchars($error); ?>
-            </p>
-
-            <p class="test-credentials">
-              Test credentials: admin1 / password123
-            </p>
-          </form>
-        </div>
+<body>
+  <div class="mainContent" style="background-color: #121712">
+    <!-- Navbar -->
+    <div class="navbar" style="background-color: #121712">
+      <div class="logo">
+        <h3><a href="../html/index.php" style="color: white">Pranayom</a></h3>
+      </div>
+      <div class="list">
+        <li><a href="../html/index.php" style="color: white">Home</a></li>
       </div>
     </div>
-  </body>
+
+    <div class="secBox" style="
+          background-color: #121712;
+          min-height: 80vh;
+          justify-content: center;
+          align-items: center;
+        ">
+      <div class="login-box">
+        <div class="login-header">
+          <span style="font-size: 20px">⚡</span>
+          <h3>Pranayom</h3>
+        </div>
+
+        <div class="welcome-text">Welcome Back</div>
+        <div class="admin-badge">ADMIN PORTAL</div>
+
+        <!-- Login Form -->
+        <form method="POST" action="/Web_Project/handlers/admin_login_handler.php" id="adminLoginForm">
+          <div class="input-group">
+            <input type="text" name="username" id="username" placeholder="Admin Username" required />
+          </div>
+          <div class="input-group">
+            <input type="password" name="password" id="password" placeholder="Password" required />
+          </div>
+
+          <a class="forgot-password" href="#">Forgot Password?</a>
+
+          <button type="submit" class="btn-login-main">Login</button>
+          
+          <p class="error-msg">
+            <?php echo htmlspecialchars($error); ?>
+          </p>
+          
+          <p class="test-credentials">
+            Test credentials: admin1 / password123
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>
