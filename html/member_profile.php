@@ -262,30 +262,24 @@ $member_name = $member['full_name'];
             <div style="clear: both;"></div>
         </form>
 
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" class="form-input" value="<?php echo htmlspecialchars($member_name); ?>" />
-        </div>
+        <form action="../handlers/member/update_profile.php" method="POST">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" class="form-input" value="<?php echo htmlspecialchars($member['full_name']); ?>" required />
+          </div>
 
-        <div class="form-group">
-          <label>Contact Number</label>
-          <input type="text" class="form-input" placeholder="+1 234 567 890" />
-        </div>
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input type="text" name="phone" class="form-input" value="<?php echo htmlspecialchars($member['phone'] ?? ''); ?>" />
+          </div>
 
-        <div class="form-group">
-          <label>Bio</label>
-          <textarea
-            class="form-textarea"
-            placeholder="Short bio about yourself..."
-          ></textarea>
-        </div>
+          <div class="form-group">
+            <label>Address</label>
+            <textarea name="address" class="form-textarea"><?php echo htmlspecialchars($member['address'] ?? ''); ?></textarea>
+          </div>
 
-        <button
-          class="btn-update"
-          onclick="alert('Profile Updated Successfully!')"
-        >
-          Update Profile
-        </button>
+          <button type="submit" class="btn-update">Update Profile</button>
+        </form>
       </div>
 
       <div class="settings-section clearfix">

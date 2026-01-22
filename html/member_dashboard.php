@@ -313,7 +313,7 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
             <p>You have <?php echo count($dietPlans); ?> meal(s) planned for today. View details and track your intake.</p>
             <div class="buttons">
               <a href="member_diet.php" class="btn btn-view">View</a>
-              <button class="btn btn-download" onclick="alert('Download feature coming soon!')">Download</button>
+              <button class="btn btn-download" onclick="window.location.href='../handlers/member/download_diet_report.php'">Download</button>
             </div>
           <?php else: ?>
             <h3>No Diet Plan for Today</h3>

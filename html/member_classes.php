@@ -204,9 +204,9 @@ $booked_class_ids = array_column($member_bookings, 'class_id');
                 <?php echo htmlspecialchars($class['instructor']); ?>, Day: <?php echo htmlspecialchars($class['schedule_day']); ?>, Time: <?php echo htmlspecialchars($class['schedule_time']); ?>
               </p>
               <?php if (in_array($class['class_id'], $booked_class_ids)): ?>
-                <button class="btn-enroll" style="background-color: #d9534f;">Cancel Enrollment</button>
+                <button class="btn-enroll" data-class-id="<?php echo $class['class_id']; ?>" style="background-color: #d9534f;">Cancel Enrollment</button>
               <?php else: ?>
-                <button class="btn-enroll">Enroll</button>
+                <button class="btn-enroll" data-class-id="<?php echo $class['class_id']; ?>">Enroll</button>
               <?php endif; ?>
             </div>
             <div class="class-image-container" style="background-color: #ffe0b2">
@@ -223,17 +223,35 @@ $booked_class_ids = array_column($member_bookings, 'class_id');
 
     enrollButtons.forEach((button) => {
       button.addEventListener("click", function () {
-        if (this.textContent === "Enroll") {
-          // Enroll Action
-          this.textContent = "Cancel Enrollment";
-          this.style.backgroundColor = "#d9534f"; // Red color for cancel
-          alert("You have successfully enrolled in this class!");
-        } else {
-          // Cancel Action
-          this.textContent = "Enroll";
-          this.style.backgroundColor = "#2a352a"; // Original color
-          alert("Enrollment cancelled.");
-        }
+        const classId = this.getAttribute('data-class-id');
+        const action = this.textContent === "Enroll" ? 'book' : 'cancel';
+
+        fetch('../handlers/member/book_class.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `class_id=${classId}&action=${action}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (action === 'book') {
+              this.textContent = "Cancel Enrollment";
+              this.style.backgroundColor = "#d9534f";
+            } else {
+              this.textContent = "Enroll";
+              this.style.backgroundColor = "#2a352a";
+            }
+            alert(data.message);
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+        });
       });
     });
   </script>
