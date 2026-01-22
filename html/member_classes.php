@@ -222,36 +222,36 @@ $booked_class_ids = array_column($member_bookings, 'class_id');
     const enrollButtons = document.querySelectorAll(".btn-enroll");
 
     enrollButtons.forEach((button) => {
-      button.addEventListener("click", function () {
+      button.addEventListener("click", function() {
         const classId = this.getAttribute('data-class-id');
         const action = this.textContent === "Enroll" ? 'book' : 'cancel';
 
         fetch('../handlers/member/book_class.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `class_id=${classId}&action=${action}`
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            if (action === 'book') {
-              this.textContent = "Cancel Enrollment";
-              this.style.backgroundColor = "#d9534f";
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `class_id=${classId}&action=${action}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              if (action === 'book') {
+                this.textContent = "Cancel Enrollment";
+                this.style.backgroundColor = "#d9534f";
+              } else {
+                this.textContent = "Enroll";
+                this.style.backgroundColor = "#2a352a";
+              }
+              alert(data.message);
             } else {
-              this.textContent = "Enroll";
-              this.style.backgroundColor = "#2a352a";
+              alert('Error: ' + data.message);
             }
-            alert(data.message);
-          } else {
-            alert('Error: ' + data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-        });
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+          });
       });
     });
   </script>

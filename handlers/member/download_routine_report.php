@@ -24,27 +24,29 @@ $output = fopen('php://output', 'w');
 
 // Section 1: Assigned Routines
 fputcsv($output, ['--- Assigned Routines ---']);
-fputcsv($output, ['Title', 'Difficulty', 'Description', 'Trainer Created']);
+fputcsv($output, ['Title', 'Difficulty', 'Description', 'Trainer']);
 
 foreach ($routines as $r) {
     fputcsv($output, [
-        $r['title'],
-        ucfirst($r['difficulty_level']),
-        $r['description'],
-        $r['created_at'] // Or trainer name if available
+        $r['title'] ?? '',
+        ucfirst($r['difficulty_level'] ?? ''),
+        $r['description'] ?? '',
+        $r['trainer_name'] ?? ''
     ]);
 }
 
 fputcsv($output, []); // Empty line
 fputcsv($output, ['--- Recent Progress Logs ---']);
-fputcsv($output, ['Date', 'Weight (kg)', 'BMI', 'Notes']);
+fputcsv($output, ['Date', 'Weight (kg)', 'Heart Rate (bpm)', 'Sleep Hours', 'Mood', 'Notes']);
 
 foreach ($progress as $p) {
     fputcsv($output, [
-        $p['tracking_date'],
-        $p['weight'],
-        $p['bmi'],
-        $p['notes']
+        $p['tracking_date'] ?? '',
+        $p['weight_kg'] ?? '',
+        $p['heart_rate'] ?? '',
+        $p['sleep_hours'] ?? '',
+        ucfirst($p['mood'] ?? ''),
+        $p['notes'] ?? ''
     ]);
 }
 

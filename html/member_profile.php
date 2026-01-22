@@ -10,256 +10,263 @@ $member_name = $member['full_name'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile & Settings - Pranayom</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: sans-serif;
-      }
 
-      body {
-        background-color: #121712; /* Very dark green/black */
-        color: white;
-        display: flex;
-        min-height: 100vh;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile & Settings - Pranayom</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
 
-      /* Sidebar */
-      .sidebar {
-        width: 250px;
-        background-color: #0d110d;
-        padding: 30px 20px;
-        border-right: 1px solid #222;
-      }
+    body {
+      background-color: #121712;
+      /* Very dark green/black */
+      color: white;
+      display: flex;
+      min-height: 100vh;
+    }
 
-      .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 50px;
-      }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #0d110d;
+      padding: 30px 20px;
+      border-right: 1px solid #222;
+    }
 
-      .avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #333;
-        overflow: hidden;
-      }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 50px;
+    }
 
-      .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #333;
+      overflow: hidden;
+    }
 
-      .user-name {
-        font-weight: bold;
-        font-size: 16px;
-      }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      .menu {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
+    .user-name {
+      font-weight: bold;
+      font-size: 16px;
+    }
 
-      .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: #aaa;
-        text-decoration: none;
-        font-size: 14px;
-        padding: 10px;
-        border-radius: 5px;
-        transition: 0.3s;
-      }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-      .menu-item:hover,
-      .menu-item.active {
-        background-color: #1f261f;
-        color: white;
-      }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
 
-      .icon {
-        width: 20px;
-        text-align: center;
-      }
+    .menu-item:hover,
+    .menu-item.active {
+      background-color: #1f261f;
+      color: white;
+    }
 
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        padding: 40px 60px;
-      }
+    .icon {
+      width: 20px;
+      text-align: center;
+    }
 
-      h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
-      }
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 40px 60px;
+    }
 
-      .page-subtitle {
-        color: #888;
-        font-size: 14px;
-        margin-bottom: 40px;
-      }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
 
-      /* Profile Header */
-      .profile-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 40px;
-      }
+    .page-subtitle {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
 
-      .large-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(145deg, #333, #111);
-        overflow: hidden;
-      }
+    /* Profile Header */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
 
-      .large-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    .large-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #333, #111);
+      overflow: hidden;
+    }
 
-      .profile-info h2 {
-        font-size: 20px;
-        margin-bottom: 5px;
-      }
+    .large-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      .profile-details {
-        font-size: 12px;
-        color: #aaa;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
+    .profile-info h2 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
 
-      /* Forms */
-      .settings-section {
-        margin-bottom: 50px;
-        max-width: 600px;
-      }
+    .profile-details {
+      font-size: 12px;
+      color: #aaa;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
 
-      .settings-section h3 {
-        font-size: 18px;
-        margin-bottom: 20px;
-      }
+    /* Forms */
+    .settings-section {
+      margin-bottom: 50px;
+      max-width: 600px;
+    }
 
-      .form-group {
-        margin-bottom: 20px;
-      }
+    .settings-section h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
 
-      .form-group label {
-        display: block;
-        font-size: 13px;
-        color: #eee;
-        margin-bottom: 8px;
-        font-weight: bold;
-      }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-      .form-input,
-      .form-textarea {
-        width: 100%;
-        background-color: #1f261f; /* Darker green bg */
-        border: 1px solid #333; /* Dark green accent */
-        padding: 12px 15px;
-        border-radius: 5px;
-        color: white;
-        font-size: 14px;
-        outline: none;
-      }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #eee;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
 
-      /* Greenish tint to inputs as per screenshot slightly */
-      .form-input {
-        background-color: #1a3a1a;
-        border-color: #2a4a2a;
-      }
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background-color: #1f261f;
+      /* Darker green bg */
+      border: 1px solid #333;
+      /* Dark green accent */
+      padding: 12px 15px;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
 
-      .form-textarea {
-        background-color: #1a3a1a;
-        border-color: #2a4a2a;
-        resize: vertical;
-        min-height: 100px;
-      }
+    /* Greenish tint to inputs as per screenshot slightly */
+    .form-input {
+      background-color: #1a3a1a;
+      border-color: #2a4a2a;
+    }
 
-      .btn-update {
-        background-color: #00d26a; /* Bright Green */
-        color: black;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
-        float: right;
-      }
+    .form-textarea {
+      background-color: #1a3a1a;
+      border-color: #2a4a2a;
+      resize: vertical;
+      min-height: 100px;
+    }
 
-      .btn-update:hover {
-        background-color: #00b05a;
-      }
+    .btn-update {
+      background-color: #00d26a;
+      /* Bright Green */
+      color: black;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      float: right;
+    }
 
-      .clearfix::after {
-        content: "";
-        clear: both;
-        display: table;
-      }
-    </style>
-  </head>
-  <body>
-<?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
+    .btn-update:hover {
+      background-color: #00b05a;
+    }
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <h1>Your Profile & Settings</h1>
-      <p class="page-subtitle">Manage your profile information and settings.</p>
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+  </style>
+</head>
 
-      <div class="profile-header">
-          <div class="large-avatar">
-            <div style="width: 100%; height: 100%;">
-              <img
-                src="<?php echo !empty($member['profile_picture']) && file_exists(__DIR__ . '/../uploads/profile_pics/' . $member['profile_picture']) 
-                      ? '../uploads/profile_pics/' . htmlspecialchars($member['profile_picture']) 
-                      : '../images/default_avatar.jpg'; ?>"
-                alt="Profile Picture"
-                style="width: 100%; height: 100%; object-fit: cover;"
-              />
-            </div>
-          </div>
-        <div class="profile-info">
-          <h2><?php echo htmlspecialchars($member_name); ?></h2>
-          <div class="profile-details">
-            <span>Joined <?php echo date('Y', strtotime($member['join_date'])); ?></span>
-            <span>ID: #<?php echo str_pad($member_id, 5, '0', STR_PAD_LEFT); ?></span>
-          </div>
+<body>
+  <?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Your Profile & Settings</h1>
+    <p class="page-subtitle">Manage your profile information and settings.</p>
+
+    <div class="profile-header">
+      <div class="large-avatar">
+        <div style="width: 100%; height: 100%;">
+          <img
+            src="<?php echo !empty($member['profile_picture']) && file_exists(__DIR__ . '/../uploads/profile_pics/' . $member['profile_picture'])
+                    ? '../uploads/profile_pics/' . htmlspecialchars($member['profile_picture'])
+                    : '../images/default_avatar.jpg'; ?>"
+            alt="Profile Picture"
+            style="width: 100%; height: 100%; object-fit: cover;" />
         </div>
       </div>
+      <div class="profile-info">
+        <h2><?php echo htmlspecialchars($member_name); ?></h2>
+        <div class="profile-details">
+          <span>Joined <?php echo date('Y', strtotime($member['join_date'])); ?></span>
+          <span>ID: #<?php echo str_pad($member_id, 5, '0', STR_PAD_LEFT); ?></span>
+        </div>
+      </div>
+    </div>
 
-      <div class="settings-section clearfix">
+    <div class="settings-section clearfix">
       <div class="settings-section clearfix">
         <h3>Edit Profile Information</h3>
-        
+
         <?php if (isset($_SESSION['success_message'])): ?>
-            <div style="color: #4ade80; margin-bottom: 15px;"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+          <div style="color: #4ade80; margin-bottom: 15px;"><?php echo $_SESSION['success_message'];
+                                                            unset($_SESSION['success_message']); ?></div>
         <?php endif; ?>
         <?php if (isset($_SESSION['error_message'])): ?>
-            <div style="color: #ff4d4d; margin-bottom: 15px;"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+          <div style="color: #ff4d4d; margin-bottom: 15px;"><?php echo $_SESSION['error_message'];
+                                                            unset($_SESSION['error_message']); ?></div>
         <?php endif; ?>
 
         <!-- Profile Picture Upload Form -->
         <form action="../handlers/upload_profile_picture.php" method="POST" enctype="multipart/form-data" class="form-group" style="background: #1a201a; padding: 15px; border-radius: 5px; border: 1px solid #333;">
-            <label style="margin-bottom: 10px; display: block;">Change Profile Picture</label>
-            <input type="file" name="profile_picture" class="form-input" style="padding: 10px;" required accept="image/*">
-            <button type="submit" class="btn-update" style="margin-top: 10px;">Upload Photo</button>
-            <div style="clear: both;"></div>
+          <label style="margin-bottom: 10px; display: block;">Change Profile Picture</label>
+          <input type="file" name="profile_picture" class="form-input" style="padding: 10px;" required accept="image/*">
+          <button type="submit" class="btn-update" style="margin-top: 10px;">Upload Photo</button>
+          <div style="clear: both;"></div>
         </form>
 
         <form action="../handlers/member/update_profile.php" method="POST">
@@ -290,8 +297,7 @@ $member_name = $member['full_name'];
           <input
             type="password"
             class="form-input"
-            placeholder="Enter current password"
-          />
+            placeholder="Enter current password" />
         </div>
 
         <div class="form-group">
@@ -299,8 +305,7 @@ $member_name = $member['full_name'];
           <input
             type="password"
             class="form-input"
-            placeholder="Enter new password"
-          />
+            placeholder="Enter new password" />
         </div>
 
         <div class="form-group">
@@ -308,17 +313,16 @@ $member_name = $member['full_name'];
           <input
             type="password"
             class="form-input"
-            placeholder="Confirm new password"
-          />
+            placeholder="Confirm new password" />
         </div>
 
         <button
           class="btn-update"
-          onclick="alert('Password Changed Successfully!')"
-        >
+          onclick="alert('Password Changed Successfully!')">
           Change Password
         </button>
       </div>
     </div>
-  </body>
+</body>
+
 </html>

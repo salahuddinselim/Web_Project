@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Member Dashboard
  * Pranayom Fitness Management System
@@ -336,18 +337,18 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
         <div class="progress-grid">
           <div class="input-group">
             <label>Weight (kg)</label>
-            <input type="number" step="0.1" name="weight" class="custom-input" placeholder="Enter weight" 
-                   value="<?php echo $latestProgress['weight_kg'] ?? ''; ?>" />
+            <input type="number" step="0.1" name="weight" class="custom-input" placeholder="Enter weight"
+              value="<?php echo $latestProgress['weight_kg'] ?? ''; ?>" />
           </div>
           <div class="input-group">
             <label>Heart Rate (bpm)</label>
-            <input type="number" name="heart_rate" class="custom-input" placeholder="Enter heart rate" 
-                   value="<?php echo $latestProgress['heart_rate'] ?? ''; ?>" />
+            <input type="number" name="heart_rate" class="custom-input" placeholder="Enter heart rate"
+              value="<?php echo $latestProgress['heart_rate'] ?? ''; ?>" />
           </div>
           <div class="input-group">
             <label>Sleep (hours)</label>
-            <input type="number" step="0.5" name="sleep_hours" class="custom-input" placeholder="Enter sleep hours" 
-                   value="<?php echo $latestProgress['sleep_hours'] ?? ''; ?>" />
+            <input type="number" step="0.5" name="sleep_hours" class="custom-input" placeholder="Enter sleep hours"
+              value="<?php echo $latestProgress['sleep_hours'] ?? ''; ?>" />
           </div>
           <div class="input-group">
             <label>Mood</label>
@@ -418,21 +419,21 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
     document.getElementById('progressForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
-      
+
       fetch('/Web_Project/handlers/member/log_progress.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('progress-success').style.display = 'block';
-          setTimeout(() => {
-            document.getElementById('progress-success').style.display = 'none';
-          }, 3000);
-        }
-      })
-      .catch(error => console.error('Error:', error));
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('progress-success').style.display = 'block';
+            setTimeout(() => {
+              document.getElementById('progress-success').style.display = 'none';
+            }, 3000);
+          }
+        })
+        .catch(error => console.error('Error:', error));
     });
 
     // Rating function
@@ -467,30 +468,30 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
 
       // Submit rating to server
       fetch('/Web_Project/handlers/member/submit_rating.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `rating_type=${type}&rating_value=${value}&comment=${encodeURIComponent(comment)}`
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          msg.innerText = "Thanks for your feedback!";
-          msg.style.color = "#00d26a";
-          // Clear form
-          commentInput.value = "";
-          setRating(type, 0); 
-        } else {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `rating_type=${type}&rating_value=${value}&comment=${encodeURIComponent(comment)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            msg.innerText = "Thanks for your feedback!";
+            msg.style.color = "#00d26a";
+            // Clear form
+            commentInput.value = "";
+            setRating(type, 0);
+          } else {
             msg.innerText = "Error: " + (data.message || "Unknown error");
             msg.style.color = "#ff6b6b";
-        }
-      })
-      .catch(error => {
+          }
+        })
+        .catch(error => {
           console.error('Error:', error);
           msg.innerText = "Network error occurred.";
           msg.style.color = "#ff6b6b";
-      });
+        });
     }
   </script>
 </body>
