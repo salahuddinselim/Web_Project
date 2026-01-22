@@ -290,7 +290,7 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
             <p><?php echo htmlspecialchars($todayRoutine['description']); ?></p>
             <div class="buttons">
               <a href="member_routines.php" class="btn btn-view">View</a>
-              <button class="btn btn-download" onclick="alert('Download feature coming soon!')">Download</button>
+              <button class="btn btn-download" onclick="window.location.href='../handlers/member/download_routine_report.php'">Download</button>
             </div>
           <?php else: ?>
             <h3>No Routine Assigned</h3>

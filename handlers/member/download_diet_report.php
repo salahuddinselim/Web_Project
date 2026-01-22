@@ -1,49 +1,43 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db_functions.php';
+require_once __DIR__ . '/../../includes/fpdf.php'; // Assuming FPDF is installed here
 
 requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
 
-// Get diet plans for today and future, or all? Let's get today's plan primarily, or a weekly summary.
-// The user asked for "the report". A simple comprehensive report is best.
-// Let's get the plan for the current week or just "All upcoming plans".
-// For simplicity and utility, let's export ALL diet plans assigned.
-
-// We need a function to get ALL plans, or reuse getMemberDietPlans without date?
-// getMemberDietPlans uses date if provided. If null, it gets ALL?
-// Let's check db_functions.php.
-// Yes: if ($date) { $sql .= " AND d.plan_date = ?"; }
-// So if we pass null, it returns all.
-
 $plans = getMemberDietPlans($member_id, null);
 
-// Filename
-$filename = "Diet_Plan_" . date('Y-m-d') . ".csv";
+// Create PDF
+$pdf = new FPDF();
+$pdf->AddPage();
+$pdf->SetFont('Arial', 'B', 16);
+$pdf->Cell(0, 10, 'Diet Plan Report for ' . $member_name, 0, 1, 'C');
+$pdf->Ln(10);
 
-// Set headers for download
-header('Content-Type: text/csv');
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(30, 10, 'Date', 1);
+$pdf->Cell(25, 10, 'Meal Time', 1);
+$pdf->Cell(40, 10, 'Meal Name', 1);
+$pdf->Cell(20, 10, 'Calories', 1);
+$pdf->Cell(0, 10, 'Food Items', 1);
+$pdf->Ln();
+
+$pdf->SetFont('Arial', '', 10);
+foreach ($plans as $plan) {
+    $pdf->Cell(30, 10, $plan['plan_date'], 1);
+    $pdf->Cell(25, 10, ucfirst($plan['meal_time']), 1);
+    $pdf->Cell(40, 10, $plan['meal_name'], 1);
+    $pdf->Cell(20, 10, $plan['calories'], 1);
+    $pdf->MultiCell(0, 10, $plan['food_items'], 1);
+}
+
+$filename = "Diet_Plan_" . date('Y-m-d') . ".pdf";
+header('Content-Type: application/pdf');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$output = fopen('php://output', 'w');
-
-// CSV Header
-fputcsv($output, ['Date', 'Meal Time', 'Meal Name', 'Calories', 'Food Items', 'Notes']);
-
-// CSV Data
-foreach ($plans as $plan) {
-    fputcsv($output, [
-        $plan['plan_date'],
-        ucfirst($plan['meal_time']),
-        $plan['meal_name'],
-        $plan['calories'],
-        $plan['food_items'],
-        $plan['notes'] ?? ''
-    ]);
-}
-
-fclose($output);
+$pdf->Output('D', $filename);
 exit();

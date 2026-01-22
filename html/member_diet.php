@@ -4,6 +4,81 @@ require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
+
+$today = date('Y-m-d');
+$plans = getMemberDietPlans($member_id, $today);
+$todays_meals = [];
+$total_calories = 0;
+$total_protein = 0;
+$total_carbs = 0;
+$total_fat = 0;
+if (is_array($plans)) {
+  foreach ($plans as $p) {
+    if (isset($p['meal_time'])) {
+      $todays_meals[$p['meal_time']] = $p;
+      $total_calories += intval($p['calories'] ?? 0);
+      $total_protein += intval($p['protein_grams'] ?? 0);
+      $total_carbs += intval($p['carbs_grams'] ?? 0);
+      $total_fat += intval($p['fat_grams'] ?? 0);
+    }
+  }
+}
+
+// Daily targets (hardcoded for now, can be made configurable)
+$calorie_target = 1850;
+$protein_target = 120;
+$carbs_target = 180;
+$fat_target = 65;
+
+// Weekly data
+$week_start = date('Y-m-d', strtotime('monday this week'));
+$week_end = date('Y-m-d', strtotime('sunday this week'));
+$all_plans = getMemberDietPlans($member_id);
+$weekly_calories = [];
+foreach ($all_plans as $p) {
+  if ($p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end) {
+    $day = date('w', strtotime($p['plan_date'])); // 0=Sun, 1=Mon, ..., 6=Sat
+    if (!isset($weekly_calories[$day])) $weekly_calories[$day] = 0;
+    $weekly_calories[$day] += intval($p['calories'] ?? 0);
+  }
+}
+
+// Monthly data
+$month_start = date('Y-m-01');
+$month_end = date('Y-m-t');
+$monthly_total_calories = 0;
+$days_with_plans = [];
+foreach ($all_plans as $p) {
+  if ($p['plan_date'] >= $month_start && $p['plan_date'] <= $month_end) {
+    $monthly_total_calories += intval($p['calories'] ?? 0);
+    $days_with_plans[$p['plan_date']] = true;
+  }
+}
+$days_tracked = count($days_with_plans);
+$total_days_in_month = date('t');
+$adherence = $total_days_in_month > 0 ? round(($days_tracked / $total_days_in_month) * 100) : 0;
+
+// Weekly adherence
+$weekly_plans_count = count(array_filter($all_plans, function ($p) use ($week_start, $week_end) {
+  return $p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end;
+}));
+$weekly_days_tracked = count(array_unique(array_column(array_filter($all_plans, function ($p) use ($week_start, $week_end) {
+  return $p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end;
+}), 'plan_date')));
+$weekly_adherence = 7 > 0 ? round(($weekly_days_tracked / 7) * 100) : 0;
+$progress_data = getMemberProgress($member_id);
+$monthly_progress = array_filter($progress_data, function ($p) use ($month_start, $month_end) {
+  return $p['tracking_date'] >= $month_start && $p['tracking_date'] <= $month_end;
+});
+usort($monthly_progress, function ($a, $b) {
+  return strcmp($a['tracking_date'], $b['tracking_date']);
+});
+$weight_change = 0;
+if (count($monthly_progress) >= 2) {
+  $first_weight = $monthly_progress[0]['weight_kg'];
+  $last_weight = $monthly_progress[count($monthly_progress) - 1]['weight_kg'];
+  $weight_change = $last_weight - $first_weight;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -685,7 +760,7 @@ $member_name = $_SESSION['full_name'];
 </head>
 
 <body>
-<?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
+  <?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
 
   <!-- Main Content -->
   <div class="main-content">
@@ -714,20 +789,6 @@ $member_name = $_SESSION['full_name'];
       </div>
     </div>
 
-$today = date('Y-m-d');
-$plans = getMemberDietPlans($member_id, $today);
-$todays_meals = [];
-$total_calories = 0;
-if (is_array($plans)) {
-    foreach ($plans as $p) {
-        if (isset($p['meal_time'])) {
-            $todays_meals[$p['meal_time']] = $p;
-            $total_calories += intval($p['calories'] ?? 0);
-        }
-    }
-}
-?>
-
     <div id="dailyView">
       <div class="selector-row" id="daySelector">
         <button class="selector-btn active" data-day="today">Today (<?php echo date('M d'); ?>)</button>
@@ -739,37 +800,37 @@ if (is_array($plans)) {
 
           <?php if (empty($todays_meals)): ?>
             <div class="meal-card">
-                <div class="meal-description">
-                    <p>No diet plan assigned for today. Please contact your trainer.</p>
-                </div>
+              <div class="meal-description">
+                <p>No diet plan assigned for today. Please contact your trainer.</p>
+              </div>
             </div>
           <?php else: ?>
             <?php foreach (['breakfast' => '🌅', 'lunch' => '🥗', 'dinner' => '🌙', 'snack' => '🍎'] as $time => $icon): ?>
-                <?php if (isset($todays_meals[$time])): $meal = $todays_meals[$time]; ?>
-                  <div class="meal-card">
-                    <div class="meal-header">
-                      <div class="meal-title-row">
-                        <div class="meal-icon <?php echo $time; ?>"><?php echo $icon; ?></div>
-                        <div>
-                          <div class="meal-type"><?php echo ucfirst($time); ?></div>
-                          <div class="meal-name"><?php echo htmlspecialchars($meal['meal_name']); ?></div>
-                        </div>
+              <?php if (isset($todays_meals[$time])): $meal = $todays_meals[$time]; ?>
+                <div class="meal-card">
+                  <div class="meal-header">
+                    <div class="meal-title-row">
+                      <div class="meal-icon <?php echo $time; ?>"><?php echo $icon; ?></div>
+                      <div>
+                        <div class="meal-type"><?php echo ucfirst($time); ?></div>
+                        <div class="meal-name"><?php echo htmlspecialchars($meal['meal_name']); ?></div>
                       </div>
-                      <div class="meal-time"><?php echo ucfirst($time); ?></div>
                     </div>
-                    <div class="meal-description">
-                      <p><?php echo nl2br(htmlspecialchars($meal['food_items'])); ?></p>
-                    </div>
-                    <?php if (!empty($meal['calories'])): ?>
+                    <div class="meal-time"><?php echo ucfirst($time); ?></div>
+                  </div>
+                  <div class="meal-description">
+                    <p><?php echo nl2br(htmlspecialchars($meal['food_items'])); ?></p>
+                  </div>
+                  <?php if (!empty($meal['calories'])): ?>
                     <div class="meal-details">
                       <div class="meal-detail-item">
                         <div class="detail-value"><?php echo $meal['calories']; ?></div>
                         <div class="detail-label">Calories</div>
                       </div>
                     </div>
-                    <?php endif; ?>
-                  </div>
-                <?php endif; ?>
+                  <?php endif; ?>
+                </div>
+              <?php endif; ?>
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
@@ -786,8 +847,8 @@ if (is_array($plans)) {
                 </circle>
               </svg>
               <div class="calorie-text">
-                <div class="calorie-value">1,420</div>
-                <div class="calorie-label">of 1,850 kcal</div>
+                <div class="calorie-value"><?php echo number_format($total_calories); ?></div>
+                <div class="calorie-label">of <?php echo number_format($calorie_target); ?> kcal</div>
               </div>
             </div>
 
@@ -795,28 +856,28 @@ if (is_array($plans)) {
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Protein</span>
-                  <span class="macro-value">93g / 120g</span>
+                  <span class="macro-value"><?php echo $total_protein; ?>g / <?php echo $protein_target; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill protein" style="width: 78%"></div>
+                  <div class="macro-fill protein" style="width: <?php echo $protein_target > 0 ? min(100, ($total_protein / $protein_target) * 100) : 0; ?>%"></div>
                 </div>
               </div>
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Carbs</span>
-                  <span class="macro-value">133g / 180g</span>
+                  <span class="macro-value"><?php echo $total_carbs; ?>g / <?php echo $carbs_target; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill carbs" style="width: 74%"></div>
+                  <div class="macro-fill carbs" style="width: <?php echo $carbs_target > 0 ? min(100, ($total_carbs / $carbs_target) * 100) : 0; ?>%"></div>
                 </div>
               </div>
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Fat</span>
-                  <span class="macro-value">56g / 65g</span>
+                  <span class="macro-value"><?php echo $total_fat; ?>g / <?php echo $fat_target; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill fat" style="width: 86%"></div>
+                  <div class="macro-fill fat" style="width: <?php echo $fat_target > 0 ? min(100, ($total_fat / $fat_target) * 100) : 0; ?>%"></div>
                 </div>
               </div>
               <div class="macro-item">
@@ -851,41 +912,23 @@ if (is_array($plans)) {
     <!-- Weekly View -->
     <div id="weeklyView" class="hidden">
       <div class="week-grid" id="weekGrid">
-        <div class="week-day-card" data-day="0">
-          <div class="week-day-name">Mon</div>
-          <div class="week-day-date">6</div>
-          <div class="week-day-calories">1,820 kcal</div>
-        </div>
-        <div class="week-day-card" data-day="1">
-          <div class="week-day-name">Tue</div>
-          <div class="week-day-date">7</div>
-          <div class="week-day-calories">1,750 kcal</div>
-        </div>
-        <div class="week-day-card" data-day="2">
-          <div class="week-day-name">Wed</div>
-          <div class="week-day-date">8</div>
-          <div class="week-day-calories">1,900 kcal</div>
-        </div>
-        <div class="week-day-card active" data-day="3">
-          <div class="week-day-name">Thu</div>
-          <div class="week-day-date">9</div>
-          <div class="week-day-calories">1,420 kcal</div>
-        </div>
-        <div class="week-day-card" data-day="4">
-          <div class="week-day-name">Fri</div>
-          <div class="week-day-date">10</div>
-          <div class="week-day-calories">—</div>
-        </div>
-        <div class="week-day-card" data-day="5">
-          <div class="week-day-name">Sat</div>
-          <div class="week-day-date">11</div>
-          <div class="week-day-calories">—</div>
-        </div>
-        <div class="week-day-card" data-day="6">
-          <div class="week-day-name">Sun</div>
-          <div class="week-day-date">12</div>
-          <div class="week-day-calories">—</div>
-        </div>
+        <?php
+        $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        $php_days = [1, 2, 3, 4, 5, 6, 0]; // corresponding PHP day numbers
+        $current_day_of_week = date('w');
+        $monday = strtotime('monday this week');
+        for ($i = 0; $i < 7; $i++) {
+          $date = date('d', $monday + $i * 86400);
+          $php_day = $php_days[$i];
+          $calories = isset($weekly_calories[$php_day]) ? number_format($weekly_calories[$php_day]) . ' kcal' : '—';
+          $is_active = ($php_day == $current_day_of_week) ? ' active' : '';
+          echo "<div class=\"week-day-card{$is_active}\" data-day=\"{$i}\">
+                  <div class=\"week-day-name\">{$days[$i]}</div>
+                  <div class=\"week-day-date\">{$date}</div>
+                  <div class=\"week-day-calories\">{$calories}</div>
+                </div>";
+        }
+        ?>
       </div>
 
       <div class="diet-content">
@@ -895,80 +938,44 @@ if (is_array($plans)) {
           <div class="month-summary">
             <div class="month-stat-card">
               <div class="month-stat-icon">🔥</div>
-              <div class="month-stat-value">5,890</div>
+              <div class="month-stat-value"><?php echo number_format(array_sum($weekly_calories)); ?></div>
               <div class="month-stat-label">Total Calories This Week</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">🎯</div>
-              <div class="month-stat-value">95%</div>
+              <div class="month-stat-value"><?php echo $weekly_adherence; ?>%</div>
               <div class="month-stat-label">Diet Plan Adherence</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">💧</div>
-              <div class="month-stat-value">24</div>
+              <div class="month-stat-value">0</div>
               <div class="month-stat-label">Glasses of Water</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">🥗</div>
-              <div class="month-stat-value">12</div>
+              <div class="month-stat-value"><?php echo $weekly_plans_count; ?></div>
               <div class="month-stat-label">Meals Logged</div>
             </div>
           </div>
 
           <div class="weekly-breakdown">
             <div class="nutrition-title">📈 Daily Breakdown</div>
-            <div class="week-row">
-              <span class="week-label">Monday</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">1,820</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">115g</div>
-                  <div class="week-stat-label">Protein</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">Tuesday</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">1,750</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">108g</div>
-                  <div class="week-stat-label">Protein</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">Wednesday</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">1,900</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">122g</div>
-                  <div class="week-stat-label">Protein</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">Thursday</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">1,420</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">93g</div>
-                  <div class="week-stat-label">Protein</div>
-                </div>
-              </div>
-            </div>
+            <?php
+            for ($i = 0; $i < 7; $i++) {
+              $day_name = $days[$i];
+              $php_day = $php_days[$i];
+              $calories = isset($weekly_calories[$php_day]) ? number_format($weekly_calories[$php_day]) : '—';
+              echo "<div class=\"week-row\">
+                      <span class=\"week-label\">{$day_name}</span>
+                      <div class=\"week-stats\">
+                        <div class=\"week-stat\">
+                          <div class=\"week-stat-value\">{$calories}</div>
+                          <div class=\"week-stat-label\">Calories</div>
+                        </div>
+                      </div>
+                    </div>";
+            }
+            ?>
           </div>
         </div>
 
@@ -1025,7 +1032,7 @@ if (is_array($plans)) {
     <!-- Monthly View -->
     <div id="monthlyView" class="hidden">
       <div class="selector-row">
-        <button class="selector-btn active">January 2026</button>
+        <button class="selector-btn active"><?php echo date('F Y'); ?></button>
         <button class="selector-btn">December 2025</button>
         <button class="selector-btn">November 2025</button>
       </div>
@@ -1037,22 +1044,22 @@ if (is_array($plans)) {
           <div class="month-summary">
             <div class="month-stat-card">
               <div class="month-stat-icon">🔥</div>
-              <div class="month-stat-value">52,400</div>
+              <div class="month-stat-value"><?php echo number_format($monthly_total_calories); ?></div>
               <div class="month-stat-label">Total Calories Consumed</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">🎯</div>
-              <div class="month-stat-value">92%</div>
+              <div class="month-stat-value"><?php echo $adherence; ?>%</div>
               <div class="month-stat-label">Diet Plan Adherence</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">⚖️</div>
-              <div class="month-stat-value">-2.5</div>
+              <div class="month-stat-value"><?php echo number_format($weight_change, 1); ?></div>
               <div class="month-stat-label">Weight Change (kg)</div>
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">📅</div>
-              <div class="month-stat-value">28</div>
+              <div class="month-stat-value"><?php echo $days_tracked; ?></div>
               <div class="month-stat-label">Days Tracked</div>
             </div>
           </div>
@@ -1060,27 +1067,27 @@ if (is_array($plans)) {
           <div class="weekly-breakdown">
             <div class="nutrition-title">📈 Weekly Breakdown</div>
             <div class="week-row">
-              <span class="week-label">Week 1 (Jan 1-5)</span>
+              <span class="week-label">Week 1 (<?php echo date('M j', strtotime('first day of this month')); ?>-<?php echo date('j', strtotime('first day of this month +6 days')); ?>)</span>
               <div class="week-stats">
                 <div class="week-stat">
-                  <div class="week-stat-value">9,250</div>
+                  <div class="week-stat-value">0</div>
                   <div class="week-stat-label">Calories</div>
                 </div>
                 <div class="week-stat">
-                  <div class="week-stat-value">98%</div>
+                  <div class="week-stat-value">0%</div>
                   <div class="week-stat-label">Adherence</div>
                 </div>
               </div>
             </div>
             <div class="week-row">
-              <span class="week-label">Week 2 (Jan 6-12)</span>
+              <span class="week-label">Week 2 (<?php echo date('M j', strtotime('first day of this month +7 days')); ?>-<?php echo date('j', strtotime('first day of this month +13 days')); ?>)</span>
               <div class="week-stats">
                 <div class="week-stat">
-                  <div class="week-stat-value">5,890</div>
+                  <div class="week-stat-value"><?php echo number_format(array_sum($weekly_calories)); ?></div>
                   <div class="week-stat-label">Calories</div>
                 </div>
                 <div class="week-stat">
-                  <div class="week-stat-value">95%</div>
+                  <div class="week-stat-value"><?php echo $adherence; ?>%</div>
                   <div class="week-stat-label">Adherence</div>
                 </div>
               </div>
@@ -1089,11 +1096,11 @@ if (is_array($plans)) {
               <span class="week-label">Previous Weeks</span>
               <div class="week-stats">
                 <div class="week-stat">
-                  <div class="week-stat-value">37,260</div>
+                  <div class="week-stat-value">0</div>
                   <div class="week-stat-label">Calories</div>
                 </div>
                 <div class="week-stat">
-                  <div class="week-stat-value">90%</div>
+                  <div class="week-stat-value">0%</div>
                   <div class="week-stat-label">Adherence</div>
                 </div>
               </div>

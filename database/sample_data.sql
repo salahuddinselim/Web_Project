@@ -9,7 +9,8 @@ INSERT INTO users (username, password_hash, email, role) VALUES
 ('trainer2','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','trainer2@pranayom.com','trainer'),
 ('member1','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member1@pranayom.com','member'),
 ('member2','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member2@pranayom.com','member'),
-('member3','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member3@pranayom.com','member');
+('member3','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member3@pranayom.com','member'),
+('member_afia','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member_afia@pranayom.com','member');
 
 -- =====================================================
 -- ADMINS
@@ -32,12 +33,13 @@ INSERT INTO members
 VALUES
 (4,'Selim Member','01730000001',CURDATE(),'male','premium'),
 (5,'Ayesha Member','01730000002',CURDATE(),'female','basic'),
-(6,'Nabila Member','01730000003',CURDATE(),'female','vip');
+(6,'Nabila Member','01730000003',CURDATE(),'female','vip'),
+(7,'Afia Member','01730000004',CURDATE(),'female','premium');
 
 -- =====================================================
 -- ASSIGN TRAINERS TO MEMBERS
 -- =====================================================
-UPDATE members SET trainer_id = 1 WHERE member_id IN (1,2);
+UPDATE members SET trainer_id = 1 WHERE member_id IN (1,2,4);
 UPDATE members SET trainer_id = 2 WHERE member_id = 3;
 
 -- =====================================================
@@ -53,7 +55,10 @@ VALUES
  '[{"name":"Wall Push-ups","sets":2,"reps":10}]'),
 
 (3,2,'Full Body Strength','Intermediate strength workout','strength','intermediate',45,
- '[{"name":"Deadlift","sets":4,"reps":8}]');
+ '[{"name":"Deadlift","sets":4,"reps":8}]'),
+
+(4,1,'Evening Yoga','Relaxing evening yoga','yoga','beginner',20,
+ '[{"name":"Child Pose","sets":1,"reps":"5 breaths"}]');
 
 -- =====================================================
 -- CLASSES
@@ -83,7 +88,10 @@ INSERT INTO diet_plans
 VALUES
 (1,1,'Healthy Breakfast','breakfast','Oats, Banana, Milk',350,'trainer',CURDATE()),
 (2,1,'Light Lunch','lunch','Rice, Vegetables',450,'trainer',CURDATE()),
-(3,2,'Protein Dinner','dinner','Chicken, Salad',600,'trainer',CURDATE());
+(3,2,'Protein Dinner','dinner','Chicken, Salad',600,'trainer',CURDATE()),
+(4,1,'Afia Breakfast','breakfast','Smoothie, Fruits',300,'trainer',CURDATE()),
+(4,1,'Afia Lunch','lunch','Salad, Yogurt',400,'trainer',CURDATE()),
+(4,1,'Afia Dinner','dinner','Fish, Veggies',500,'trainer',CURDATE());
 
 -- =====================================================
 -- PROGRESS TRACKING
@@ -93,7 +101,8 @@ INSERT INTO progress_tracking
 VALUES
 (1,CURDATE(),72.5,7.5,'good'),
 (2,CURDATE(),65.2,8.0,'excellent'),
-(3,CURDATE(),58.0,6.8,'neutral');
+(3,CURDATE(),58.0,6.8,'neutral'),
+(4,CURDATE(),60.0,7.0,'good');
 
 -- =====================================================
 -- RATINGS
