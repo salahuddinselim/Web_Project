@@ -169,7 +169,7 @@ unset($_SESSION['login_error']);
         <div class="admin-badge">ADMIN PORTAL</div>
 
         <!-- Login Form -->
-        <form method="POST" action="/Web_Project/handlers/admin_login_handler.php" id="adminLoginForm">
+        <form method="POST" action="../handlers/admin_login_handler.php" id="adminLoginForm">
           <div class="input-group">
             <input type="text" name="username" id="username" placeholder="Admin Username" required />
           </div>

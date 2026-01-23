@@ -174,7 +174,7 @@ unset($_SESSION['login_error']);
         <div class="welcome-text">Welcome Back</div>
 
         <!-- Login Form -->
-        <form method="POST" action="/Web_Project/handlers/login_handler.php" id="loginForm">
+        <form method="POST" action="../handlers/login_handler.php" id="loginForm">
           <!-- Toggle -->
           <div class="toggle-container">
             <button type="button" class="toggle-btn active" id="btn-member" onclick="setRole('member')">

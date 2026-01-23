@@ -385,7 +385,7 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
             <span onclick="setRating('app', 5)">★</span>
           </div>
           <textarea id="app_comment" class="custom-input" placeholder="Leave a comment..." style="width: 100%; margin-bottom: 10px;"></textarea>
-          <button class="btn btn-download" onclick="submitRatingWithComment('app')">Submit Rating</button>
+          <button class="btn btn-download" onclick="submitRatingWithComment('app')" style="display: block !important; width: 100% !important;">Submit Rating</button>
           <p id="app_msg" style="color: #00d26a; font-size: 12px; height: 15px; margin-top: 5px;"></p>
         </div>
 
@@ -401,7 +401,7 @@ $latestProgress = !empty($progressData) ? $progressData[0] : null;
             <span onclick="setRating('trainer', 5)">★</span>
           </div>
           <textarea id="trainer_comment" class="custom-input" placeholder="Leave a comment for your trainer..." style="width: 100%; margin-bottom: 10px;"></textarea>
-          <button class="btn btn-download" onclick="submitRatingWithComment('trainer')">Submit Rating</button>
+          <button class="btn btn-download" onclick="submitRatingWithComment('trainer')" style="display: block !important; width: 100% !important;">Submit Rating</button>
           <p id="trainer_msg" style="color: #00d26a; font-size: 12px; height: 15px; margin-top: 5px;"></p>
         </div>
       </div>

@@ -18,12 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $certification = $_POST['certification'] ?? '';
     $bio = $_POST['bio'] ?? '';
     
-    $username = strtolower(str_replace(' ', '_', $full_name)) . rand(10,99); // Generate username
+    $username = trim($_POST['username'] ?? '');
     
-    if (empty($full_name) || empty($email) || empty($password)) {
-        $error_message = "Name, Email and Password are required.";
+    if (empty($full_name) || empty($email) || empty($password) || empty($username)) {
+        $error_message = "Name, Username, Email and Password are required.";
     } else {
         try {
+            // Check if username or email already exists
+            $check_stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? OR email = ?");
+            $check_stmt->execute([$username, $email]);
+            if ($check_stmt->fetch()) {
+                throw new Exception("Username or Email already exists.");
+            }
+
             $pdo->beginTransaction();
             
             // 1. Create User
@@ -35,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $user_id = $pdo->lastInsertId();
             
-            // 2. Create Trainer (matching actual schema: no gender, certification not certifications)
+            // 2. Create Trainer
             $stmt = $pdo->prepare("INSERT INTO trainers (user_id, full_name, phone, specialization, experience_years, certification, bio) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $user_id,
@@ -48,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             
             $pdo->commit();
-            $success_message = "Trainer added successfully! Username: " . $username;
-        } catch (PDOException $e) {
-            $pdo->rollBack();
+            $success_message = "Trainer added successfully! Username: " . htmlspecialchars($username);
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
             $error_message = "Error adding trainer: " . $e->getMessage();
         }
     }
@@ -246,6 +253,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="input-group">
         <label>Full Name</label>
         <input type="text" name="full_name" class="input-field" placeholder="Enter trainer's full name" required />
+      </div>
+
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" name="username" class="input-field" placeholder="Enter unique username" required />
       </div>
 
       <div class="input-group">

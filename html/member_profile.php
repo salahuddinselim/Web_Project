@@ -271,6 +271,14 @@ $member_name = $member['full_name'];
 
         <form action="../handlers/member/update_profile.php" method="POST">
           <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" class="form-input" value="<?php echo htmlspecialchars($member['username']); ?>" required />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-input" value="<?php echo htmlspecialchars($member['email']); ?>" required />
+          </div>
+          <div class="form-group">
             <label>Full Name</label>
             <input type="text" name="full_name" class="form-input" value="<?php echo htmlspecialchars($member['full_name']); ?>" required />
           </div>

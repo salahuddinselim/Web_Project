@@ -297,6 +297,14 @@ $trainer_name = $trainer['full_name'];
       <div class="form-section clearfix">
         <form action="../handlers/trainer/update_profile.php" method="POST">
           <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" value="<?php echo htmlspecialchars($trainer['username']); ?>" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($trainer['email']); ?>" required />
+          </div>
+          <div class="form-group">
             <label class="form-label">Full Name</label>
             <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($trainer['full_name']); ?>" required />
           </div>

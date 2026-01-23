@@ -14,9 +14,9 @@ logout();
 
 // Redirect based on previous role
 if ($user_role === 'admin') {
-    header("Location: /Web_Project/admin/login.php");
+    header("Location: ../admin/login.php");
 } else {
-    header("Location: /Web_Project/html/index.php");
+    header("Location: ../html/index.php");
 }
 exit();
 ?>

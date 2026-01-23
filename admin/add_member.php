@@ -38,12 +38,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $trainer_id = $_POST['trainer_id'] ?? null;
     if (empty($trainer_id)) $trainer_id = null;
     
-    $username = strtolower(str_replace(' ', '', $full_name)) . rand(10,99); // Generate username
+    $username = trim($_POST['username'] ?? '');
     
-    if (empty($full_name) || empty($email) || empty($password)) {
-        $error_message = "Name, Email and Password are required.";
+    if (empty($full_name) || empty($email) || empty($password) || empty($username)) {
+        $error_message = "Name, Username, Email and Password are required.";
     } else {
         try {
+            // Check if username or email already exists
+            $check_stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? OR email = ?");
+            $check_stmt->execute([$username, $email]);
+            if ($check_stmt->fetch()) {
+                throw new Exception("Username or Email already exists.");
+            }
+
             $pdo->beginTransaction();
             
             // 1. Create User
@@ -56,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_id = $pdo->lastInsertId();
             
             // 2. Create Member
-            // Using current date for join_date
             $stmt = $pdo->prepare("INSERT INTO members (user_id, full_name, phone, gender, medical_notes, trainer_id, join_date) VALUES (?, ?, ?, ?, ?, ?, CURDATE())");
             $stmt->execute([
                 $user_id,
@@ -68,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             
             $pdo->commit();
-            $success_message = "Member added successfully! Username: " . $username;
-        } catch (PDOException $e) {
-            $pdo->rollBack();
+            $success_message = "Member added successfully! Username: " . htmlspecialchars($username);
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
             $error_message = "Error adding member: " . $e->getMessage();
         }
     }
@@ -267,6 +273,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             name="full_name"
             class="input-field"
             placeholder="Enter member's full name"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            class="input-field"
+            placeholder="Enter unique username"
             required
           />
         </div>

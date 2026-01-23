@@ -14,7 +14,6 @@ ORDER BY cb.booking_date DESC, c.schedule_time LIMIT ?");
 $stmt->execute([$member_id, $limit]);
 return $stmt->fetchAll();
 }
-<?php
 
 /**
  * Database Helper Functions
@@ -325,4 +324,14 @@ function sendMessage($sender_id, $receiver_id, $message_text)
     global $pdo;
     $stmt = $pdo->prepare("INSERT INTO messages (sender_id, receiver_id, message_text) VALUES (?, ?, ?)");
     return $stmt->execute([$sender_id, $receiver_id, $message_text]);
+}
+/**
+ * Get trainer's uploaded content
+ */
+function getTrainerContent($trainer_id)
+{
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM workout_content WHERE trainer_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$trainer_id]);
+    return $stmt->fetchAll();
 }

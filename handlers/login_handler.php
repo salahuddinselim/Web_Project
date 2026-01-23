@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (login($username, $password, $role)) {
             // Redirect based on role
             if ($_SESSION['role'] === 'member') {
-                header("Location: /Web_Project/html/member_dashboard.php");
+                header("Location: ../html/member_dashboard.php");
             } elseif ($_SESSION['role'] === 'trainer') {
-                header("Location: /Web_Project/trainer/dashboard.php");
+                header("Location: ../trainer/dashboard.php");
             }
             exit();
         } else {
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Store error in session and redirect back
     $_SESSION['login_error'] = $error;
-    header("Location: /Web_Project/html/login.php");
+    header("Location: ../html/login.php");
     exit();
 }
 ?>

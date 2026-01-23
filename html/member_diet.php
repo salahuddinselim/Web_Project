@@ -914,7 +914,7 @@ if (count($monthly_progress) >= 2) {
       <div class="week-grid" id="weekGrid">
         <?php
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        $php_days = [1, 2, 3, 4, 5, 6, 0]; // corresponding PHP day numbers
+        $php_days = [1, 2, 3, 4, 5, 6, 0]; // Mon-Sun
         $current_day_of_week = date('w');
         $monday = strtotime('monday this week');
         for ($i = 0; $i < 7; $i++) {
@@ -947,14 +947,14 @@ if (count($monthly_progress) >= 2) {
               <div class="month-stat-label">Diet Plan Adherence</div>
             </div>
             <div class="month-stat-card">
-              <div class="month-stat-icon">💧</div>
-              <div class="month-stat-value">0</div>
-              <div class="month-stat-label">Glasses of Water</div>
-            </div>
-            <div class="month-stat-card">
               <div class="month-stat-icon">🥗</div>
               <div class="month-stat-value"><?php echo $weekly_plans_count; ?></div>
               <div class="month-stat-label">Meals Logged</div>
+            </div>
+            <div class="month-stat-card">
+              <div class="month-stat-icon">📅</div>
+              <div class="month-stat-value"><?php echo $weekly_days_tracked; ?>/7</div>
+              <div class="month-stat-label">Days Logged</div>
             </div>
           </div>
 
@@ -982,47 +982,26 @@ if (count($monthly_progress) >= 2) {
         <div class="side-panel">
           <div class="nutrition-card">
             <div class="nutrition-title">📊 Weekly Averages</div>
-
+            <?php 
+              $weekly_avg = $weekly_days_tracked > 0 ? array_sum($weekly_calories) / $weekly_days_tracked : 0;
+            ?>
             <div class="calorie-circle">
               <svg width="150" height="150">
                 <circle class="calorie-bg" cx="75" cy="75" r="65"></circle>
-                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="40">
+                <?php 
+                  $avg_offset = $calorie_target > 0 ? 408 - (408 * min(1, $weekly_avg / $calorie_target)) : 408;
+                ?>
+                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="<?php echo $avg_offset; ?>">
                 </circle>
               </svg>
               <div class="calorie-text">
-                <div class="calorie-value">1,722</div>
+                <div class="calorie-value"><?php echo number_format($weekly_avg); ?></div>
                 <div class="calorie-label">avg per day</div>
               </div>
             </div>
 
             <div class="macro-list">
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Protein</span>
-                  <span class="macro-value">110g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill protein" style="width: 92%"></div>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Carbs</span>
-                  <span class="macro-value">165g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill carbs" style="width: 88%"></div>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Fat</span>
-                  <span class="macro-value">58g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill fat" style="width: 85%"></div>
-                </div>
-              </div>
+              <p style="font-size: 11px; color: #666; text-align: center;">Average macros are calculated based on your daily intake this week.</p>
             </div>
           </div>
         </div>
@@ -1033,8 +1012,6 @@ if (count($monthly_progress) >= 2) {
     <div id="monthlyView" class="hidden">
       <div class="selector-row">
         <button class="selector-btn active"><?php echo date('F Y'); ?></button>
-        <button class="selector-btn">December 2025</button>
-        <button class="selector-btn">November 2025</button>
       </div>
 
       <div class="diet-content">
@@ -1054,7 +1031,7 @@ if (count($monthly_progress) >= 2) {
             </div>
             <div class="month-stat-card">
               <div class="month-stat-icon">⚖️</div>
-              <div class="month-stat-value"><?php echo number_format($weight_change, 1); ?></div>
+              <div class="month-stat-value"><?php echo $weight_change > 0 ? '+' : ''; ?><?php echo number_format($weight_change, 1); ?></div>
               <div class="month-stat-label">Weight Change (kg)</div>
             </div>
             <div class="month-stat-card">
@@ -1065,74 +1042,22 @@ if (count($monthly_progress) >= 2) {
           </div>
 
           <div class="weekly-breakdown">
-            <div class="nutrition-title">📈 Weekly Breakdown</div>
+            <div class="nutrition-title">📊 Monthly Achievements</div>
             <div class="week-row">
-              <span class="week-label">Week 1 (<?php echo date('M j', strtotime('first day of this month')); ?>-<?php echo date('j', strtotime('first day of this month +6 days')); ?>)</span>
+              <span class="week-label">🏆 Adherence</span>
               <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">0</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">0%</div>
-                  <div class="week-stat-label">Adherence</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">Week 2 (<?php echo date('M j', strtotime('first day of this month +7 days')); ?>-<?php echo date('j', strtotime('first day of this month +13 days')); ?>)</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value"><?php echo number_format(array_sum($weekly_calories)); ?></div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
                 <div class="week-stat">
                   <div class="week-stat-value"><?php echo $adherence; ?>%</div>
-                  <div class="week-stat-label">Adherence</div>
+                  <div class="week-stat-label">Goal Met</div>
                 </div>
               </div>
             </div>
             <div class="week-row">
-              <span class="week-label">Previous Weeks</span>
+              <span class="week-label">🥗 Total Meals</span>
               <div class="week-stats">
                 <div class="week-stat">
-                  <div class="week-stat-value">0</div>
-                  <div class="week-stat-label">Calories</div>
-                </div>
-                <div class="week-stat">
-                  <div class="week-stat-value">0%</div>
-                  <div class="week-stat-label">Adherence</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="weekly-breakdown" style="margin-top: 20px;">
-            <div class="nutrition-title">🏆 Monthly Achievements</div>
-            <div class="week-row">
-              <span class="week-label">🥇 Best Day</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">Jan 3</div>
-                  <div class="week-stat-label">100% Goals</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">💧 Hydration Streak</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">12 Days</div>
-                  <div class="week-stat-label">8+ Glasses</div>
-                </div>
-              </div>
-            </div>
-            <div class="week-row">
-              <span class="week-label">🥗 Meals Logged</span>
-              <div class="week-stats">
-                <div class="week-stat">
-                  <div class="week-stat-value">112</div>
-                  <div class="week-stat-label">This Month</div>
+                  <div class="week-stat-value"><?php echo count(array_filter($all_plans, function($p) use ($month_start, $month_end) { return $p['plan_date'] >= $month_start && $p['plan_date'] <= $month_end; })); ?></div>
+                  <div class="week-stat-label">Recorded</div>
                 </div>
               </div>
             </div>
@@ -1142,76 +1067,28 @@ if (count($monthly_progress) >= 2) {
         <div class="side-panel">
           <div class="nutrition-card">
             <div class="nutrition-title">📊 Monthly Averages</div>
-
+            <?php 
+              $monthly_avg = $days_tracked > 0 ? $monthly_total_calories / $days_tracked : 0;
+            ?>
             <div class="calorie-circle">
               <svg width="150" height="150">
                 <circle class="calorie-bg" cx="75" cy="75" r="65"></circle>
-                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="32">
+                <?php 
+                  $m_avg_offset = $calorie_target > 0 ? 408 - (408 * min(1, $monthly_avg / $calorie_target)) : 408;
+                ?>
+                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="<?php echo $m_avg_offset; ?>">
                 </circle>
               </svg>
               <div class="calorie-text">
-                <div class="calorie-value">1,872</div>
+                <div class="calorie-value"><?php echo number_format($monthly_avg); ?></div>
                 <div class="calorie-label">avg per day</div>
-              </div>
-            </div>
-
-            <div class="macro-list">
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Protein</span>
-                  <span class="macro-value">118g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill protein" style="width: 98%"></div>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Carbs</span>
-                  <span class="macro-value">172g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill carbs" style="width: 95%"></div>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Avg Fat</span>
-                  <span class="macro-value">62g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill fat" style="width: 95%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="nutrition-card">
-            <div class="nutrition-title">📉 Trend Analysis</div>
-            <div class="macro-list">
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Calories</span>
-                  <span class="macro-value" style="color: #00d26a">↓ 5%</span>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Protein</span>
-                  <span class="macro-value" style="color: #00d26a">↑ 12%</span>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Water</span>
-                  <span class="macro-value" style="color: #00d26a">↑ 20%</span>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- Action Buttons -->
     <div class="action-row">

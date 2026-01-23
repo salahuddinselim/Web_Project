@@ -245,56 +245,61 @@ $admin_name = $admin['full_name'];
             </div>
             <button type="submit" class="action-btn">Upload Photo</button>
         </form>
-      <div class="form-section">
+      <!-- Personal Details Form -->
+      <form action="../handlers/admin/update_profile.php" method="POST" class="form-section">
         <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-control" value="<?php echo htmlspecialchars($admin_name); ?>" />
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" value="<?php echo htmlspecialchars($admin['username']); ?>" required />
         </div>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input type="email" class="form-control" value="afia@pranayom.com" />
+          <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($admin['email']); ?>" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($admin['full_name']); ?>" required />
         </div>
         <div class="form-group">
           <label class="form-label">Contact Number</label>
-          <input type="text" class="form-control" value="+880 1234 567890" />
+          <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($admin['phone'] ?? ''); ?>" />
         </div>
-        <button
-          class="action-btn"
-          onclick="alert('Profile Updated Successfully!')"
-        >
+        <button type="submit" class="action-btn">
           Update Profile
         </button>
-      </div>
+      </form>
 
       <div class="section-title">Security</div>
-      <div class="form-section">
+      
+      <!-- Change Password Form -->
+      <form action="../handlers/admin/change_password.php" method="POST" class="form-section">
         <div class="form-group">
           <label class="form-label">Current Password</label>
-          <input type="password" class="form-control" placeholder="••••••••" />
+          <input type="password" name="current_password" class="form-control" placeholder="••••••••" required />
         </div>
         <div class="form-group">
           <label class="form-label">New Password</label>
           <input
             type="password"
+            name="new_password"
             class="form-control"
             placeholder="Enter new password"
+            required
           />
         </div>
         <div class="form-group">
           <label class="form-label">Confirm New Password</label>
           <input
             type="password"
+            name="confirm_password"
             class="form-control"
             placeholder="Confirm new password"
+            required
           />
         </div>
-        <button
-          class="action-btn"
-          onclick="alert('Password Changed Successfully!')"
-        >
+        <button type="submit" class="action-btn">
           Change Password
         </button>
-      </div>
+      </form>
     </div>
   </body>
 </html>

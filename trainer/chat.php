@@ -462,11 +462,14 @@ $trainer_name = $_SESSION['full_name'];
         selectedMemberName = this.getAttribute('data-member-name');
         selectedMemberPic = this.getAttribute('data-member-pic');
         document.getElementById('selectedMemberName').textContent = selectedMemberName;
+        
         // Reload messages via AJAX
         fetch('chat_messages.php?member_id=' + selectedMemberId)
           .then(res => res.text())
           .then(html => {
-            document.getElementById('messagesArea').innerHTML = html;
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.innerHTML = html;
+            messagesArea.scrollTop = messagesArea.scrollHeight;
           });
       });
     });
@@ -475,22 +478,42 @@ $trainer_name = $_SESSION['full_name'];
       const input = document.getElementById("messageInput");
       const messageText = input.value.trim();
       const messagesArea = document.getElementById("messagesArea");
+      
       if (messageText && selectedMemberId) {
-        // Optionally, send to server via AJAX here
-        const newMsgHTML = `
-          <div class="message-row sent">
-            <div>
-              <div class="message-meta">You</div>
-              <div class="message-bubble">${messageText}</div>
-            </div>
-            <div style="margin-left: 10px;">
-              <img src="../images/default_avatar.jpg" style="border-radius: 50%; width: 30px; height: 30px;">
-            </div>
-          </div>
-        `;
-        messagesArea.insertAdjacentHTML("beforeend", newMsgHTML);
-        input.value = "";
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+        const formData = new FormData();
+        formData.append('member_user_id', selectedMemberId);
+        formData.append('message', messageText);
+
+        fetch('../handlers/trainer/send_message.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const newMsgHTML = `
+                <div class="message-row sent">
+                    <div style="margin-left: 10px; order: 1;">
+                        <img src="../images/default_avatar.jpg" style="border-radius: 50%; width: 30px; height: 30px" />
+                    </div>
+                    <div>
+                        <div class="message-meta">You</div>
+                        <div class="message-bubble">${messageText}</div>
+                    </div>
+                </div>
+              `;
+              // Remove "No messages" text if it exists
+              if (messagesArea.innerHTML.includes('No messages yet')) {
+                  messagesArea.innerHTML = '';
+              }
+              messagesArea.insertAdjacentHTML("beforeend", newMsgHTML);
+              input.value = "";
+              messagesArea.scrollTop = messagesArea.scrollHeight;
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch(err => alert("Error sending message"));
       }
     }
 

@@ -41,6 +41,7 @@ CREATE TABLE admins (
     user_id INT NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
+    profile_picture VARCHAR(255) DEFAULT 'default_avatar.jpg',
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

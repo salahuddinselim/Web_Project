@@ -25,8 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $trainer_user_id = $trainer['user_id'];
+    $member_user_id = $_SESSION['user_id'];
 
-    if (sendMessage($member_id, $trainer_user_id, $message_text)) {
+    if (sendMessage($member_user_id, $trainer_user_id, $message_text)) {
         echo json_encode(['success' => true, 'message' => 'Message sent']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to send message']);

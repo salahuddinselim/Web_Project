@@ -12,13 +12,23 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 $current_page = basename($_SERVER['PHP_SELF']);
 $admin_name = $_SESSION['full_name'] ?? 'Admin';
+$profile_pic = $_SESSION['profile_picture'] ?? 'default_avatar.jpg';
+if (!empty($_SESSION['admin_id'])) {
+    require_once __DIR__ . '/db_functions.php';
+    $admin_data = getAdminProfile($_SESSION['admin_id']);
+    if ($admin_data) {
+        $admin_name = $admin_data['full_name'];
+        $profile_pic = !empty($admin_data['profile_picture']) ? $admin_data['profile_picture'] : 'default_avatar.jpg';
+    }
+}
 ?>
 
 <!-- Sidebar -->
 <div class="sidebar">
     <a href="profile.php" class="user-profile" style="text-decoration: none; color: inherit;">
         <div class="avatar">
-            <img src="/Web_Project/images/default_avatar.jpg" 
+            <img src="../uploads/profile_pics/<?php echo htmlspecialchars($profile_pic); ?>" 
+                 onerror="this.src='../images/default_avatar.jpg';"
                  alt="<?php echo htmlspecialchars($admin_name); ?>" 
                  style="background-color: #ccc; width: 100%; height: 100%; object-fit: cover;" />
         </div>

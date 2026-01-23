@@ -20,7 +20,7 @@ $trainer_user_id = $trainer['user_id'];
 $trainer_picture = $trainer['profile_picture'] ?: 'default_avatar.jpg';
 
 // Get messages
-$messages = getMessages($member_id, $trainer_user_id);
+$messages = getMessages($_SESSION['user_id'], $trainer_user_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -432,7 +432,7 @@ $messages = getMessages($member_id, $trainer_user_id);
 
       if (messageText) {
         // Send message via AJAX
-        fetch('../handlers/send_message.php', {
+        fetch('../handlers/member/send_message.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',

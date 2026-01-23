@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Attempt admin login
         if (login($username, $password, 'admin')) {
-            header("Location: /Web_Project/admin/dashboard.php");
+            header("Location: ../admin/dashboard.php");
             exit();
         } else {
             $error = 'Invalid admin credentials.';
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Store error in session and redirect back
     $_SESSION['login_error'] = $error;
-    header("Location: /Web_Project/admin/login.php");
+    header("Location: ../admin/login.php");
     exit();
 }
 ?>
