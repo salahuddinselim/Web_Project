@@ -205,7 +205,7 @@ unset($_SESSION['login_error']);
           </p>
           
           <p style="color: grey; font-size: 10px; margin-top: 20px">
-            Test credentials: member_afia / password123 or trainer_sarah / password123
+            Test credentials: member_afia / password123 or trainer1 / password123
           </p>
         </form>
       </div>

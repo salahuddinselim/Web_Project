@@ -9,364 +9,636 @@ $members = getTrainerMembers($trainer_id);
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Member Details Trainer</title>
-  <style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Details Trainer</title>
+    <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0e0e0e;
-      color: #ffffff;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0e0e0e;
+        color: #ffffff;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .mainContainer {
-      display: flex;
-      width: 95%;
-      height: 90vh;
-      background-color: #121212;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        width: 95%;
+        height: 90vh;
+        background-color: #121212;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
     /* Sidebar */
     .sidebar {
-      width: 250px;
-      background-color: #0d110d;
-      padding: 30px 20px;
-      border-right: 1px solid #222;
+        width: 250px;
+        background-color: #0d110d;
+        padding: 30px 20px;
+        border-right: 1px solid #222;
     }
 
     .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 50px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
     }
 
     .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #333;
-      overflow: hidden;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #333;
+        overflow: hidden;
     }
 
     .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .user-name {
-      font-weight: bold;
-      font-size: 16px;
+        font-weight: bold;
+        font-size: 16px;
     }
 
     .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
     .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      color: #aaa;
-      text-decoration: none;
-      font-size: 14px;
-      padding: 10px;
-      border-radius: 5px;
-      transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 10px;
+        border-radius: 5px;
+        transition: 0.3s;
     }
 
     .menu-item:hover,
     .menu-item.active {
-      background-color: #1f261f;
-      color: white;
+        background-color: #1f261f;
+        color: white;
     }
 
     .icon {
-      width: 20px;
-      text-align: center;
+        width: 20px;
+        text-align: center;
     }
 
     /* Main Content Styling */
     .mainContent {
-      flex: 1;
-      padding: 40px;
-      overflow-y: auto;
-      background-color: #0e0e0e;
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+        background-color: #0e0e0e;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
     }
 
     .page-header h2 {
-      margin: 0;
-      margin-bottom: 20px;
-      font-size: 24px;
-      font-weight: bold;
+        margin: 0;
+        font-size: 28px;
+        font-weight: bold;
     }
 
-    /* Members List Card */
-    .members-card {
-      background-color: #0d120f;
-      /* Dark background matching image */
-      border: 1px solid #1f2b23;
-      border-radius: 8px;
-      padding: 20px;
+    .header-stats {
+        display: flex;
+        gap: 20px;
     }
 
-    .members-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
+    .stat-box {
+        background-color: #1a201a;
+        padding: 15px 25px;
+        border-radius: 8px;
+        border: 1px solid #2a3830;
+        text-align: center;
     }
 
-    .members-table th {
-      text-align: left;
-      padding: 15px;
-      color: #e5e5e5;
-      border-bottom: 1px solid #2a3830;
-      font-weight: 500;
+    .stat-value {
+        display: block;
+        font-size: 24px;
+        font-weight: bold;
+        color: #00d26a;
+        margin-bottom: 5px;
     }
 
-    .members-table td {
-      padding: 15px;
-      border-bottom: 1px solid #1f2b23;
-      color: #a1a1aa;
-      vertical-align: middle;
+    .stat-label {
+        display: block;
+        font-size: 12px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .members-table tr:hover td {
-      background-color: #111a14;
+    /* Toolbar */
+    .toolbar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        align-items: center;
     }
 
-    .members-table tr:last-child td {
-      border-bottom: none;
+    .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: #1a201a;
+        border: 1px solid #2a3830;
+        border-radius: 8px;
+        padding: 10px 15px;
     }
 
-    /* Status Pills */
-    .status-pill {
-      display: inline-block;
-      padding: 6px 0;
-      width: 120px;
-      text-align: center;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
+    .search-icon {
+        margin-right: 10px;
+        font-size: 16px;
     }
 
-    .status-active {
-      background-color: #1f3b26;
-      /* Dark Green bg */
-      color: #ffffff;
-      border: 1px solid #2a4030;
+    .search-box input {
+        flex: 1;
+        background: none;
+        border: none;
+        color: white;
+        outline: none;
+        font-size: 14px;
     }
 
-    .status-inactive {
-      background-color: transparent;
-      color: #a1a1aa;
-      border: 1px solid #2a3830;
+    .search-box input::placeholder {
+        color: #666;
     }
 
-    /* Buttons & Links */
-    .btn-view {
-      background-color: #2a352a;
-      color: #00d26a;
-      border: 1px solid #00d26a;
-      padding: 5px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: 0.3s;
+    .filter-select {
+        background-color: #1a201a;
+        border: 1px solid #2a3830;
+        border-radius: 8px;
+        padding: 10px 15px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
     }
 
-    .btn-view:hover {
-      background-color: #00d26a;
-      color: black;
+    .filter-select option {
+        background-color: #1a201a;
+        color: white;
     }
 
-    .progress-link {
-      color: #00d26a;
-      text-decoration: underline;
-      cursor: pointer;
-      font-weight: 500;
+    /* Members Grid */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
     }
 
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.7);
-      align-items: center;
-      justify-content: center;
+    /* Member Card */
+    .member-card {
+        background-color: #1a201a;
+        border: 1px solid #2a3830;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
     }
 
-    .modal-content {
-      background-color: #1a201a;
-      margin: auto;
-      padding: 30px;
-      border: 1px solid #333;
-      width: 50%;
-      max-width: 600px;
-      border-radius: 8px;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    .member-card:hover {
+        transform: translateY(-5px);
+        border-color: #00d26a;
+        box-shadow: 0 10px 30px rgba(0, 210, 106, 0.1);
     }
 
-    .close-btn {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
+    /* Card Header */
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #2a3830;
     }
 
-    .close-btn:hover,
-    .close-btn:focus {
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
+    .member-avatar {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #00d26a;
     }
 
-    .modal-header {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 10px;
+    .member-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .modal-textarea {
-      width: 100%;
-      height: 150px;
-      background-color: #0d110d;
-      color: #ddd;
-      border: 1px solid #333;
-      padding: 10px;
-      border-radius: 4px;
-      resize: vertical;
-      margin-bottom: 20px;
-      font-family: inherit;
+    .status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #1a201a;
     }
-  </style>
+
+    .status-dot.active {
+        background-color: #00d26a;
+    }
+
+    .member-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .membership-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        background-color: #2a352a;
+        color: #00d26a;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Card Stats */
+    .card-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .stat-item {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #15201a;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .stat-icon {
+        font-size: 20px;
+    }
+
+    .stat-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-number {
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        line-height: 1;
+    }
+
+    .stat-text {
+        font-size: 10px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Card Actions */
+    .card-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid #2a3830;
+        background-color: transparent;
+        color: #aaa;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .action-btn:hover {
+        background-color: #2a3830;
+        color: white;
+        border-color: #00d26a;
+    }
+
+    .btn-primary {
+        grid-column: 1 / -1;
+        background-color: #2a352a;
+        border-color: #00d26a;
+        color: #00d26a;
+    }
+
+    .btn-primary:hover {
+        background-color: #00d26a;
+        color: black;
+    }
+
+    .btn-chat {
+        grid-column: 1 / -1;
+    }
+
+    .btn-icon {
+        font-size: 14px;
+    }
+
+    .btn-text {
+        font-size: 12px;
+    }
+
+    .count-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #00d26a;
+        color: black;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    /* Empty State */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background-color: #1a201a;
+        border: 1px dashed #2a3830;
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #ccc;
+    }
+
+    .empty-state p {
+        color: #888;
+        font-size: 14px;
+    }
+    </style>
 </head>
 
 <body>
-  <div class="mainContainer">
-    <?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
+    <div class="mainContainer">
+        <?php include __DIR__ . '/../includes/trainer_sidebar.php'; ?>
 
-    <!-- Main Content -->
-    <div class="mainContent">
-      <div class="page-header">
-        <h2>Assigned Members</h2>
-      </div>
+        <!-- Main Content -->
+        <div class="mainContent">
+            <!-- Page Header with Stats -->
+            <div class="page-header">
+                <h2>My Members</h2>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <span class="stat-value"><?php echo count($members); ?></span>
+                        <span class="stat-label">Total Members</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value"><?php echo count(array_filter($members, function ($m) {
+                                    return true;
+                                  })); ?></span>
+                        <span class="stat-label">Active</span>
+                    </div>
+                </div>
+            </div>
 
-      <div class="members-card">
-        <table class="members-table">
-          <thead>
-            <tr>
-              <th width="15%">Name</th>
-              <th width="25%">Diet Plan</th>
-              <th width="25%">Yoga Routine</th>
-              <th width="25%">Progress</th>
-              <th width="10%">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (empty($members)): ?>
-              <tr>
-                <td colspan="5" style="text-align: center; padding: 30px;">No members assigned to you yet.</td>
-              </tr>
-            <?php else: ?>
-              <?php foreach ($members as $m):
-                // Get member's diet plans and routines for modal display
-                $dietPlans = getMemberDietPlans($m['member_id'], null);
-                $routines = getMemberRoutines($m['member_id'], true);
-                $dietDesc = !empty($dietPlans) ? 'Diet plan last updated: ' . date('M d, Y') : 'No active diet plan assigned.';
-                $routineDesc = !empty($routines) ? count($routines) . ' routine(s) assigned' : 'No routines assigned yet.';
-              ?>
-                <tr>
-                  <td><strong><?php echo htmlspecialchars($m['full_name']); ?></strong><br>
-                    <span class="status-pill status-active"
-                      style="margin-top:5px; width:auto; padding: 2px 8px; font-size: 10px;">
-                      Active</span>
-                  </td>
-                  <td><button class="btn-view"
-                      onclick="openModal('Diet Plan', '<?php echo addslashes($m['full_name']); ?>', '<?php echo addslashes($dietDesc); ?>')">View</button>
-                  </td>
-                  <td><button class="btn-view"
-                      onclick="openModal('Yoga Routine', '<?php echo addslashes($m['full_name']); ?>', '<?php echo addslashes($routineDesc); ?>')">View</button>
-                  </td>
-                  <td><span class="progress-link"
-                      onclick="openModal('Progress', '<?php echo addslashes($m['full_name']); ?>', 'Tracking member progress over time.')">View</span>
-                  </td>
-                  <td><button class="btn-view" style="color: #00d26a; border-color: #00d26a;" onclick="alert('Member data saved.')">Save</button></td>
-                </tr>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
+            <!-- Search and Filter Bar -->
+            <div class="toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search members by name..."
+                        onkeyup="filterMembers()">
+                </div>
+                <div class="filter-group">
+                    <select id="filterStatus" onchange="filterMembers()" class="filter-select">
+                        <option value="all">All Members</option>
+                        <option value="active">Active Only</option>
+                        <option value="with-routine">Has Routines</option>
+                        <option value="with-diet">Has Diet Plan</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Members Grid -->
+            <div class="members-grid" id="membersGrid">
+                <?php if (empty($members)): ?>
+                <div class="empty-state">
+                    <div class="empty-icon">👥</div>
+                    <h3>No Members Assigned</h3>
+                    <p>You don't have any members assigned to you yet.</p>
+                </div>
+                <?php else: ?>
+                <?php foreach ($members as $m):
+            // Get member's data
+            $dietPlans = getMemberDietPlans($m['member_id'], null);
+            $routines = getMemberRoutines($m['member_id'], true);
+            $routineCount = count($routines);
+            $dietCount = count($dietPlans);
+            $profilePic = !empty($m['profile_picture']) ? '../uploads/profile_pics/' . $m['profile_picture'] : '../images/default_avatar.jpg';
+          ?>
+                <div class="member-card" data-name="<?php echo strtolower($m['full_name']); ?>"
+                    data-has-routine="<?php echo $routineCount > 0 ? 'yes' : 'no'; ?>"
+                    data-has-diet="<?php echo $dietCount > 0 ? 'yes' : 'no'; ?>">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="member-avatar">
+                            <img src="<?php echo htmlspecialchars($profilePic); ?>"
+                                alt="<?php echo htmlspecialchars($m['full_name']); ?>">
+                            <div class="status-dot active"></div>
+                        </div>
+                        <div class="member-info">
+                            <h3><?php echo htmlspecialchars($m['full_name']); ?></h3>
+                            <span
+                                class="membership-badge"><?php echo ucfirst($m['membership_type'] ?? 'Basic'); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-icon">🧘</span>
+                            <div class="stat-content">
+                                <span class="stat-number"><?php echo $routineCount; ?></span>
+                                <span class="stat-text">Routines</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">🥗</span>
+                            <div class="stat-content">
+                                <span class="stat-number"><?php echo $dietCount; ?></span>
+                                <span class="stat-text">Diet Plans</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">📊</span>
+                            <div class="stat-content">
+                                <span class="stat-number">--</span>
+                                <span class="stat-text">Progress</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-actions">
+                        <button class="action-btn btn-primary"
+                            onclick="viewMemberDetails(<?php echo $m['member_id']; ?>, '<?php echo addslashes($m['full_name']); ?>')">
+                            <span class="btn-icon">👤</span>
+                            <span class="btn-text">Profile</span>
+                        </button>
+                        <button class="action-btn btn-secondary"
+                            onclick="manageRoutines(<?php echo $m['member_id']; ?>, '<?php echo addslashes($m['full_name']); ?>', <?php echo $routineCount; ?>)">
+                            <span class="btn-icon">🧘</span>
+                            <span class="btn-text">Routines</span>
+                            <?php if ($routineCount > 0): ?>
+                            <span class="count-badge"><?php echo $routineCount; ?></span>
+                            <?php endif; ?>
+                        </button>
+                        <button class="action-btn btn-secondary"
+                            onclick="manageDiet(<?php echo $m['member_id']; ?>, '<?php echo addslashes($m['full_name']); ?>', <?php echo $dietCount; ?>)">
+                            <span class="btn-icon">🥗</span>
+                            <span class="btn-text">Diet</span>
+                            <?php if ($dietCount > 0): ?>
+                            <span class="count-badge"><?php echo $dietCount; ?></span>
+                            <?php endif; ?>
+                        </button>
+                        <button class="action-btn btn-secondary"
+                            onclick="viewProgress(<?php echo $m['member_id']; ?>, '<?php echo addslashes($m['full_name']); ?>')">
+                            <span class="btn-icon">📈</span>
+                            <span class="btn-text">Progress</span>
+                        </button>
+                        <button class="action-btn btn-chat"
+                            onclick="window.location.href='chat.php?member_id=<?php echo $m['user_id']; ?>'">
+                            <span class="btn-icon">💬</span>
+                            <span class="btn-text">Chat</span>
+                        </button>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Edit/View Modal -->
-  <div id="detailsModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <div class="modal-header">
-        <h2 id="modalTitle">Details</h2>
-        <p style="color: #888; font-size: 14px; margin-top: 5px;" id="modalSubtitle">Member Name</p>
-      </div>
-      <textarea id="modalText" class="modal-textarea"></textarea>
-      <div style="text-align: right;">
-        <button class="btn-view" style="color: white; border-color: #555; margin-right: 10px;"
-          onclick="closeModal()">Cancel</button>
-        <button class="btn-view" style="background-color: #00d26a; color: black; border: none; font-weight: bold;"
-          onclick="saveModalChanges()">Save Changes</button>
-      </div>
-    </div>
-  </div>
+    <script>
+    // Filter members by search and status
+    function filterMembers() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filterStatus = document.getElementById('filterStatus').value;
+        const cards = document.querySelectorAll('.member-card');
 
-  <script>
-    const modal = document.getElementById("detailsModal");
-    const titleEl = document.getElementById("modalTitle");
-    const subTitleEl = document.getElementById("modalSubtitle");
-    const textEl = document.getElementById("modalText");
+        let visibleCount = 0;
 
-    function openModal(type, name, content) {
-      modal.style.display = "flex";
-      titleEl.innerText = "Edit " + type;
-      subTitleEl.innerText = "For Member: " + name;
-      textEl.value = content;
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const hasRoutine = card.getAttribute('data-has-routine');
+            const hasDiet = card.getAttribute('data-has-diet');
+
+            let matchesSearch = name.includes(searchTerm);
+            let matchesFilter = true;
+
+            if (filterStatus === 'with-routine') {
+                matchesFilter = hasRoutine === 'yes';
+            } else if (filterStatus === 'with-diet') {
+                matchesFilter = hasDiet === 'yes';
+            }
+
+            if (matchesSearch && matchesFilter) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
     }
 
-    function closeModal() {
-      modal.style.display = "none";
+    // View member profile details
+    function viewMemberDetails(memberId, memberName) {
+        alert(
+            `Viewing profile for: ${memberName}\nMember ID: ${memberId}\n\nThis would open a detailed profile modal or navigate to profile page.`
+            );
+        // TODO: Navigate to profile page or open detailed modal
+        // window.location.href = `profile.php?member_id=${memberId}`;
     }
 
-    function saveModalChanges() {
-      // Logic to save changes would go here
-      alert("Changes saved successfully!");
-      closeModal();
+    // Manage member routines
+    function manageRoutines(memberId, memberName, routineCount) {
+        if (routineCount > 0) {
+            alert(`${memberName} has ${routineCount} routine(s).\n\nThis would open the routines management page.`);
+            // TODO: Navigate to routines page
+            // window.location.href = `routine.php?member_id=${memberId}`;
+        } else {
+            const assign = confirm(
+                `${memberName} has no routines assigned.\n\nWould you like to assign a routine now?`);
+            if (assign) {
+                // TODO: Navigate to routine assignment page
+                alert('Redirecting to routine assignment...');
+            }
+        }
     }
 
-    // Close if clicked outside
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        closeModal();
-      }
+    // Manage member diet plans
+    function manageDiet(memberId, memberName, dietCount) {
+        if (dietCount > 0) {
+            alert(`${memberName} has ${dietCount} diet plan(s).\n\nThis would open the diet management page.`);
+            // TODO: Navigate to diet page
+            // window.location.href = `diet_plan.php?member_id=${memberId}`;
+        } else {
+            const assign = confirm(`${memberName} has no diet plans.\n\nWould you like to create a diet plan now?`);
+            if (assign) {
+                // TODO: Navigate to diet creation page
+                alert('Redirecting to diet plan creation...');
+            }
+        }
     }
-  </script>
+
+    // View member progress
+    function viewProgress(memberId, memberName) {
+        alert(
+            `Viewing progress for: ${memberName}\n\nThis would open the progress tracking page with charts and metrics.`
+            );
+        // TODO: Navigate to progress page
+        // window.location.href = `progress_logs.php?member_id=${memberId}`;
+    }
+    </script>
 </body>
 
 </html>

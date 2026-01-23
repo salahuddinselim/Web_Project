@@ -4,13 +4,13 @@ USE pranayom_db;
 -- USERS (Password: password123 for all)
 -- =====================================================
 INSERT INTO users (username, password_hash, email, role) VALUES
-('admin1','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','admin@pranayom.com','admin'),
-('trainer1','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','trainer1@pranayom.com','trainer'),
-('trainer2','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','trainer2@pranayom.com','trainer'),
-('member1','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member1@pranayom.com','member'),
-('member2','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member2@pranayom.com','member'),
-('member3','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member3@pranayom.com','member'),
-('member_afia','$2y$10$e0MYzXyjpJS7Pd0RVvHwHeFpDMJcJYrKZRV7z1p9qJfLQqQY7qJVq','member_afia@pranayom.com','member');
+('admin1','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','admin@pranayom.com','admin'),
+('trainer1','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','trainer1@pranayom.com','trainer'),
+('trainer2','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','trainer2@pranayom.com','trainer'),
+('member1','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','member1@pranayom.com','member'),
+('member2','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','member2@pranayom.com','member'),
+('member3','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','member3@pranayom.com','member'),
+('member_afia','$2y$10$mqOP7JhTdI4AvDqVQXGIhuBOMVffN3yRf3UHHzg4bem1zWEjZAJcm','member_afia@pranayom.com','member');
 
 -- =====================================================
 -- ADMINS
