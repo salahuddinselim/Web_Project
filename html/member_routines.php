@@ -4,6 +4,38 @@ require_once __DIR__ . '/../includes/db_functions.php';
 requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
+
+// Fetch routines
+$routines = getMemberRoutines($member_id);
+
+// Fetch attendance for this week (Sun-Sat)
+$today = date('Y-m-d');
+$startOfWeek = date('Y-m-d', strtotime('last sunday', strtotime($today)));
+$endOfWeek = date('Y-m-d', strtotime('next saturday', strtotime($today)));
+$attendance = getMemberAttendance($member_id, 100);
+$daysCompleted = 0;
+$totalMinutes = 0;
+$streak = 0;
+$weekAttendance = [];
+foreach ($attendance as $a) {
+  $date = $a['booking_date'];
+  if ($date >= $startOfWeek && $date <= $endOfWeek) {
+    $daysCompleted++;
+    $totalMinutes += $a['duration_minutes'];
+    $weekAttendance[$date] = true;
+  }
+}
+// Calculate streak (consecutive days up to today)
+$streak = 0;
+for ($i = 0; $i < 7; $i++) {
+  $d = date('Y-m-d', strtotime("-$i day", strtotime($today)));
+  if (isset($weekAttendance[$d])) {
+    $streak++;
+  } else {
+    break;
+  }
+}
+$weekProgress = round(($daysCompleted / 7) * 100);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -875,27 +907,27 @@ $member_name = $_SESSION['full_name'];
       <div class="progress-stats">
         <div class="stat-item">
           <span class="stat-label">Days Completed</span>
-          <span class="stat-value" id="completedCount">3/7</span>
+          <span class="stat-value" id="completedCount"><?php echo $daysCompleted; ?>/7</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Current Streak</span>
-          <span class="stat-value">🔥 5 days</span>
+          <span class="stat-value">🔥 <?php echo $streak; ?> days</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Total Minutes</span>
-          <span class="stat-value">145 min</span>
+          <span class="stat-value"><?php echo $totalMinutes; ?> min</span>
         </div>
       </div>
       <div class="progress-bar-container">
         <div class="progress-bar-label">
           <span>Week Progress</span>
-          <span id="weekProgress">43%</span>
+          <span id="weekProgress"><?php echo $weekProgress; ?>%</span>
         </div>
         <div class="progress-bar">
           <div
             class="progress-bar-fill"
             id="progressFill"
-            style="width: 43%"></div>
+            style="width: <?php echo $weekProgress; ?>%"></div>
         </div>
       </div>
     </div>
@@ -1111,7 +1143,7 @@ $member_name = $_SESSION['full_name'];
       const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
       const today = new Date();
 
-      // Empty days before first day
+      // Empty days before first day (Sunday = 0)
       for (let i = 0; i < firstDay; i++) {
         const day = document.createElement("div");
         day.className = "cal-day empty";
@@ -1133,7 +1165,7 @@ $member_name = $_SESSION['full_name'];
           day.classList.add("today");
         }
 
-        // Add indicator for days with routines (first 7 days of month for demo)
+        // Mark yoga/class days from day 1 (not day 4)
         if (i <= 7) {
           day.classList.add("has-routine");
         }
