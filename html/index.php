@@ -20,9 +20,7 @@
           <li><a href="trainers.php">Trainers</a></li>
           <li><a href="contact.php">Contact</a></li>
         </div>
-        <button class="btn-login" onclick="window.location.href = 'login.php'">
-          Login
-        </button>
+        <a href="login.php" class="btn-login">Login</a>
       </div>
 
       <!-- Content Section -->
