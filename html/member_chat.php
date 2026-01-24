@@ -11,16 +11,20 @@ $stmt = $pdo->prepare("SELECT t.trainer_id, t.full_name, t.user_id, t.profile_pi
 $stmt->execute([$member_id]);
 $trainer = $stmt->fetch();
 
+$no_trainer = false;
+$trainer_name = '';
+$trainer_user_id = 0;
+$trainer_picture = 'default_avatar.jpg';
+$messages = [];
+
 if (!$trainer) {
-  die("No assigned trainer found. Please contact admin.");
+    $no_trainer = true;
+} else {
+    $trainer_name = $trainer['full_name'];
+    $trainer_user_id = $trainer['user_id'];
+    $trainer_picture = $trainer['profile_picture'] ?: 'default_avatar.jpg';
+    $messages = getMessages($_SESSION['user_id'], $trainer_user_id);
 }
-
-$trainer_name = $trainer['full_name'];
-$trainer_user_id = $trainer['user_id'];
-$trainer_picture = $trainer['profile_picture'] ?: 'default_avatar.jpg';
-
-// Get messages
-$messages = getMessages($_SESSION['user_id'], $trainer_user_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -350,6 +354,18 @@ $messages = getMessages($_SESSION['user_id'], $trainer_user_id);
 </head>
 
 <body>
+  <?php if ($no_trainer): ?>
+  <!-- No Trainer Modal -->
+  <div id="noTrainerModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;">
+    <div style="background:#1a201a;padding:40px;border-radius:12px;text-align:center;max-width:400px;border:1px solid #00d26a;">
+      <div style="font-size:64px;margin-bottom:20px;">⚠️</div>
+      <h2 style="color:#00d26a;margin-bottom:15px;">No Trainer Assigned</h2>
+      <p style="color:#aaa;margin-bottom:25px;line-height:1.6;">You don't have a trainer assigned yet. Please contact the administrator to get a trainer assigned to your account.</p>
+      <a href="member_dashboard.php" style="display:inline-block;background:#00d26a;color:black;padding:12px 30px;border-radius:8px;text-decoration:none;font-weight:bold;">Go to Dashboard</a>
+    </div>
+  </div>
+  <?php endif; ?>
+  
   <?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
 
   <!-- Chat Container -->

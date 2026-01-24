@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db_functions.php';
-require_once __DIR__ . '/../../includes/fpdf/fpdf.php';
+require_once __DIR__ . '/../../includes/fpdf.php';
 requireLogin('trainer');
 
 $member_id = isset($_GET['member_id']) ? intval($_GET['member_id']) : 0;
@@ -93,4 +93,12 @@ if ($report_type === 'Attendance Report' && !empty($data['attendance'])) {
         $pdf->Ln(3);
     }
 }
-$pdf->Output('I', 'member_report.pdf');
+$filename = 'member_report_' . $member_id . '_' . date('Ymd') . '.pdf';
+header('Content-Type: application/pdf');
+header('Content-Disposition: attachment; filename="' . $filename . '"');
+header('Cache-Control: no-cache, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+$pdf->Output('D', $filename);
+exit();

@@ -415,6 +415,106 @@ $members = getTrainerMembers($trainer_id);
         color: #888;
         font-size: 14px;
     }
+
+    /* Member Detail Modal */
+    .member-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .member-modal.active {
+        display: flex;
+    }
+    .modal-content {
+        background: #1a201a;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 700px;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid #2a3830;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid #2a3830;
+        background: #15201a;
+    }
+    .modal-header h3 {
+        margin: 0;
+        color: #00d26a;
+        font-size: 18px;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .modal-close:hover {
+        color: #fff;
+    }
+    .modal-body {
+        padding: 25px;
+    }
+    .modal-body .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .modal-body .data-table th,
+    .modal-body .data-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #2a3830;
+    }
+    .modal-body .data-table th {
+        background: #15201a;
+        color: #00d26a;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .modal-body .data-table td {
+        color: #ccc;
+        font-size: 14px;
+    }
+    .modal-body .empty-msg {
+        text-align: center;
+        color: #888;
+        padding: 40px;
+    }
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .profile-item {
+        background: #15201a;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .profile-item label {
+        display: block;
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    .profile-item span {
+        font-size: 16px;
+        color: #fff;
+    }
     </style>
 </head>
 
@@ -554,6 +654,17 @@ $members = getTrainerMembers($trainer_id);
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
+    </div>
+
+    <!-- Member Detail Modal -->
+    <div id="memberModal" class="member-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Member Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="empty-msg">Loading...</div>
             </div>
         </div>
     </div>
@@ -590,53 +701,115 @@ $members = getTrainerMembers($trainer_id);
         });
     }
 
+    function openModal(title) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = '<div class="empty-msg">Loading...</div>';
+        document.getElementById('memberModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('memberModal').classList.remove('active');
+    }
+
+    // Close modal on outside click
+    document.getElementById('memberModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
     // View member profile details
     function viewMemberDetails(memberId, memberName) {
-        alert(
-            `Viewing profile for: ${memberName}\nMember ID: ${memberId}\n\nThis would open a detailed profile modal or navigate to profile page.`
-            );
-        // TODO: Navigate to profile page or open detailed modal
-        // window.location.href = `profile.php?member_id=${memberId}`;
+        openModal('Profile: ' + memberName);
+        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=profile')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
+                    return;
+                }
+                const m = data.member;
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="profile-grid">
+                        <div class="profile-item"><label>Full Name</label><span>${m.full_name || '-'}</span></div>
+                        <div class="profile-item"><label>Email</label><span>${m.email || '-'}</span></div>
+                        <div class="profile-item"><label>Phone</label><span>${m.phone || '-'}</span></div>
+                        <div class="profile-item"><label>Membership</label><span>${m.membership_type || 'Basic'}</span></div>
+                        <div class="profile-item"><label>Join Date</label><span>${m.join_date || '-'}</span></div>
+                        <div class="profile-item"><label>Gender</label><span>${m.gender || '-'}</span></div>
+                    </div>
+                `;
+            });
     }
 
     // Manage member routines
     function manageRoutines(memberId, memberName, routineCount) {
-        if (routineCount > 0) {
-            alert(`${memberName} has ${routineCount} routine(s).\n\nThis would open the routines management page.`);
-            // TODO: Navigate to routines page
-            // window.location.href = `routine.php?member_id=${memberId}`;
-        } else {
-            const assign = confirm(
-                `${memberName} has no routines assigned.\n\nWould you like to assign a routine now?`);
-            if (assign) {
-                // TODO: Navigate to routine assignment page
-                alert('Redirecting to routine assignment...');
-            }
-        }
+        openModal('Routines: ' + memberName);
+        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=routines')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
+                    return;
+                }
+                const routines = data.routines || [];
+                if (routines.length === 0) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No routines assigned yet.</div>';
+                    return;
+                }
+                let html = '<table class="data-table"><thead><tr><th>Title</th><th>Type</th><th>Difficulty</th><th>Duration</th></tr></thead><tbody>';
+                routines.forEach(r => {
+                    html += `<tr><td>${r.title || '-'}</td><td>${r.routine_type || '-'}</td><td>${r.difficulty_level || '-'}</td><td>${r.duration_minutes || '-'} min</td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('modalBody').innerHTML = html;
+            });
     }
 
     // Manage member diet plans
     function manageDiet(memberId, memberName, dietCount) {
-        if (dietCount > 0) {
-            alert(`${memberName} has ${dietCount} diet plan(s).\n\nThis would open the diet management page.`);
-            // TODO: Navigate to diet page
-            // window.location.href = `diet_plan.php?member_id=${memberId}`;
-        } else {
-            const assign = confirm(`${memberName} has no diet plans.\n\nWould you like to create a diet plan now?`);
-            if (assign) {
-                // TODO: Navigate to diet creation page
-                alert('Redirecting to diet plan creation...');
-            }
-        }
+        openModal('Diet Plans: ' + memberName);
+        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=diet')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
+                    return;
+                }
+                const plans = data.diet_plans || [];
+                if (plans.length === 0) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No diet plans assigned yet.</div>';
+                    return;
+                }
+                let html = '<table class="data-table"><thead><tr><th>Date</th><th>Meal Time</th><th>Meal Name</th><th>Calories</th></tr></thead><tbody>';
+                plans.forEach(p => {
+                    html += `<tr><td>${p.plan_date || '-'}</td><td>${p.meal_time || '-'}</td><td>${p.meal_name || '-'}</td><td>${p.calories || '-'}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('modalBody').innerHTML = html;
+            });
     }
 
     // View member progress
     function viewProgress(memberId, memberName) {
-        alert(
-            `Viewing progress for: ${memberName}\n\nThis would open the progress tracking page with charts and metrics.`
-            );
-        // TODO: Navigate to progress page
-        // window.location.href = `progress_logs.php?member_id=${memberId}`;
+        openModal('Progress: ' + memberName);
+        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=progress')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
+                    return;
+                }
+                const progress = data.progress || [];
+                if (progress.length === 0) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No progress data logged yet.</div>';
+                    return;
+                }
+                let html = '<table class="data-table"><thead><tr><th>Date</th><th>Weight (kg)</th><th>Heart Rate</th><th>Sleep (hrs)</th><th>Mood</th></tr></thead><tbody>';
+                progress.forEach(p => {
+                    html += `<tr><td>${p.tracking_date || '-'}</td><td>${p.weight_kg || '-'}</td><td>${p.heart_rate || '-'}</td><td>${p.sleep_hours || '-'}</td><td>${p.mood || '-'}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('modalBody').innerHTML = html;
+            });
     }
     </script>
 </body>

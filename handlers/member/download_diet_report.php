@@ -12,11 +12,11 @@ $plans = getMemberDietPlans($member_id, null);
 // Create PDF
 $pdf = new FPDF();
 $pdf->AddPage();
-$pdf->SetFont('Courier', 'B', 16);
+$pdf->SetFont('Arial', 'B', 16);
 $pdf->Cell(0, 10, 'Diet Plan Report for ' . $member_name, 0, 1, 'C');
 $pdf->Ln(10);
 
-$pdf->SetFont('Courier', '', 12);
+$pdf->SetFont('Arial', '', 12);
 $pdf->Cell(30, 10, 'Date', 1);
 $pdf->Cell(25, 10, 'Meal Time', 1);
 $pdf->Cell(40, 10, 'Meal Name', 1);
@@ -24,7 +24,7 @@ $pdf->Cell(20, 10, 'Calories', 1);
 $pdf->Cell(0, 10, 'Food Items', 1);
 $pdf->Ln();
 
-$pdf->SetFont('Courier', '', 10);
+$pdf->SetFont('Arial', '', 10);
 foreach ($plans as $plan) {
     $pdf->Cell(30, 10, $plan['plan_date'], 1);
     $pdf->Cell(25, 10, ucfirst($plan['meal_time']), 1);
@@ -36,6 +36,7 @@ foreach ($plans as $plan) {
 $filename = "Diet_Plan_" . date('Y-m-d') . ".pdf";
 header('Content-Type: application/pdf');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
+header('Cache-Control: no-cache, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 

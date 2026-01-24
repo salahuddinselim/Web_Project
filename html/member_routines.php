@@ -997,7 +997,7 @@ $weekProgress = round(($daysCompleted / 7) * 100);
                       echo json_encode($phpRoutineData);
                       ?>;
 
-    let selectedDay = 4; // Current day (ongoing)
+    let selectedDay = 1; // Current day (ongoing)
 
     // Generate Day Buttons
     function renderDaySelector() {

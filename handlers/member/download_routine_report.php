@@ -64,5 +64,11 @@ foreach ($progress as $p) {
 }
 
 $filename = "Routine_Report_" . date('Y-m-d') . ".pdf";
+header('Content-Type: application/pdf');
+header('Content-Disposition: attachment; filename="' . $filename . '"');
+header('Cache-Control: no-cache, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 $pdf->Output('D', $filename);
 exit();
