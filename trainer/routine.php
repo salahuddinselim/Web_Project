@@ -12,23 +12,29 @@ $members = getTrainerMembers($trainer_id);
 $success_message = '';
 $error_message = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $member_id = $_POST['member_id'] ?? '';
-    $title = $_POST['title'] ?? '';
-    $description = $_POST['description'] ?? '';
-    $exercises_json = $_POST['exercises_json'] ?? '[]';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $member_id = $_POST['member_id'] ?? '';
+        $title = $_POST['title'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $exercises_json = $_POST['exercises_json'] ?? '[]';
+        
+        $selected_day = intval($_POST['target_day'] ?? 1);
+        // Calculate date: Monday of this week + (selected_day - 1)
+        $monday = date('Y-m-d', strtotime('monday this week'));
+        $scheduled_date = date('Y-m-d', strtotime("+" . ($selected_day - 1) . " days", strtotime($monday)));
     
     if (empty($member_id) || empty($title)) {
         $error_message = "Please select a member and provide a routine title.";
     } else {
         try {
-            $stmt = $pdo->prepare("INSERT INTO routines (member_id, trainer_id, title, description, exercises, is_active) VALUES (?, ?, ?, ?, ?, 1)");
+            $stmt = $pdo->prepare("INSERT INTO routines (member_id, trainer_id, title, description, exercises, is_active, scheduled_date) VALUES (?, ?, ?, ?, ?, 1, ?)");
             $stmt->execute([
                 $member_id,
                 $trainer_id,
                 $title,
                 $description,
-                $exercises_json
+                $exercises_json,
+                $scheduled_date
             ]);
             $success_message = "Routine created successfully!";
         } catch (PDOException $e) {
@@ -299,6 +305,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="form-group">
           <label class="form-label">Routine Description</label>
           <textarea name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target Day (7-Day Cycle)</label>
+          <select name="target_day" class="form-control" required>
+            <?php 
+              $days_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+              for($i = 1; $i <= 7; $i++): ?>
+                <option value="<?php echo $i; ?>">Day <?php echo $i; ?> - <?php echo $days_labels[$i-1]; ?></option>
+            <?php endfor; ?>
+          </select>
+          <small style="color: #888; font-size: 11px;">Mapped to the current week (<?php echo date('M d', strtotime('monday this week')); ?> to <?php echo date('M d', strtotime('sunday this week')); ?>)</small>
         </div>
 
         <div class="section-title">Meditations</div>

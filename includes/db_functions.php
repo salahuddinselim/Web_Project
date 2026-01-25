@@ -28,7 +28,15 @@ require_once __DIR__ . '/../config/database.php';
 function getUserById($user_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+    // Join with role tables to get profile info (full_name, profile_picture)
+    $stmt = $pdo->prepare("SELECT u.*, 
+                          COALESCE(m.full_name, t.full_name, a.full_name) as full_name,
+                          COALESCE(m.profile_picture, t.profile_picture, a.profile_picture) as profile_picture
+                          FROM users u 
+                          LEFT JOIN members m ON u.user_id = m.user_id
+                          LEFT JOIN trainers t ON u.user_id = t.user_id
+                          LEFT JOIN admins a ON u.user_id = a.user_id
+                          WHERE u.user_id = ?");
     $stmt->execute([$user_id]);
     return $stmt->fetch();
 }
@@ -326,6 +334,118 @@ function sendMessage($sender_id, $receiver_id, $message_text)
     return $stmt->execute([$sender_id, $receiver_id, $message_text]);
 }
 /**
+ * Get member's calorie summary for a specific date
+ */
+function getMemberCalorieSummary($member_id, $date = null) {
+    global $pdo;
+    if (!$date) $date = date('Y-m-d');
+    
+    // Total planned (everything for that day)
+    $stmt = $pdo->prepare("SELECT 
+        SUM(calories) as planned_calories, 
+        SUM(protein_grams) as planned_protein, 
+        SUM(carbs_grams) as planned_carbs, 
+        SUM(fat_grams) as planned_fat 
+        FROM diet_plans WHERE member_id = ? AND plan_date = ?");
+    $stmt->execute([$member_id, $date]);
+    $planned = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Total consumed (only where is_consumed = 1)
+    $stmt = $pdo->prepare("SELECT 
+        SUM(calories) as taken_calories, 
+        SUM(protein_grams) as taken_protein, 
+        SUM(carbs_grams) as taken_carbs, 
+        SUM(fat_grams) as taken_fat 
+        FROM diet_plans WHERE member_id = ? AND plan_date = ? AND is_consumed = 1");
+    $stmt->execute([$member_id, $date]);
+    $taken = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return array_merge($planned, $taken);
+}
+
+/**
+ * Get member's yoga session time for a date range
+ */
+function getMemberYogaSummary($member_id, $start_date, $end_date) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT SUM(duration_minutes) as total_minutes FROM yoga_sessions WHERE member_id = ? AND session_date BETWEEN ? AND ?");
+    $stmt->execute([$member_id, $start_date, $end_date]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total_minutes'] ?? 0;
+}
+
+/**
+ * Get all yoga sessions for a member
+ */
+function getMemberYogaSessions($member_id, $limit = 30) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM yoga_sessions WHERE member_id = ? ORDER BY session_date DESC LIMIT ?");
+    $stmt->execute([$member_id, $limit]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Function to update diet plan
+ */
+function updateDietPlan($diet_plan_id, $trainer_id, $data) {
+    global $pdo;
+    // Allow update if it's the trainer's plan OR if the plan belongs to a member assigned to this trainer
+    $stmt = $pdo->prepare("UPDATE diet_plans d 
+                          SET d.meal_name = ?, d.food_items = ?, d.calories = ?, d.protein_grams = ?, d.carbs_grams = ?, d.fat_grams = ?, d.plan_date = ?, d.product_weight = ? 
+                          WHERE d.diet_plan_id = ? 
+                          AND (d.trainer_id = ? OR d.member_id IN (SELECT member_id FROM members WHERE trainer_id = ?))");
+    return $stmt->execute([
+        $data['meal_name'],
+        $data['food_items'],
+        $data['calories'],
+        $data['protein_grams'],
+        $data['carbs_grams'],
+        $data['fat_grams'],
+        $data['plan_date'],
+        $data['product_weight'] ?? 0,
+        $diet_plan_id,
+        $trainer_id,
+        $trainer_id
+    ]);
+}
+
+/**
+ * Function to delete diet plan
+ */
+function deleteDietPlan($diet_plan_id, $trainer_id) {
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM diet_plans 
+                          WHERE diet_plan_id = ? 
+                          AND (trainer_id = ? OR member_id IN (SELECT member_id FROM members WHERE trainer_id = ?))");
+    return $stmt->execute([$diet_plan_id, $trainer_id, $trainer_id]);
+}
+
+/**
+ * Function to update routine
+ */
+function updateRoutine($routine_id, $trainer_id, $data) {
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE routines SET title = ?, description = ?, exercises = ?, scheduled_date = ? WHERE routine_id = ? AND trainer_id = ?");
+    return $stmt->execute([
+        $data['title'],
+        $data['description'],
+        $data['exercises'],
+        $data['scheduled_date'],
+        $routine_id,
+        $trainer_id
+    ]);
+}
+
+/**
+ * Function to delete routine
+ */
+function deleteRoutine($routine_id, $trainer_id) {
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM routines WHERE routine_id = ? AND trainer_id = ?");
+    return $stmt->execute([$routine_id, $trainer_id]);
+}
+
+/**
  * Get trainer's uploaded content
  */
 function getTrainerContent($trainer_id)
@@ -333,5 +453,5 @@ function getTrainerContent($trainer_id)
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM workout_content WHERE trainer_id = ? ORDER BY created_at DESC");
     $stmt->execute([$trainer_id]);
-    return $stmt->fetchAll();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

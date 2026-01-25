@@ -38,15 +38,23 @@ $response = [
 switch ($data_type) {
     case 'profile':
         // Profile data already in $response['member']
+        $response['calorie_summary'] = getMemberCalorieSummary($member_id, date('Y-m-d'));
+        $response['yoga_time'] = getMemberYogaSummary($member_id, date('Y-m-d'), date('Y-m-d'));
         break;
     case 'diet':
         $response['diet_plans'] = getMemberDietPlans($member_id, null);
         break;
     case 'routines':
-        $response['routines'] = getMemberRoutines($member_id, true);
+        $response['routines'] = getMemberRoutines($member_id, false); // Fetch all routines
         break;
     case 'progress':
         $response['progress'] = getMemberProgress($member_id, 30);
+        break;
+    case 'calories':
+        $response['calorie_summary'] = getMemberCalorieSummary($member_id, $_GET['date'] ?? date('Y-m-d'));
+        break;
+    case 'yoga_sessions':
+        $response['yoga_sessions'] = getMemberYogaSessions($member_id, 30);
         break;
     default:
         $response['error'] = 'Invalid type parameter';

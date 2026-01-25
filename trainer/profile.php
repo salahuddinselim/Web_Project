@@ -271,6 +271,13 @@ $trainer_name = $trainer['full_name'];
           <h3><?php echo htmlspecialchars($trainer_name); ?></h3>
           <span><?php echo htmlspecialchars($trainer['specialization'] ?? 'Fitness Trainer'); ?></span>
           <span class="id-text">ID: <?php echo str_pad($trainer_id, 6, '0', STR_PAD_LEFT); ?></span>
+          <?php if (!empty($trainer['certification'])): ?>
+            <div style="margin-top: 10px;">
+                <a href="../uploads/certificates/<?php echo htmlspecialchars($trainer['certification']); ?>" target="_blank" style="color: #4ade80; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                    📜 View Certification Photo
+                </a>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
 
@@ -293,6 +300,16 @@ $trainer_name = $trainer['full_name'];
           <input type="file" name="profile_picture" class="form-control" style="background: transparent;" required accept="image/*">
         </div>
         <button type="submit" class="action-btn">Upload Photo</button>
+      </form>
+
+      <!-- Certification Upload Form -->
+      <form action="../handlers/trainer/update_certificate.php" method="POST" enctype="multipart/form-data" class="form-section clearfix" style="border: 1px solid #333; padding: 20px; border-radius: 6px; margin-top: 20px;">
+        <div class="form-group">
+          <label class="form-label">Update Certification Photo</label>
+          <input type="file" name="certification" class="form-control" style="background: transparent;" required accept="image/*">
+          <small style="color: #888; margin-top: 5px; display: block;">Upload your certificate as a photo (JPG, PNG, WebP)</small>
+        </div>
+        <button type="submit" class="action-btn">Update Certificate</button>
       </form>
       <div class="form-section clearfix">
         <form action="../handlers/trainer/update_profile.php" method="POST">

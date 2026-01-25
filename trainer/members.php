@@ -601,18 +601,22 @@ $members = getTrainerMembers($trainer_id);
                                 <span class="stat-text">Routines</span>
                             </div>
                         </div>
-                        <div class="stat-item">
+                        <?php 
+                            $calSummary = getMemberCalorieSummary($m['member_id'], date('Y-m-d'));
+                            $yogaTime = getMemberYogaSummary($m['member_id'], date('Y-m-d'), date('Y-m-d'));
+                        ?>
+                        <div class="stat-item" style="border-left: 1px solid #2a3830;">
                             <span class="stat-icon">🥗</span>
                             <div class="stat-content">
-                                <span class="stat-number"><?php echo $dietCount; ?></span>
-                                <span class="stat-text">Diet Plans</span>
+                                <span class="stat-number" title="Taken / Planned Calories"><?php echo ($calSummary['taken_calories'] ?? 0) . ' / ' . ($calSummary['planned_calories'] ?? 0); ?></span>
+                                <span class="stat-text">Today Kcal</span>
                             </div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-icon">📊</span>
+                        <div class="stat-item" style="border-left: 1px solid #2a3830;">
+                            <span class="stat-icon">🕒</span>
                             <div class="stat-content">
-                                <span class="stat-number">--</span>
-                                <span class="stat-text">Progress</span>
+                                <span class="stat-number" title="Today's Yoga Time"><?php echo $yogaTime; ?></span>
+                                <span class="stat-text">Mins Done</span>
                             </div>
                         </div>
                     </div>
@@ -665,6 +669,19 @@ $members = getTrainerMembers($trainer_id);
             </div>
             <div class="modal-body" id="modalBody">
                 <div class="empty-msg">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inner Edit Modal (for Diet/Routine) -->
+    <div id="editModal" class="member-modal" style="z-index: 10000; background: rgba(0,0,0,0.9);">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="editModalTitle">Edit Entry</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Form will be injected here -->
             </div>
         </div>
     </div>
@@ -740,9 +757,138 @@ $members = getTrainerMembers($trainer_id);
             });
     }
 
+    // Manage member diet plans
+    function manageDiet(memberId, memberName, dietCount) {
+        openModal('Manage Diet: ' + memberName);
+        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=diet')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
+                    return;
+                }
+                const plans = data.diet_plans || [];
+                let html = '<table class="data-table"><thead><tr><th>Date</th><th>Logged By</th><th>Meal</th><th>Kcal</th><th>Weight</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+                plans.forEach(p => {
+                    const status = p.is_consumed == 1 ? '<span style="color:#00d26a;">✓ Taken</span>' : '<span style="color:#888;">Pending</span>';
+                    const creator = p.created_by == 'member' ? '<span style="color:#f0c040;">User</span>' : 'Trainer';
+                    const weight = p.product_weight ? p.product_weight + 'g' : '-';
+                    html += `<tr>
+                        <td>${p.plan_date || '-'}</td>
+                        <td>${creator}</td>
+                        <td>${p.meal_name || p.meal_time || '-'}</td>
+                        <td>${p.calories || '0'}</td>
+                        <td>${weight}</td>
+                        <td>${status}</td>
+                        <td>
+                            <button class="action-btn" style="padding: 5px 10px; font-size: 10px; color: #00d26a;" onclick='editDiet(${JSON.stringify(p)}, ${memberId}, "${memberName}")'>✏️</button>
+                            <button class="action-btn" style="padding: 5px 10px; font-size: 10px; color: #ff4d4d;" onclick="deleteDiet(${p.diet_plan_id}, ${memberId}, '${memberName}')">🗑️</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('modalBody').innerHTML = html;
+            });
+    }
+
+    function editDiet(p, memberId, memberName) {
+        document.getElementById('editModalTitle').textContent = 'Edit Diet: ' + p.meal_time;
+        document.getElementById('editModalBody').innerHTML = `
+            <form id="editDietForm">
+                <input type="hidden" name="diet_plan_id" value="${p.diet_plan_id}">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; color:#888; margin-bottom:5px;">Meal Name</label>
+                    <input type="text" name="meal_name" class="filter-select" style="width:100%;" value="${p.meal_name}">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; color:#888; margin-bottom:5px;">Food Items</label>
+                    <textarea name="food_items" class="filter-select" style="width:100%; height:80px;">${p.food_items}</textarea>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Calories</label>
+                        <input type="number" name="calories" class="filter-select" style="width:100%;" value="${p.calories}">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Target Day (1-7)</label>
+                        <select name="plan_date" class="filter-select" style="width:100%;">
+                            <?php 
+                              $monday = date('Y-m-d', strtotime('monday this week'));
+                              for($i=1; $i<=7; $i++): $d = date('Y-m-d', strtotime("+".($i-1)." days", strtotime($monday))); ?>
+                                <option value="<?php echo $d; ?>" \${p.plan_date == '<?php echo $d; ?>' ? 'selected' : ''}>Day <?php echo $i; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Protein (g)</label>
+                        <input type="number" name="protein" class="filter-select" style="width:100%;" value="${p.protein_grams || 0}">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Carbs (g)</label>
+                        <input type="number" name="carbs" class="filter-select" style="width:100%;" value="${p.carbs_grams || 0}">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Fat (g)</label>
+                        <input type="number" name="fat" class="filter-select" style="width:100%;" value="${p.fat_grams || 0}">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#888; margin-bottom:5px;">Weight (g)</label>
+                        <input type="number" name="product_weight" class="filter-select" style="width:100%;" value="${p.product_weight || 0}">
+                    </div>
+                </div>
+                <button type="button" class="action-btn btn-primary" style="width:100%;" onclick="updateDiet(${memberId}, '${memberName}')">Update Diet Plan</button>
+            </form>
+        `;
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function updateDiet(memberId, memberName) {
+        const formData = new FormData(document.getElementById('editDietForm'));
+        formData.append('action', 'update');
+        
+        fetch('../handlers/trainer/manage_diet.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Updated successfully');
+                closeEditModal();
+                manageDiet(memberId, memberName);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+
+    function deleteDiet(dietId, memberId, memberName) {
+        if (!confirm('Are you sure you want to delete this diet entry?')) return;
+        
+        const formData = new FormData();
+        formData.append('diet_plan_id', dietId);
+        formData.append('action', 'delete');
+        
+        fetch('../handlers/trainer/manage_diet.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Deleted successfully');
+                manageDiet(memberId, memberName);
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        });
+    }
+
     // Manage member routines
     function manageRoutines(memberId, memberName, routineCount) {
-        openModal('Routines: ' + memberName);
+        openModal('Manage Routines: ' + memberName);
         fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=routines')
             .then(r => r.json())
             .then(data => {
@@ -752,63 +898,177 @@ $members = getTrainerMembers($trainer_id);
                 }
                 const routines = data.routines || [];
                 if (routines.length === 0) {
-                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No routines assigned yet.</div>';
+                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No routines assigned yet. <br><br><button class="action-btn btn-primary" onclick="window.location.href=\'routine.php\'">Create One</button></div>';
                     return;
                 }
-                let html = '<table class="data-table"><thead><tr><th>Title</th><th>Type</th><th>Difficulty</th><th>Duration</th></tr></thead><tbody>';
+                let html = '<table class="data-table"><thead><tr><th>Day</th><th>Title</th><th>Progress</th><th>Actions</th></tr></thead><tbody>';
                 routines.forEach(r => {
-                    html += `<tr><td>${r.title || '-'}</td><td>${r.routine_type || '-'}</td><td>${r.difficulty_level || '-'}</td><td>${r.duration_minutes || '-'} min</td></tr>`;
+                    const ex = JSON.parse(r.exercises || '[]');
+                    const comp = JSON.parse(r.completed_exercises || '[]');
+                    const progress = ex.length > 0 ? `${comp.length} / ${ex.length} done` : 'No exercises';
+                    html += `<tr>
+                        <td>${r.scheduled_date || 'Any'}</td>
+                        <td>${r.title || '-'}</td>
+                        <td><small style="color:#00d26a;">${progress}</small></td>
+                        <td>
+                            <button class="action-btn" style="padding: 5px 10px; font-size: 10px; color: #00d26a;" onclick='editRoutine(${JSON.stringify(r)}, ${memberId}, "${memberName}")'>✏️</button>
+                            <button class="action-btn" style="padding: 5px 10px; font-size: 10px; color: #ff4d4d;" onclick="deleteRoutine(${r.routine_id}, ${memberId}, '${memberName}')">🗑️</button>
+                        </td>
+                    </tr>`;
                 });
                 html += '</tbody></table>';
                 document.getElementById('modalBody').innerHTML = html;
             });
     }
 
-    // Manage member diet plans
-    function manageDiet(memberId, memberName, dietCount) {
-        openModal('Diet Plans: ' + memberName);
-        fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=diet')
-            .then(r => r.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
-                    return;
-                }
-                const plans = data.diet_plans || [];
-                if (plans.length === 0) {
-                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No diet plans assigned yet.</div>';
-                    return;
-                }
-                let html = '<table class="data-table"><thead><tr><th>Date</th><th>Meal Time</th><th>Meal Name</th><th>Calories</th></tr></thead><tbody>';
-                plans.forEach(p => {
-                    html += `<tr><td>${p.plan_date || '-'}</td><td>${p.meal_time || '-'}</td><td>${p.meal_name || '-'}</td><td>${p.calories || '-'}</td></tr>`;
-                });
-                html += '</tbody></table>';
-                document.getElementById('modalBody').innerHTML = html;
+    function editRoutine(r, memberId, memberName) {
+        document.getElementById('editModalTitle').textContent = 'Edit Routine: ' + r.title;
+        document.getElementById('editModalBody').innerHTML = `
+            <form id="editRoutineForm">
+                <input type="hidden" name="routine_id" value="${r.routine_id}">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; color:#888; margin-bottom:5px;">Routine Title</label>
+                    <input type="text" name="title" class="filter-select" style="width:100%;" value="${r.title}">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; color:#888; margin-bottom:5px;">Description</label>
+                    <textarea name="description" class="filter-select" style="width:100%; height:80px;">${r.description}</textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; color:#888; margin-bottom:5px;">Target Day (1-7)</label>
+                    <select name="scheduled_date" class="filter-select" style="width:100%;">
+                        <?php 
+                          $monday = date('Y-m-d', strtotime('monday this week'));
+                          for($i=1; $i<=7; $i++): $d = date('Y-m-d', strtotime("+".($i-1)." days", strtotime($monday))); ?>
+                            <option value="<?php echo $d; ?>" \${r.scheduled_date == '<?php echo $d; ?>' ? 'selected' : ''}>Day <?php echo $i; ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+                <div id="edit-exercises-container" style="margin-top: 20px; border-top: 1px solid #2a352a; padding-top: 15px;">
+                    <label style="display:block; color:#00d26a; margin-bottom:10px; font-weight:bold;">Exercises</label>
+                    <div id="ex-list-wrapper"></div>
+                    <button type="button" class="action-btn" style="float:none; width:100%; margin-top:10px; background:#2d4a36; color:#fff;" onclick="addExerciseField()">+ Add Exercise</button>
+                </div>
+                <input type="hidden" name="exercises_json" id="edit_exercises_json">
+                <button type="button" class="action-btn btn-primary" style="width:100%; margin-top:20px;" onclick="updateRoutine(${memberId}, '${memberName}')">Update Routine</button>
+            </form>
+        `;
+        
+        const exercises = JSON.parse(r.exercises || '[]');
+        exercises.forEach(ex => addExerciseField(ex));
+        
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function addExerciseField(data = null) {
+        const wrapper = document.getElementById('ex-list-wrapper');
+        const div = document.createElement('div');
+        div.className = 'edit-ex-item';
+        div.style = 'background:#15251a; padding:10px; border-radius:6px; margin-bottom:10px; position:relative;';
+        div.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" style="position:absolute; right:5px; top:5px; background:none; border:none; color:#ff4d4d; cursor:pointer;">&times;</button>
+            <input type="text" placeholder="Name" class="ex-name filter-select" style="width:100%; margin-bottom:5px; font-size:12px;" value="${data?.name || ''}">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                <input type="text" placeholder="Duration" class="ex-duration filter-select" style="font-size:12px;" value="${data?.duration || ''}">
+                <input type="text" placeholder="Sets/Reps" class="ex-reps filter-select" style="font-size:12px;" value="${data?.reps || ''}">
+            </div>
+        `;
+        wrapper.appendChild(div);
+    }
+
+    function updateRoutine(memberId, memberName) {
+        const form = document.getElementById('editRoutineForm');
+        const exItems = form.querySelectorAll('.edit-ex-item');
+        const exercises = [];
+        exItems.forEach(item => {
+            exercises.push({
+                name: item.querySelector('.ex-name').value,
+                duration: item.querySelector('.ex-duration').value,
+                reps: item.querySelector('.ex-reps').value
             });
+        });
+        document.getElementById('edit_exercises_json').value = JSON.stringify(exercises);
+
+        const formData = new FormData(form);
+        formData.append('action', 'update');
+        
+        fetch('../handlers/trainer/manage_routine.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Updated successfully');
+                closeEditModal();
+                manageRoutines(memberId, memberName);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+
+    function deleteRoutine(routineId, memberId, memberName) {
+        if (!confirm('Are you sure you want to delete this routine?')) return;
+        
+        const formData = new FormData();
+        formData.append('routine_id', routineId);
+        formData.append('action', 'delete');
+        
+        fetch('../handlers/trainer/manage_routine.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Deleted successfully');
+                manageRoutines(memberId, memberName);
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        });
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
     }
 
     // View member progress
     function viewProgress(memberId, memberName) {
-        openModal('Progress: ' + memberName);
+        openModal('Activity & Progress: ' + memberName);
         fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=progress')
             .then(r => r.json())
             .then(data => {
-                if (data.error) {
-                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">' + data.error + '</div>';
-                    return;
-                }
+                let html = '<h4 style="color:#00d26a; margin-bottom:10px;">Health Metrics</h4>';
                 const progress = data.progress || [];
                 if (progress.length === 0) {
-                    document.getElementById('modalBody').innerHTML = '<div class="empty-msg">No progress data logged yet.</div>';
-                    return;
+                    html += '<div class="empty-msg">No health metrics logged yet.</div>';
+                } else {
+                    html += '<table class="data-table" style="margin-bottom:30px;"><thead><tr><th>Date</th><th>Weight</th><th>HR</th><th>Sleep</th><th>Mood</th></tr></thead><tbody>';
+                    progress.forEach(p => {
+                        html += `<tr><td>${p.tracking_date || '-'}</td><td>${p.weight_kg || '-'}kg</td><td>${p.heart_rate || '-'}</td><td>${p.sleep_hours || '-'}h</td><td>${p.mood || '-'}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
                 }
-                let html = '<table class="data-table"><thead><tr><th>Date</th><th>Weight (kg)</th><th>Heart Rate</th><th>Sleep (hrs)</th><th>Mood</th></tr></thead><tbody>';
-                progress.forEach(p => {
-                    html += `<tr><td>${p.tracking_date || '-'}</td><td>${p.weight_kg || '-'}</td><td>${p.heart_rate || '-'}</td><td>${p.sleep_hours || '-'}</td><td>${p.mood || '-'}</td></tr>`;
-                });
-                html += '</tbody></table>';
-                document.getElementById('modalBody').innerHTML = html;
+
+                // Fetch Yoga Sessions separately or use existing data if added to get_member_data.php
+                fetch('../handlers/trainer/get_member_data.php?member_id=' + memberId + '&type=yoga_sessions')
+                    .then(r => r.json())
+                    .then(yData => {
+                        html += '<h4 style="color:#00d26a; margin-bottom:10px; margin-top:20px;">Yoga Sessions History</h4>';
+                        const sessions = yData.yoga_sessions || [];
+                        if (sessions.length === 0) {
+                            html += '<div class="empty-msg">No yoga sessions recorded yet.</div>';
+                        } else {
+                            html += '<table class="data-table"><thead><tr><th>Date</th><th>Duration</th><th>Notes</th></tr></thead><tbody>';
+                            sessions.forEach(s => {
+                                html += `<tr><td>${s.session_date || '-'}</td><td>${s.duration_minutes || '-'} min</td><td>${s.notes || '-'}</td></tr>`;
+                            });
+                            html += '</tbody></table>';
+                        }
+                        document.getElementById('modalBody').innerHTML = html;
+                    });
             });
     }
     </script>

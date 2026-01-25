@@ -107,8 +107,10 @@ CREATE TABLE diet_plans (
     protein_grams DECIMAL(10,2),
     carbs_grams DECIMAL(10,2),
     fat_grams DECIMAL(10,2),
+    product_weight DECIMAL(10,2) DEFAULT 0,
     created_by ENUM('trainer','member') NOT NULL,
     plan_date DATE NOT NULL,
+    is_consumed TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE,
     FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id) ON DELETE SET NULL

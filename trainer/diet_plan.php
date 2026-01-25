@@ -12,13 +12,41 @@ $members = getTrainerMembers($trainer_id);
 $success_message = '';
 $error_message = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $member_id = $_POST['member_id'] ?? '';
-    $plan_date = $_POST['plan_date'] ?? date('Y-m-d');
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $member_id = $_POST['member_id'] ?? '';
+        
+        $selected_day = intval($_POST['target_day'] ?? 1);
+        // Calculate date: Monday of this week + (selected_day - 1)
+        $monday = date('Y-m-d', strtotime('monday this week'));
+        $plan_date = date('Y-m-d', strtotime("+" . ($selected_day - 1) . " days", strtotime($monday)));
+    
     $meals = [
-        'breakfast' => $_POST['breakfast'] ?? '',
-        'lunch' => $_POST['lunch'] ?? '',
-        'dinner' => $_POST['dinner'] ?? ''
+        'breakfast' => ['items' => $_POST['breakfast'] ?? '', 'cals' => $_POST['breakfast_cals'] ?? 0],
+        'lunch'     => ['items' => $_POST['lunch'] ?? '',     'cals' => $_POST['lunch_cals'] ?? 0],
+        'dinner'    => ['items' => $_POST['dinner'] ?? '',    'cals' => $_POST['dinner_cals'] ?? 0],
+        'snack'     => ['items' => $_POST['snack'] ?? '',     'cals' => $_POST['snack_cals'] ?? 0]
+    ];
+    
+    // Add macros
+    $breakfast_macros = [
+        'p' => $_POST['breakfast_p'] ?? 0,
+        'c' => $_POST['breakfast_c'] ?? 0,
+        'f' => $_POST['breakfast_f'] ?? 0
+    ];
+    $lunch_macros = [
+        'p' => $_POST['lunch_p'] ?? 0,
+        'c' => $_POST['lunch_c'] ?? 0,
+        'f' => $_POST['lunch_f'] ?? 0
+    ];
+    $dinner_macros = [
+        'p' => $_POST['dinner_p'] ?? 0,
+        'c' => $_POST['dinner_c'] ?? 0,
+        'f' => $_POST['dinner_f'] ?? 0
+    ];
+    $snack_macros = [
+        'p' => $_POST['snack_p'] ?? 0,
+        'c' => $_POST['snack_c'] ?? 0,
+        'f' => $_POST['snack_f'] ?? 0
     ];
     
     if (empty($member_id)) {
@@ -27,15 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             
-            foreach ($meals as $time => $items) {
-                if (!empty($items)) {
-                    $stmt = $pdo->prepare("INSERT INTO diet_plans (member_id, trainer_id, meal_name, meal_time, food_items, created_by, plan_date) VALUES (?, ?, ?, ?, ?, 'trainer', ?)");
+            foreach ($meals as $time => $data) {
+                if (!empty($data['items'])) {
+                    $macros = ${$time . '_macros'};
+                    $stmt = $pdo->prepare("INSERT INTO diet_plans (member_id, trainer_id, meal_name, meal_time, food_items, calories, protein_grams, carbs_grams, fat_grams, created_by, plan_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'trainer', ?)");
                     $stmt->execute([
                         $member_id,
                         $trainer_id,
                         ucfirst($time), // Meal name
                         $time,          // Meal time (enum)
-                        $items,
+                        $data['items'],
+                        $data['cals'],
+                        $macros['p'],
+                        $macros['c'],
+                        $macros['f'],
                         $plan_date
                     ]);
                 }
@@ -289,8 +322,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="form-group">
-            <label class="form-label">Plan Date</label>
-            <input type="date" name="plan_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required>
+            <label class="form-label">Target Day (7-Day Cycle)</label>
+            <select name="target_day" class="form-control" required>
+                <?php 
+                  $days_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  for($i = 1; $i <= 7; $i++): ?>
+                    <option value="<?php echo $i; ?>">Day <?php echo $i; ?> - <?php echo $days_labels[$i-1]; ?></option>
+                <?php endfor; ?>
+            </select>
+            <small style="color: #888; font-size: 11px;">Mapped to the current week (<?php echo date('M d', strtotime('monday this week')); ?> to <?php echo date('M d', strtotime('sunday this week')); ?>)</small>
         </div>
 
         <div class="form-group">
@@ -307,19 +347,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Breakfast</label>
-          <textarea name="breakfast" class="form-control" rows="3" id="breakfastInput" placeholder="Enter breakfast plan"></textarea>
+        <div class="form-group" style="background: #15251a; padding: 20px; border-radius: 8px; border: 1px solid #222;">
+          <label class="form-label" style="color: #00d26a; font-size: 16px;">Breakfast Plan</label>
+          <textarea name="breakfast" class="form-control" rows="3" placeholder="Enter breakfast details"></textarea>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+            <div>
+              <label class="form-label">Calories</label>
+              <input type="number" name="breakfast_cals" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Protein (g)</label>
+              <input type="number" name="breakfast_p" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Carbs (g)</label>
+              <input type="number" name="breakfast_c" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Fat (g)</label>
+              <input type="number" name="breakfast_f" class="form-control" value="0">
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Lunch</label>
-          <textarea name="lunch" class="form-control" rows="3" id="lunchInput" placeholder="Enter lunch plan"></textarea>
+        <div class="form-group" style="background: #15251a; padding: 20px; border-radius: 8px; border: 1px solid #222;">
+          <label class="form-label" style="color: #00d26a; font-size: 16px;">Lunch Plan</label>
+          <textarea name="lunch" class="form-control" rows="3" placeholder="Enter lunch details"></textarea>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+            <div>
+              <label class="form-label">Calories</label>
+              <input type="number" name="lunch_cals" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Protein (g)</label>
+              <input type="number" name="lunch_p" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Carbs (g)</label>
+              <input type="number" name="lunch_c" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Fat (g)</label>
+              <input type="number" name="lunch_f" class="form-control" value="0">
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Dinner</label>
-          <textarea name="dinner" class="form-control" rows="3" id="dinnerInput" placeholder="Enter dinner plan"></textarea>
+        <div class="form-group" style="background: #15251a; padding: 20px; border-radius: 8px; border: 1px solid #222;">
+          <label class="form-label" style="color: #00d26a; font-size: 16px;">Dinner Plan</label>
+          <textarea name="dinner" class="form-control" rows="3" placeholder="Enter dinner details"></textarea>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+            <div>
+              <label class="form-label">Calories</label>
+              <input type="number" name="dinner_cals" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Protein (g)</label>
+              <input type="number" name="dinner_p" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Carbs (g)</label>
+              <input type="number" name="dinner_c" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Fat (g)</label>
+              <input type="number" name="dinner_f" class="form-control" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="background: #15251a; padding: 20px; border-radius: 8px; border: 1px solid #222;">
+          <label class="form-label" style="color: #00d26a; font-size: 16px;">Snacks/Extra</label>
+          <textarea name="snack" class="form-control" rows="3" placeholder="Enter snack details"></textarea>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+            <div>
+              <label class="form-label">Calories</label>
+              <input type="number" name="snack_cals" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Protein (g)</label>
+              <input type="number" name="snack_p" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Carbs (g)</label>
+              <input type="number" name="snack_c" class="form-control" value="0">
+            </div>
+            <div>
+              <label class="form-label">Fat (g)</label>
+              <input type="number" name="snack_f" class="form-control" value="0">
+            </div>
+          </div>
         </div>
 
         <div class="btn-save-container">

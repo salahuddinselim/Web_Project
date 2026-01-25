@@ -5,36 +5,109 @@ requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
 
-// Fetch routines
-$routines = getMemberRoutines($member_id);
+// Define week dates (Monday to Sunday)
+$current_monday = date('Y-m-d', strtotime('monday this week'));
+$week_dates = [];
+for ($i = 0; $i < 7; $i++) {
+    $week_dates[$i + 1] = date('Y-m-d', strtotime("+$i days", strtotime($current_monday)));
+}
 
-// Fetch attendance for this week (Sun-Sat)
-$today = date('Y-m-d');
-$startOfWeek = date('Y-m-d', strtotime('last sunday', strtotime($today)));
-$endOfWeek = date('Y-m-d', strtotime('next saturday', strtotime($today)));
-$attendance = getMemberAttendance($member_id, 100);
+// Get selected day (1-7), fallback to today's day of week
+$today_dow = date('N'); // 1 (Mon) to 7 (Sun)
+$selected_day_num = isset($_GET['day']) ? intval($_GET['day']) : $today_dow;
+if ($selected_day_num < 1 || $selected_day_num > 7) $selected_day_num = $today_dow;
+
+$requested_date = $week_dates[$selected_day_num];
+
+// Fetch routines for selected date
+$stmt = $pdo->prepare("SELECT * FROM routines WHERE member_id = ? AND (scheduled_date = ? OR scheduled_date IS NULL) AND is_active = 1");
+$stmt->execute([$member_id, $requested_date]);
+$routines = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch all yoga sessions for summary (current week)
+$all_sessions = getMemberYogaSessions($member_id, 100);
+$totalMinutes = 0;
+foreach($all_sessions as $s) {
+    if ($s['session_date'] >= $week_dates[1] && $s['session_date'] <= $week_dates[7]) {
+        $totalMinutes += $s['duration_minutes'];
+    }
+}
+
+// Comprehensive Week Analysis
+$week_statuses = [];
 $daysCompleted = 0;
 $totalMinutes = 0;
-$streak = 0;
-$weekAttendance = [];
+
+// Fetch all routines for this week
+$stmt_week = $pdo->prepare("SELECT * FROM routines WHERE member_id = ? AND scheduled_date BETWEEN ? AND ? AND is_active = 1");
+$stmt_week->execute([$member_id, $week_dates[1], $week_dates[7]]);
+$all_week_routines = $stmt_week->fetchAll(PDO::FETCH_ASSOC);
+
+// Map routine completion to days
+$routine_completion_map = [];
+foreach ($all_week_routines as $r) {
+    $exercises = json_decode($r['exercises'], true);
+    $completed = json_decode($r['completed_exercises'] ?? '[]', true);
+    $is_all_done = (count($exercises) > 0 && count($completed) >= count($exercises));
+    $routine_completion_map[$r['scheduled_date']] = [
+        'is_done' => $is_all_done,
+        'has_progress' => count($completed) > 0
+    ];
+}
+
+// Fetch attendance and yoga sessions for the week
+$attendance = getMemberAttendance($member_id, 100);
+$yoga_sessions = getMemberYogaSessions($member_id, 100);
+
+$week_activity = [];
 foreach ($attendance as $a) {
-  $date = $a['booking_date'];
-  if ($date >= $startOfWeek && $date <= $endOfWeek) {
-    $daysCompleted++;
-    $totalMinutes += $a['duration_minutes'];
-    $weekAttendance[$date] = true;
-  }
+    if ($a['booking_date'] >= $week_dates[1] && $a['booking_date'] <= $week_dates[7]) {
+        $week_activity[$a['booking_date']] = true;
+    }
 }
-// Calculate streak (consecutive days up to today)
+foreach ($yoga_sessions as $s) {
+    if ($s['session_date'] >= $week_dates[1] && $s['session_date'] <= $week_dates[7]) {
+        $week_activity[$s['session_date']] = true;
+        $totalMinutes += $s['duration_minutes'];
+    }
+}
+
+// Calculate days completed and statuses for the selector
+for ($i = 1; $i <= 7; $i++) {
+    $d = $week_dates[$i];
+    $status = 'upcoming';
+    
+    // Check if any activity (attendance or session) or routine progress
+    $has_routine = isset($routine_completion_map[$d]);
+    $is_routine_done = $has_routine && $routine_completion_map[$d]['is_done'];
+    $is_routine_ongoing = $has_routine && $routine_completion_map[$d]['has_progress'] && !$is_routine_done;
+    
+    if (isset($week_activity[$d]) || $is_routine_done) {
+        $daysCompleted++;
+        $status = 'completed';
+    } else if ($is_routine_ongoing) {
+        $status = 'ongoing';
+    }
+    
+    $week_statuses[$i] = $status;
+}
+
+// Calculate streak
 $streak = 0;
-for ($i = 0; $i < 7; $i++) {
-  $d = date('Y-m-d', strtotime("-$i day", strtotime($today)));
-  if (isset($weekAttendance[$d])) {
-    $streak++;
-  } else {
-    break;
-  }
+$today = date('Y-m-d');
+for ($i = 0; $i < 30; $i++) {
+    $check_date = date('Y-m-d', strtotime("-$i days"));
+    // check attendance, sessions, or completed routines for streak
+    // (simplified check for recent activity)
+    $stmt_streak = $pdo->prepare("SELECT count(*) FROM yoga_sessions WHERE member_id = ? AND session_date = ?");
+    $stmt_streak->execute([$member_id, $check_date]);
+    if ($stmt_streak->fetchColumn() > 0) {
+        $streak++;
+    } else {
+        break;
+    }
 }
+
 $weekProgress = round(($daysCompleted / 7) * 100);
 ?>
 <!DOCTYPE html>
@@ -692,17 +765,17 @@ $weekProgress = round(($daysCompleted / 7) * 100);
 
       <h2>Select Day</h2>
       <div class="day-selector" id="daySelector">
-        <?php if (empty($routines)): ?>
-          <p>No routines assigned yet.</p>
-        <?php else: ?>
-          <?php foreach ($routines as $index => $routine): ?>
-            <button class="day-btn <?php echo $index === 0 ? 'active' : ''; ?>"
-              onclick="showRoutine(<?php echo $index; ?>)"
-              id="btn-routine-<?php echo $index; ?>">
-              <?php echo htmlspecialchars($routine['title']); ?>
-            </button>
-          <?php endforeach; ?>
-        <?php endif; ?>
+        <?php 
+          $days_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          for($i = 1; $i <= 7; $i++) {
+            $date_str = $week_dates[$i];
+            $label = "Day $i<br><small>" . $days_labels[$i-1] . "</small>";
+            $active = ($i == $selected_day_num) ? 'active' : '';
+            $status_class = $week_statuses[$i]; // completed, ongoing, upcoming
+            
+            echo "<button class='day-btn $active $status_class' onclick='window.location.href=\"?day=$i\"'>$label</button>";
+          }
+        ?>
       </div>
 
       <!-- Day Details -->
@@ -718,21 +791,42 @@ $weekProgress = round(($daysCompleted / 7) * 100);
               </div>
               <p style="color: #aaa; margin-bottom: 20px;"><?php echo htmlspecialchars($routine['description']); ?></p>
 
+              <?php 
+                $exercises = json_decode($routine['exercises'], true);
+                $completed = json_decode($routine['completed_exercises'] ?? '[]', true);
+                $totalEx = is_array($exercises) ? count($exercises) : 0;
+                $doneEx = is_array($completed) ? count($completed) : 0;
+                $percent = $totalEx > 0 ? ($doneEx / $totalEx) * 100 : 0;
+              ?>
+              
+              <div class="progress-container" style="margin-bottom: 25px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
+                    <span style="color:#888;">Routine Progress</span>
+                    <span style="color:#00d26a; font-weight:bold;" class="progressPercent"><?php echo round($percent); ?>%</span>
+                </div>
+                <div style="height:8px; background:#2a352a; border-radius:10px; overflow:hidden;">
+                    <div class="progressFill" style="width:<?php echo $percent; ?>%; height:100%; background:linear-gradient(90deg, #00d26a, #00a854); transition: width 0.3s ease;"></div>
+                </div>
+              </div>
+
               <div class="routine-list">
                 <?php
                 $exercises = json_decode($routine['exercises'], true);
+                $completed = json_decode($routine['completed_exercises'] ?? '[]', true);
                 if ($exercises):
-                  foreach ($exercises as $ex):
+                  foreach ($exercises as $ex_idx => $ex):
+                    $isDone = in_array($ex_idx, $completed);
                 ?>
                     <div class="routine-item">
                       <div class="routine-icon yoga">🧘</div> <!-- Fallback icon -->
                       <div class="routine-info">
                         <div class="routine-name"><?php echo htmlspecialchars($ex['name'] ?? 'Exercise'); ?></div>
-                        <div class="routine-duration"><?php echo htmlspecialchars($ex['duration'] ?? '0') . ' ' . htmlspecialchars($ex['sets'] ?? 'mins'); ?></div>
+                        <div class="routine-duration"><?php echo htmlspecialchars($ex['duration'] ?? '0') . ' ' . htmlspecialchars($ex['reps'] ?? 'mins'); ?></div>
                       </div>
-                      <div class="routine-check" onclick="this.classList.toggle('done')">✓</div>
+                      <div class="routine-check <?php echo $isDone ? 'done' : ''; ?>" 
+                           onclick="toggleExercise(this, <?php echo $routine['routine_id']; ?>, <?php echo $ex_idx; ?>)">✓</div>
                     </div>
-                  <?php
+                <?php
                   endforeach;
                 else:
                   ?>
@@ -747,14 +841,89 @@ $weekProgress = round(($daysCompleted / 7) * 100);
       </div>
 
       <div class="action-buttons">
-        <button class="btn btn-primary" id="startBtn">Start Routine</button>
-        <button class="btn btn-secondary" onclick="markDayComplete()">
-          Mark Complete
-        </button>
+        <button class="btn btn-primary" onclick="openSessionLog()">Log Completed Session</button>
         <button class="btn btn-secondary" onclick="window.location.href='../handlers/member/download_routine_report.php'">
           📄 Download Report
         </button>
       </div>
+
+      <!-- Session Log Modal (Simple implementation) -->
+      <div id="sessionLog" style="display:none; margin-top: 20px; background: #1a201a; padding: 25px; border-radius: 14px; border: 1px solid #2a352a;">
+         <h3 style="color: #00d26a; margin-bottom: 15px;">Log Yoga Session</h3>
+         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label class="form-label">Duration (minutes)</label>
+                <input type="number" id="logDuration" class="form-input" value="30">
+            </div>
+            <div>
+                <label class="form-label">Date</label>
+                <input type="date" id="logDate" class="form-input" value="<?php echo $requested_date; ?>">
+            </div>
+         </div>
+         <label class="form-label">Session Notes</label>
+         <textarea id="logNotes" class="form-input" style="margin-bottom: 15px;" placeholder="Optional notes..."></textarea>
+         <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="submitSessionLog()">Submit Log</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('sessionLog').style.display='none'">Cancel</button>
+         </div>
+      </div>
+
+      <script>
+        function openSessionLog() {
+            document.getElementById('sessionLog').style.display = 'block';
+            document.getElementById('sessionLog').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function submitSessionLog() {
+            const duration = document.getElementById('logDuration').value;
+            const date = document.getElementById('logDate').value;
+            const notes = document.getElementById('logNotes').value;
+
+            if (duration <= 0) { alert('Enter valid duration'); return; }
+
+            const formData = new FormData();
+            formData.append('duration', duration);
+            formData.append('session_date', date);
+            formData.append('notes', notes);
+
+            fetch('../handlers/member/log_yoga_session.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Session logged!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        }
+
+        function toggleExercise(el, routineId, exIndex) {
+            el.classList.toggle('done');
+            
+            // Get all done items for this routine
+            const routineContent = el.closest('.routine-content');
+            const doneItems = [];
+            routineContent.querySelectorAll('.routine-check.done').forEach(check => {
+                // We need the index. Let's find it from the onclick.
+                const onclickStr = check.getAttribute('onclick');
+                const match = onclickStr.match(/,\s*(\d+)\)/);
+                if (match) doneItems.push(parseInt(match[1]));
+            });
+
+            const formData = new FormData();
+            formData.append('routine_id', routineId);
+            formData.append('completed_exercises', JSON.stringify(doneItems));
+
+            fetch('../handlers/member/save_exercise_status.php', {
+                method: 'POST',
+                body: formData
+            });
+        }
+      </script>
 
       <!-- Post-workout feedback inputs -->
       <div class="post-workout">
@@ -969,124 +1138,95 @@ $weekProgress = round(($daysCompleted / 7) * 100);
                       }
 
                       // Map DB routines to days
-                      foreach ($db_routines as $k => $r) {
-                        $day = $k + 1;
-                        if ($day > 7) break;
+                      // Fetch all routines for the week to populate summary
+                      $all_week_routines = $pdo->prepare("SELECT * FROM routines WHERE member_id = ? AND scheduled_date BETWEEN ? AND ?");
+                      $all_week_routines->execute([$member_id, $week_dates[1], $week_dates[7]]);
+                      $week_routines_rows = $all_week_routines->fetchAll(PDO::FETCH_ASSOC);
+
+                      foreach ($week_routines_rows as $r) {
+                        $r_date = $r['scheduled_date'];
+                        $day_idx = 0;
+                        foreach($week_dates as $idx => $d) { if($d == $r_date) $day_idx = $idx; }
+                        if ($day_idx == 0) continue;
 
                         $exercises = json_decode($r['exercises'], true);
+                        $completed = json_decode($r['completed_exercises'] ?? '[]', true);
                         $ui_exercises = [];
                         if (is_array($exercises)) {
-                          foreach ($exercises as $ex) {
+                          foreach ($exercises as $ex_idx => $ex) {
                             $ui_exercises[] = [
                               'name' => $ex['name'] ?? 'Exercise',
                               'duration' => ($ex['duration'] ?? '0') . ' min',
                               'icon' => '🧘',
                               'type' => 'yoga',
-                              'done' => false
+                              'done' => in_array($ex_idx, $completed)
                             ];
                           }
                         }
 
-                        $phpRoutineData[$day]['title'] = $r['title'];
-                        $phpRoutineData[$day]['routines'] = $ui_exercises;
+                        $phpRoutineData[$day_idx]['title'] = $r['title'];
+                        $phpRoutineData[$day_idx]['routines'] = $ui_exercises;
 
-                        // Set status logic (simple approximation for demo)
-                        if ($day == 1) $phpRoutineData[$day]['status'] = 'ongoing';
+                        if (count($completed) > 0) {
+                            $phpRoutineData[$day_idx]['status'] = (count($completed) == count($exercises)) ? 'completed' : 'ongoing';
+                        }
                       }
+
 
                       echo json_encode($phpRoutineData);
                       ?>;
 
-    let selectedDay = 1; // Current day (ongoing)
+    let selectedDay = <?php echo $selected_day_num; ?>; 
 
-    // Generate Day Buttons
+    // Generate Day Buttons (removed duplicate rendering as PHP handles it now)
     function renderDaySelector() {
-      const container = document.getElementById("daySelector");
-      container.innerHTML = "";
-
-      for (let i = 1; i <= 7; i++) {
-        const data = routineData[i];
-        const btn = document.createElement("button");
-        btn.className = `day-btn ${data.status}`;
-        if (i === selectedDay) btn.classList.add("active");
-        btn.innerHTML = `Day ${i}`;
-        btn.onclick = () => selectDay(i);
-        container.appendChild(btn);
-      }
+       // Using PHP rendered selector for better state sync
     }
 
-    // Select a day and show details
-    function selectDay(day) {
-      selectedDay = day;
-      renderDaySelector();
-      renderDayDetails();
+    function toggleExercise(el, routineId, exIndex) {
+        el.classList.toggle('done');
+        
+        // Get all done items for this routine
+        const routineContent = el.closest('.routine-content');
+        const doneItems = [];
+        const allItems = routineContent.querySelectorAll('.routine-check');
+        
+        routineContent.querySelectorAll('.routine-check.done').forEach(check => {
+            const onclickStr = check.getAttribute('onclick');
+            const match = onclickStr.match(/,\s*\d+,\s*(\d+)\)/); // Adjusted regex for 3 args
+            if (match) doneItems.push(parseInt(match[1]));
+        });
+
+        // Update progress bar
+        const percent = (doneItems.length / allItems.length) * 100;
+        const progressFill = routineContent.querySelector('.progressFill');
+        const progressPercent = routineContent.querySelector('.progressPercent');
+        if (progressFill) progressFill.style.width = percent + '%';
+        if (progressPercent) progressPercent.textContent = Math.round(percent) + '%';
+
+        // Update Day selector status visually
+        const dayBtn = document.querySelector(`.day-btn[onclick*="day=${selectedDay}"]`);
+        if (dayBtn) {
+            dayBtn.classList.remove('completed', 'ongoing', 'upcoming');
+            if (doneItems.length === allItems.length) dayBtn.classList.add('completed');
+            else if (doneItems.length > 0) dayBtn.classList.add('ongoing');
+            else dayBtn.classList.add('upcoming');
+        }
+
+        const formData = new FormData();
+        formData.append('routine_id', routineId);
+        formData.append('completed_exercises', JSON.stringify(doneItems));
+
+        fetch('../handlers/member/save_exercise_status.php', {
+            method: 'POST',
+            body: formData
+        });
     }
-
-    // Render Day Details
-    function renderDayDetails() {
-      const data = routineData[selectedDay];
-
-      document.getElementById("dayTitle").textContent = data.title;
-
-      const statusEl = document.getElementById("dayStatus");
-      statusEl.textContent =
-        data.status.charAt(0).toUpperCase() + data.status.slice(1);
-      statusEl.className = `day-status ${data.status}`;
-
-      const listEl = document.getElementById("routineList");
-      listEl.innerHTML = "";
-
-      data.routines.forEach((routine, index) => {
-        const item = document.createElement("div");
-        item.className = "routine-item";
-        item.innerHTML = `
-            <div class="routine-icon ${routine.type}">${routine.icon}</div>
-            <div class="routine-info">
-              <div class="routine-name">${routine.name}</div>
-              <div class="routine-duration">${routine.duration}</div>
-            </div>
-            <div class="routine-check ${
-              routine.done ? "done" : ""
-            }" onclick="toggleRoutine(${index})">
-              ${routine.done ? "✓" : ""}
-            </div>
-          `;
-        listEl.appendChild(item);
-      });
-
-      // Update button text based on status
-      const startBtn = document.getElementById("startBtn");
-      if (data.status === "completed") {
-        startBtn.textContent = "Review Routine";
-      } else if (data.status === "ongoing") {
-        startBtn.textContent = "Continue Routine";
-      } else {
-        startBtn.textContent = "Start Routine";
-      }
-
-      updateProgress();
-    }
-
-    // Toggle routine completion
-    function toggleRoutine(index) {
-      routineData[selectedDay].routines[index].done = !routineData[selectedDay].routines[index].done;
-
-      // Update day status based on routines
-      const routines = routineData[selectedDay].routines;
-      const allDone = routines.every((r) => r.done);
-      const someDone = routines.some((r) => r.done);
-
-      if (allDone) {
-        routineData[selectedDay].status = "completed";
-      } else if (someDone) {
-        routineData[selectedDay].status = "ongoing";
-      } else {
-        routineData[selectedDay].status = "upcoming";
-      }
-
-      renderDaySelector();
-      renderDayDetails();
-    }
+    
+    // Remove legacy JS functions to prevent UI interference
+    function renderDaySelector() {}
+    function renderDayDetails() {}
+    
 
     // Mark entire day as complete
     function markDayComplete() {

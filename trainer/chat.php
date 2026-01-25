@@ -394,8 +394,9 @@ $trainer_name = $_SESSION['full_name'];
               if (!empty($messages)) {
                 foreach ($messages as $msg) {
                   $isSent = $msg['sender_id'] == $trainerUserId;
-                  $senderName = $isSent ? 'You' : htmlspecialchars($firstMember['full_name']);
-                  $senderImage = $isSent ? '../images/default_avatar.jpg' : '../uploads/profile_pics/' . htmlspecialchars($firstMember['profile_picture'] ?? 'default_avatar.jpg');
+                  $sender = getUserById($msg['sender_id']);
+                  $senderName = $isSent ? 'You' : htmlspecialchars($sender['full_name'] ?? 'Member');
+                  $senderImage = $sender['profile_picture'] ? '../uploads/profile_pics/' . htmlspecialchars($sender['profile_picture']) : '../images/default_avatar.jpg';
                   $align = $isSent ? 'sent' : 'received';
           ?>
                   <div class="message-row <?php echo $align; ?>">

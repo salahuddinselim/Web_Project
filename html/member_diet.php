@@ -5,21 +5,31 @@ requireLogin('member');
 $member_id = $_SESSION['member_id'];
 $member_name = $_SESSION['full_name'];
 
+// Define week dates (Monday to Sunday)
+$current_monday = date('Y-m-d', strtotime('monday this week'));
+$week_dates = [];
+for ($i = 0; $i < 7; $i++) {
+    $week_dates[$i + 1] = date('Y-m-d', strtotime("+$i days", strtotime($current_monday)));
+}
+
+// Get selected day (1-7), fallback to today's day of week
+$today_dow = date('N'); // 1 (Mon) to 7 (Sun)
+$selected_day_num = isset($_GET['day']) ? intval($_GET['day']) : $today_dow;
+if ($selected_day_num < 1 || $selected_day_num > 7) $selected_day_num = $today_dow;
+
+$requested_date = $week_dates[$selected_day_num];
 $today = date('Y-m-d');
-$plans = getMemberDietPlans($member_id, $today);
+
+$calSummary = getMemberCalorieSummary($member_id, $requested_date);
+$total_calories = $calSummary['planned_calories'] ?? 0;
+$taken_calories = $calSummary['taken_calories'] ?? 0;
+
+$plans = getMemberDietPlans($member_id, $requested_date);
 $todays_meals = [];
-$total_calories = 0;
-$total_protein = 0;
-$total_carbs = 0;
-$total_fat = 0;
 if (is_array($plans)) {
   foreach ($plans as $p) {
     if (isset($p['meal_time'])) {
       $todays_meals[$p['meal_time']] = $p;
-      $total_calories += intval($p['calories'] ?? 0);
-      $total_protein += intval($p['protein_grams'] ?? 0);
-      $total_carbs += intval($p['carbs_grams'] ?? 0);
-      $total_fat += intval($p['fat_grams'] ?? 0);
     }
   }
 }
@@ -30,43 +40,65 @@ $protein_target = 120;
 $carbs_target = 180;
 $fat_target = 65;
 
-// Weekly data
-$week_start = date('Y-m-d', strtotime('monday this week'));
-$week_end = date('Y-m-d', strtotime('sunday this week'));
-$all_plans = getMemberDietPlans($member_id);
-$weekly_calories = [];
-foreach ($all_plans as $p) {
-  if ($p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end) {
-    $day = date('w', strtotime($p['plan_date'])); // 0=Sun, 1=Mon, ..., 6=Sat
-    if (!isset($weekly_calories[$day])) $weekly_calories[$day] = 0;
-    $weekly_calories[$day] += intval($p['calories'] ?? 0);
-  }
+// Comprehensive Week Analysis for Diet
+$diet_week_statuses = [];
+foreach ($week_dates as $idx => $date) {
+    if ($date > $today) {
+        $diet_week_statuses[$idx] = 'upcoming';
+        continue;
+    }
+    
+    $summary = getMemberCalorieSummary($member_id, $date);
+    $planned = $summary['planned_calories'] ?? 0;
+    $taken = $summary['taken_calories'] ?? 0;
+    
+    if ($planned > 0) {
+        if ($taken >= $planned) {
+            $diet_week_statuses[$idx] = 'completed';
+        } else if ($taken > 0) {
+            $diet_week_statuses[$idx] = 'ongoing';
+        } else {
+            $diet_week_statuses[$idx] = 'upcoming';
+        }
+    } else {
+        $diet_week_statuses[$idx] = 'upcoming';
+    }
 }
 
 // Monthly data
+$all_plans = getMemberDietPlans($member_id); // Define $all_plans before use
 $month_start = date('Y-m-01');
 $month_end = date('Y-m-t');
 $monthly_total_calories = 0;
 $days_with_plans = [];
-foreach ($all_plans as $p) {
-  if ($p['plan_date'] >= $month_start && $p['plan_date'] <= $month_end) {
-    $monthly_total_calories += intval($p['calories'] ?? 0);
-    $days_with_plans[$p['plan_date']] = true;
-  }
+
+if (is_array($all_plans)) {
+    foreach ($all_plans as $p) {
+        if ($p['plan_date'] >= $month_start && $p['plan_date'] <= $month_end) {
+            $monthly_total_calories += intval($p['calories'] ?? 0);
+            $days_with_plans[$p['plan_date']] = true;
+        }
+    }
 }
+
 $days_tracked = count($days_with_plans);
 $total_days_in_month = date('t');
 $adherence = $total_days_in_month > 0 ? round(($days_tracked / $total_days_in_month) * 100) : 0;
 
 // Weekly adherence
-$weekly_plans_count = count(array_filter($all_plans, function ($p) use ($week_start, $week_end) {
-  return $p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end;
-}));
-$weekly_days_tracked = count(array_unique(array_column(array_filter($all_plans, function ($p) use ($week_start, $week_end) {
-  return $p['plan_date'] >= $week_start && $p['plan_date'] <= $week_end;
-}), 'plan_date')));
-$weekly_adherence = 7 > 0 ? round(($weekly_days_tracked / 7) * 100) : 0;
+$week_start_date = $week_dates[1];
+$week_end_date = $week_dates[7];
+
+$weekly_plans = is_array($all_plans) ? array_filter($all_plans, function ($p) use ($week_start_date, $week_end_date) {
+    return $p['plan_date'] >= $week_start_date && $p['plan_date'] <= $week_end_date;
+}) : [];
+
+$weekly_plans_count = count($weekly_plans);
+$weekly_days_tracked = count(array_unique(array_column($weekly_plans, 'plan_date')));
+$weekly_adherence = round(($weekly_days_tracked / 7) * 100);
+
 $progress_data = getMemberProgress($member_id);
+if (!is_array($progress_data)) $progress_data = [];
 $monthly_progress = array_filter($progress_data, function ($p) use ($month_start, $month_end) {
   return $p['tracking_date'] >= $month_start && $p['tracking_date'] <= $month_end;
 });
@@ -275,10 +307,16 @@ if (count($monthly_progress) >= 2) {
     }
 
     .selector-btn.active {
-      background: linear-gradient(135deg, #1a3d2a, #0d2818);
+      background-color: #1f3b26;
       border-color: #00d26a;
-      color: #00d26a;
+      color: #fff;
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 210, 106, 0.2);
     }
+    
+    .selector-btn.completed { border-bottom: 3px solid #00d26a; }
+    .selector-btn.ongoing { border-bottom: 3px solid #f0c040; }
+    .selector-btn.upcoming { border-bottom: 1px solid #2a352a; }
 
     .selector-btn:hover:not(.active) {
       border-color: #555;
@@ -756,10 +794,69 @@ if (count($monthly_progress) >= 2) {
     .btn-secondary:hover {
       background: #3a453a;
     }
+
+    /* Ensure interaction on critical buttons */
+    .toggle-taken-btn {
+      position: relative !important;
+      z-index: 9999 !important;
+      pointer-events: all !important;
+      cursor: pointer !important;
+    }
   </style>
 </head>
 
 <body>
+    <script>
+    // DEFINE TOGGLE EARLY
+    window.handleConsumptionToggle = function(btn) {
+        if (!btn || btn.disabled) return;
+        
+        const dietId = btn.getAttribute('data-diet-id');
+        const currentStatus = btn.getAttribute('data-status');
+        const newStatus = (currentStatus == '1') ? 0 : 1;
+        
+        btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerText = 'Syncing...';
+        btn.style.opacity = '0.5';
+
+        const formData = new FormData();
+        formData.append('diet_plan_id', dietId);
+        formData.append('is_consumed', newStatus);
+
+        fetch('../handlers/member/mark_consumed.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                const url = new URL(window.location.href);
+                window.location.href = url.pathname + url.search;
+            } else {
+                alert('Error: ' + data.error);
+                btn.disabled = false;
+                btn.innerText = originalText;
+                btn.style.opacity = '1';
+            }
+        })
+        .catch(function(err) {
+            alert('Connection error. Please refresh.');
+            btn.disabled = false;
+            btn.innerText = originalText;
+            btn.style.opacity = '1';
+        });
+    };
+
+    // DEBUG CLICK INTERCEPTOR
+    document.addEventListener('mousedown', function(e) {
+        console.log('Down on:', e.target.tagName, e.target.className);
+        if (e.target.closest('.toggle-taken-btn')) {
+            console.log('Caught toggle click via delegation');
+            window.handleConsumptionToggle(e.target.closest('.toggle-taken-btn'));
+        }
+    }, true);
+    </script>
   <?php include __DIR__ . '/../includes/member_sidebar.php'; ?>
 
   <!-- Main Content -->
@@ -776,63 +873,166 @@ if (count($monthly_progress) >= 2) {
     <!-- Stats Overview -->
     <div class="stats-overview" id="statsOverview">
       <div class="stat-card">
-        <div class="stat-label">Today's Target</div>
-        <div class="stat-value"><?php echo $total_calories; ?><span class="stat-unit">kcal</span></div>
+        <div class="stat-label">Taken / Planned</div>
+        <div class="stat-value"><?php echo $taken_calories; ?> / <?php echo $total_calories; ?><span class="stat-unit">kcal</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Diet Status</div>
-        <div class="stat-value"><?php echo count($todays_meals) > 0 ? 'Active' : 'No Plan'; ?></div>
+        <div class="stat-label">Daily Target</div>
+        <div class="stat-value"><?php echo $calorie_target; ?><span class="stat-unit">kcal</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Meals</div>
-        <div class="stat-value"><?php echo count($todays_meals); ?><span class="stat-unit">items</span></div>
+        <div class="stat-label">Meals Done</div>
+        <div class="stat-value">
+           <?php 
+             $done = count(array_filter($todays_meals, function($m) { return $m['is_consumed'] == 1; }));
+             echo $done . ' / ' . count($todays_meals);
+           ?>
+        </div>
       </div>
     </div>
 
     <div id="dailyView">
       <div class="selector-row" id="daySelector">
-        <button class="selector-btn active" data-day="today">Today (<?php echo date('M d'); ?>)</button>
+        <?php 
+          $days_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          for($i = 1; $i <= 7; $i++) {
+            $label = "Day $i<br><small>" . $days_labels[$i-1] . "</small>";
+            $active = ($i == $selected_day_num) ? 'active' : '';
+            $status_class = $diet_week_statuses[$i];
+            echo "<button class='selector-btn $active $status_class' onclick='window.location.href=\"?day=$i\"'>$label</button>";
+          }
+        ?>
       </div>
 
       <div class="diet-content">
         <div class="meals-panel">
           <h2>Today's Meals</h2>
 
-          <?php if (empty($todays_meals)): ?>
+          <?php if (empty($plans)): ?>
             <div class="meal-card">
               <div class="meal-description">
                 <p>No diet plan assigned for today. Please contact your trainer.</p>
               </div>
             </div>
           <?php else: ?>
-            <?php foreach (['breakfast' => '🌅', 'lunch' => '🥗', 'dinner' => '🌙', 'snack' => '🍎'] as $time => $icon): ?>
-              <?php if (isset($todays_meals[$time])): $meal = $todays_meals[$time]; ?>
+            <?php 
+              // 1. Trainer assigned meals
+              $icons = ['breakfast' => '🌅', 'lunch' => '🥗', 'dinner' => '🌙', 'snack' => '🍎'];
+              foreach ($plans as $meal):
+                if ($meal['created_by'] == 'trainer'):
+                  $icon = $icons[$meal['meal_time']] ?? '🍽️';
+            ?>
                 <div class="meal-card">
                   <div class="meal-header">
                     <div class="meal-title-row">
-                      <div class="meal-icon <?php echo $time; ?>"><?php echo $icon; ?></div>
+                      <div class="meal-icon <?php echo $meal['meal_time']; ?>"><?php echo $icon; ?></div>
                       <div>
-                        <div class="meal-type"><?php echo ucfirst($time); ?></div>
+                        <div class="meal-type"><?php echo ucfirst($meal['meal_time']); ?></div>
                         <div class="meal-name"><?php echo htmlspecialchars($meal['meal_name']); ?></div>
                       </div>
                     </div>
-                    <div class="meal-time"><?php echo ucfirst($time); ?></div>
+                    <div class="meal-time"><?php echo ucfirst($meal['meal_time']); ?></div>
                   </div>
                   <div class="meal-description">
                     <p><?php echo nl2br(htmlspecialchars($meal['food_items'])); ?></p>
                   </div>
-                  <?php if (!empty($meal['calories'])): ?>
-                    <div class="meal-details">
-                      <div class="meal-detail-item">
+                  <div style="display: flex; gap: 15px; align-items: center; padding-top: 10px; border-top: 1px solid #2a352a;">
+                    <button type="button" 
+                            class="btn toggle-taken-btn <?php echo $meal['is_consumed'] ? 'btn-primary' : 'btn-secondary'; ?>" 
+                            style="flex: 1; padding: 12px; font-size: 13px; font-weight: bold; cursor: pointer !important;"
+                            data-diet-id="<?php echo $meal['diet_plan_id']; ?>"
+                            data-status="<?php echo $meal['is_consumed'] ? 1 : 0; ?>">
+                      <?php echo $meal['is_consumed'] ? '✓ Meal Taken' : 'Mark as Taken'; ?>
+                    </button>
+                    <?php if (!empty($meal['calories'])): ?>
+                      <div class="meal-detail-item" style="min-width: 80px;">
                         <div class="detail-value"><?php echo $meal['calories']; ?></div>
-                        <div class="detail-label">Calories</div>
+                        <div class="detail-label">kcal</div>
+                      </div>
+                    <?php endif; ?>
+                  </div>
+                </div>
+            <?php 
+                endif;
+              endforeach; 
+              
+              // 2. Member extra snacks
+              foreach ($plans as $meal):
+                if ($meal['created_by'] == 'member'):
+            ?>
+                <div class="meal-card" style="border-left: 4px solid #f0c040;">
+                  <div class="meal-header">
+                    <div class="meal-title-row">
+                      <div class="meal-icon snack">⚡</div>
+                      <div>
+                        <div class="meal-type">Extra Intake</div>
+                        <div class="meal-name"><?php echo htmlspecialchars($meal['meal_name']); ?></div>
                       </div>
                     </div>
-                  <?php endif; ?>
+                    <button type="button" class="btn" style="background: none; color: #ff4d4d; padding: 5px; font-size: 16px; cursor: pointer;" onclick="deleteIntake(<?php echo $meal['diet_plan_id']; ?>)">🗑️</button>
+                  </div>
+                  <div class="meal-description">
+                    <p><?php echo nl2br(htmlspecialchars($meal['food_items'])); ?></p>
+                  </div>
+                  <div style="display: flex; gap: 15px; align-items: center; padding-top: 10px; border-top: 1px solid #2a352a;">
+                    <div class="meal-detail-item" style="min-width: 60px;">
+                        <div class="detail-value"><?php echo $meal['calories']; ?></div>
+                        <div class="detail-label">kcal</div>
+                    </div>
+                    <?php if (!empty($meal['product_weight'])): ?>
+                    <div class="meal-detail-item" style="min-width: 60px;">
+                        <div class="detail-value"><?php echo $meal['product_weight']; ?></div>
+                        <div class="detail-label">grams</div>
+                    </div>
+                    <?php endif; ?>
+                    <div style="flex: 1; text-align: right; display: flex; gap: 8px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" onclick='openEditIntake(<?php echo json_encode($meal); ?>)'>✏️ Edit</button>
+                        <button type="button" class="btn" style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d33; padding: 6px 10px; font-size: 11px;" onclick="deleteIntake(<?php echo $meal['diet_plan_id']; ?>)">🗑️</button>
+                    </div>
+                  </div>
                 </div>
-              <?php endif; ?>
-            <?php endforeach; ?>
+            <?php 
+                endif;
+              endforeach;
+            ?>
           <?php endif; ?>
+
+          <!-- Integrated Quick Add -->
+          <div id="extraIntakeForm" style="margin-top: 25px; background: linear-gradient(145deg, #1a201a, #151915); padding: 25px; border-radius: 14px; border: 1px solid #2a352a;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 16px; margin: 0; color: #00d26a; text-transform: uppercase; letter-spacing: 1px;">⚡ Quick Log Extra Intake</h2>
+                <span style="font-size: 11px; color: #888;">Adding to <strong>Day <?php echo $selected_day_num; ?></strong></span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label class="stat-label" style="display: block; margin-bottom: 5px;">Item Name</label>
+                    <input type="text" id="extraMealName" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d; border-color: #2a352a;" placeholder="e.g. Protein Bar">
+                </div>
+                <div>
+                    <label class="stat-label" style="display: block; margin-bottom: 5px;">Calories (kcal)</label>
+                    <input type="number" id="extraCalories" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d; border-color: #2a352a;" value="0">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <label class="stat-label" style="display: block; margin-bottom: 5px;">Weight (g / unit)</label>
+                    <input type="number" id="extraWeight" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d; border-color: #2a352a;" value="0">
+                </div>
+                <div>
+                    <label class="stat-label" style="display: block; margin-bottom: 5px;">Target Date</label>
+                    <select id="extraDate" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d; border-color: #2a352a;">
+                        <?php 
+                        $days_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        for($i=1; $i<=7; $i++): ?>
+                            <option value="<?php echo $week_dates[$i]; ?>" <?php echo ($i == $selected_day_num) ? 'selected' : ''; ?>>
+                                Day <?php echo $i; ?> (<?php echo $days_labels[$i-1]; ?>)
+                            </option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="logExtraIntake()">+ Save Entry for Day <?php echo $selected_day_num; ?></button>
+          </div>
         </div>
 
         <!-- Side Panel -->
@@ -843,12 +1043,17 @@ if (count($monthly_progress) >= 2) {
             <div class="calorie-circle">
               <svg width="150" height="150">
                 <circle class="calorie-bg" cx="75" cy="75" r="65"></circle>
-                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="408" stroke-dashoffset="115">
+                <?php 
+                  $total_goal = max($calorie_target, $total_calories);
+                  $dash_array = 408;
+                  $dash_offset = $total_goal > 0 ? $dash_array - ($dash_array * min(1, $taken_calories / $total_goal)) : $dash_array;
+                ?>
+                <circle class="calorie-progress" cx="75" cy="75" r="65" stroke-dasharray="<?php echo $dash_array; ?>" stroke-dashoffset="<?php echo $dash_offset; ?>">
                 </circle>
               </svg>
               <div class="calorie-text">
-                <div class="calorie-value"><?php echo number_format($total_calories); ?></div>
-                <div class="calorie-label">of <?php echo number_format($calorie_target); ?> kcal</div>
+                <div class="calorie-value"><?php echo number_format($taken_calories); ?></div>
+                <div class="calorie-label">of <?php echo number_format($total_calories); ?> planned</div>
               </div>
             </div>
 
@@ -856,37 +1061,28 @@ if (count($monthly_progress) >= 2) {
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Protein</span>
-                  <span class="macro-value"><?php echo $total_protein; ?>g / <?php echo $protein_target; ?>g</span>
+                  <span class="macro-value"><?php echo $calSummary['taken_protein'] ?? 0; ?>g / <?php echo $calSummary['planned_protein'] ?? 0; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill protein" style="width: <?php echo $protein_target > 0 ? min(100, ($total_protein / $protein_target) * 100) : 0; ?>%"></div>
+                  <div class="macro-fill protein" style="width: <?php echo ($calSummary['planned_protein'] ?? 0) > 0 ? min(100, (($calSummary['taken_protein'] ?? 0) / $calSummary['planned_protein']) * 100) : 0; ?>%"></div>
                 </div>
               </div>
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Carbs</span>
-                  <span class="macro-value"><?php echo $total_carbs; ?>g / <?php echo $carbs_target; ?>g</span>
+                  <span class="macro-value"><?php echo $calSummary['taken_carbs'] ?? 0; ?>g / <?php echo $calSummary['planned_carbs'] ?? 0; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill carbs" style="width: <?php echo $carbs_target > 0 ? min(100, ($total_carbs / $carbs_target) * 100) : 0; ?>%"></div>
+                  <div class="macro-fill carbs" style="width: <?php echo ($calSummary['planned_carbs'] ?? 0) > 0 ? min(100, (($calSummary['taken_carbs'] ?? 0) / $calSummary['planned_carbs']) * 100) : 0; ?>%"></div>
                 </div>
               </div>
               <div class="macro-item">
                 <div class="macro-header">
                   <span class="macro-name">Fat</span>
-                  <span class="macro-value"><?php echo $total_fat; ?>g / <?php echo $fat_target; ?>g</span>
+                  <span class="macro-value"><?php echo $calSummary['taken_fat'] ?? 0; ?>g / <?php echo $calSummary['planned_fat'] ?? 0; ?>g</span>
                 </div>
                 <div class="macro-bar">
-                  <div class="macro-fill fat" style="width: <?php echo $fat_target > 0 ? min(100, ($total_fat / $fat_target) * 100) : 0; ?>%"></div>
-                </div>
-              </div>
-              <div class="macro-item">
-                <div class="macro-header">
-                  <span class="macro-name">Fiber</span>
-                  <span class="macro-value">22g / 30g</span>
-                </div>
-                <div class="macro-bar">
-                  <div class="macro-fill fiber" style="width: 73%"></div>
+                  <div class="macro-fill fat" style="width: <?php echo ($calSummary['planned_fat'] ?? 0) > 0 ? min(100, (($calSummary['taken_fat'] ?? 0) / $calSummary['planned_fat']) * 100) : 0; ?>%"></div>
                 </div>
               </div>
             </div>
@@ -1090,14 +1286,167 @@ if (count($monthly_progress) >= 2) {
     </div>
 
 
-    <!-- Action Buttons -->
-    <div class="action-row">
-      <button class="btn btn-primary" onclick="window.location.href='../handlers/member/download_diet_report.php'">📄 Download Report</button>
-      <button class="btn btn-secondary" onclick="window.location.href='member_chat.php'">💬 Ask Trainer</button>
+  <!-- Member Edit Intake Modal -->
+  <div id="editIntakeModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10001; display: none; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #1a201a; border: 1px solid #2a352a; border-radius: 14px; width: 100%; max-width: 450px; padding: 30px;">
+        <h2 style="color: #00d26a; font-size: 18px; margin-bottom: 20px;">Edit Extra Intake</h2>
+        <input type="hidden" id="editIntakeId">
+        
+        <div style="margin-bottom: 15px;">
+            <label class="stat-label">Item Name</label>
+            <input type="text" id="editMealName" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d;">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label class="stat-label">Calories</label>
+                <input type="number" id="editCalories" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d;">
+            </div>
+            <div>
+                <label class="stat-label">Weight (g)</label>
+                <input type="number" id="editWeight" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label class="stat-label">Date</label>
+            <select id="editDate" class="selector-btn" style="width: 100%; text-align: left; background: #0d110d;">
+                <?php foreach($week_dates as $idx => $date): ?>
+                    <option value="<?php echo $date; ?>">Day <?php echo $idx; ?> (<?php echo $week_dates[$idx]; ?>)</option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="closeEditModal()">Cancel</button>
+            <button class="btn btn-primary" style="flex: 2;" onclick="updateExtraIntake()">Update Entry</button>
+        </div>
     </div>
   </div>
 
   <script>
+    function openEditIntake(meal) {
+        document.getElementById('editIntakeId').value = meal.diet_plan_id;
+        document.getElementById('editMealName').value = meal.meal_name;
+        document.getElementById('editCalories').value = meal.calories;
+        document.getElementById('editWeight').value = meal.product_weight;
+        document.getElementById('editDate').value = meal.plan_date;
+        
+        const modal = document.getElementById('editIntakeModal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editIntakeModal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+
+    function logExtraIntake() {
+        const meal = document.getElementById('extraMealName').value;
+        const cals = document.getElementById('extraCalories').value;
+        const weight = document.getElementById('extraWeight').value;
+        const date = document.getElementById('extraDate').value;
+
+        if (!meal) { alert('Enter meal name'); return; }
+
+        const formData = new FormData();
+        formData.append('meal_name', meal);
+        formData.append('calories', cals);
+        formData.append('product_weight', weight);
+        formData.append('plan_date', date);
+
+        fetch('../handlers/member/add_extra_intake.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                let dayNum = 1;
+                const select = document.getElementById('extraDate');
+                if (select) {
+                    const options = select.options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === date) {
+                            dayNum = i + 1;
+                            break;
+                        }
+                    }
+                }
+                window.location.href = '?day=' + dayNum;
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+
+    function updateExtraIntake() {
+        const id = document.getElementById('editIntakeId').value;
+        const meal = document.getElementById('editMealName').value;
+        const cals = document.getElementById('editCalories').value;
+        const weight = document.getElementById('editWeight').value;
+        const date = document.getElementById('editDate').value;
+
+        const formData = new FormData();
+        formData.append('diet_plan_id', id);
+        formData.append('meal_name', meal);
+        formData.append('calories', cals);
+        formData.append('product_weight', weight);
+        formData.append('plan_date', date);
+
+        fetch('../handlers/member/edit_extra_intake.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                let dayNum = 1;
+                const select = document.getElementById('editDate');
+                if (select) {
+                    const options = select.options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === date) {
+                            dayNum = i + 1;
+                            break;
+                        }
+                    }
+                }
+                window.location.href = '?day=' + dayNum;
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+
+    function deleteIntake(id) {
+        if (!confirm('Are you sure you want to delete this entry?')) return;
+        
+        const formData = new FormData();
+        formData.append('diet_plan_id', id);
+
+        fetch('../handlers/member/delete_diet_plan.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentDay = urlParams.get('day');
+                if (currentDay) {
+                    window.location.href = '?day=' + currentDay;
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+
     // View Toggle
     const viewBtns = document.querySelectorAll('.view-btn');
     const dailyView = document.getElementById('dailyView');
@@ -1146,9 +1495,7 @@ if (count($monthly_progress) >= 2) {
     const waterGlasses = document.querySelectorAll('.water-glass');
     waterGlasses.forEach((glass, index) => {
       glass.addEventListener('click', () => {
-        // Toggle this glass and update all before it
         const isFilled = glass.classList.contains('filled');
-
         waterGlasses.forEach((g, i) => {
           if (i <= index && !isFilled) {
             g.classList.add('filled');
@@ -1167,7 +1514,6 @@ if (count($monthly_progress) >= 2) {
         btn.classList.add('active');
       });
     });
-  </script>
+    </script>
 </body>
-
 </html>
