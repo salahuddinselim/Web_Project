@@ -15,7 +15,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $specialization = $_POST['specialization'] ?? '';
     $experience_years = $_POST['experience_years'] ?? 0;
-    $certification = $_POST['certification'] ?? '';
+    // Handle certification image upload
+    $certification = '';
+    if (isset($_FILES['certification']) && $_FILES['certification']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/../uploads/certificates/';
+        
+        // Create directory if it doesn't exist
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+        
+        $file_ext = strtolower(pathinfo($_FILES['certification']['name'], PATHINFO_EXTENSION));
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        if (in_array($file_ext, $allowed_types)) {
+            $new_filename = 'cert_' . time() . '_' . uniqid() . '.' . $file_ext;
+            $target_path = $upload_dir . $new_filename;
+            
+            if (move_uploaded_file($_FILES['certification']['tmp_name'], $target_path)) {
+                $certification = $new_filename;
+            }
+        }
+    }
     $bio = $_POST['bio'] ?? '';
     
     $username = trim($_POST['username'] ?? '');
@@ -249,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="form-container">
-      <form method="POST" action="">
+      <form method="POST" action="" enctype="multipart/form-data">
       <div class="input-group">
         <label>Full Name</label>
         <input type="text" name="full_name" class="input-field" placeholder="Enter trainer's full name" required />
@@ -286,8 +307,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="input-group">
-        <label>Certification</label>
-        <input type="text" name="certification" class="input-field" placeholder="Enter certification details" />
+        <label>Certification Photo</label>
+        <input type="file" name="certification" class="input-field" accept="image/*" style="padding: 10px;" />
+        <small style="color: #888; margin-top: 5px; display: block;">Upload certificate image (JPG, PNG, GIF, WebP)</small>
       </div>
 
       <div class="input-group">
