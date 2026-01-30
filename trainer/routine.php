@@ -5,7 +5,7 @@ requireLogin('trainer');
 $trainer_id = $_SESSION['trainer_id'];
 $trainer_name = $_SESSION['full_name'];
 
-// Get assigned members
+
 $members = getTrainerMembers($trainer_id);
 
 
