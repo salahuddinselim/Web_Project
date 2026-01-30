@@ -19,7 +19,7 @@ $error_message = '';
         $exercises_json = $_POST['exercises_json'] ?? '[]';
         
         $selected_day = intval($_POST['target_day'] ?? 1);
-        // Calculate date: Monday of this week + (selected_day - 1)
+        
         $monday = date('Y-m-d', strtotime('monday this week'));
         $scheduled_date = date('Y-m-d', strtotime("+" . ($selected_day - 1) . " days", strtotime($monday)));
     
