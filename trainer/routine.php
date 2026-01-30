@@ -8,7 +8,7 @@ $trainer_name = $_SESSION['full_name'];
 // Get assigned members
 $members = getTrainerMembers($trainer_id);
 
-// Handle Form Submission
+
 $success_message = '';
 $error_message = '';
 
