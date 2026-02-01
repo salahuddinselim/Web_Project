@@ -44,6 +44,19 @@ try {
         echo "✅ Added product_weight to diet_plans table\n";
     }
 
+    // 6. Fix workout_content table (add missing columns)
+    $result = $pdo->query("SHOW COLUMNS FROM workout_content LIKE 'content_body'");
+    if ($result->rowCount() == 0) {
+        $pdo->exec("ALTER TABLE workout_content ADD COLUMN content_body TEXT NULL AFTER title");
+        echo "✅ Added content_body to workout_content table\n";
+    }
+
+    $result = $pdo->query("SHOW COLUMNS FROM workout_content LIKE 'thumbnail'");
+    if ($result->rowCount() == 0) {
+        $pdo->exec("ALTER TABLE workout_content ADD COLUMN thumbnail VARCHAR(255) NULL AFTER content_type");
+        echo "✅ Added thumbnail to workout_content table\n";
+    }
+
     echo "\nDatabase migration completed successfully!";
 } catch (PDOException $e) {
     echo "❌ Error: " . $e->getMessage();

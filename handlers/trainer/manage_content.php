@@ -28,35 +28,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle Video Upload
             if ($content_type === 'video') {
-                if (isset($_FILES['video_file']) && $_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
-                    $upload_dir = __DIR__ . '/../../uploads/videos/';
-                    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-                    
-                    $file_ext = pathinfo($_FILES['video_file']['name'], PATHINFO_EXTENSION);
-                    $file_name = uniqid('video_') . '.' . $file_ext;
-                    $target_file = $upload_dir . $file_name;
-                    
-                    if (move_uploaded_file($_FILES['video_file']['tmp_name'], $target_file)) {
-                        $file_path = 'uploads/videos/' . $file_name;
+                if (isset($_FILES['video_file'])) {
+                    if ($_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
+                        $upload_dir = __DIR__ . '/../../uploads/videos/';
+                        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+                        
+                        $file_ext = pathinfo($_FILES['video_file']['name'], PATHINFO_EXTENSION);
+                        $file_name = uniqid('video_') . '.' . $file_ext;
+                        $target_file = $upload_dir . $file_name;
+                        
+                        if (move_uploaded_file($_FILES['video_file']['tmp_name'], $target_file)) {
+                            $file_path = 'uploads/videos/' . $file_name;
+                        } else {
+                            echo json_encode(['success' => false, 'message' => 'Failed to move uploaded video.']);
+                            exit;
+                        }
+                    } elseif ($_FILES['video_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+                        $error_msg = 'Video upload error: ' . $_FILES['video_file']['error'];
+                        if ($_FILES['video_file']['error'] === UPLOAD_ERR_INI_SIZE) $error_msg = 'Video file is too large for the server configuration.';
+                        echo json_encode(['success' => false, 'message' => $error_msg]);
+                        exit;
                     }
-                } elseif ($action === 'add') {
-                    echo json_encode(['success' => false, 'message' => 'Video file is required']);
+                }
+                
+                if ($action === 'add' && empty($file_path)) {
+                    echo json_encode(['success' => false, 'message' => 'Video file is required for new video content.']);
                     exit;
                 }
             }
 
             // Handle Article Photo Upload
             if ($content_type === 'article') {
-                if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-                    $upload_dir = __DIR__ . '/../../uploads/content/';
-                    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-                    
-                    $file_ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-                    $file_name = uniqid('content_') . '.' . $file_ext;
-                    $target_file = $upload_dir . $file_name;
-                    
-                    if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                        $thumbnail = 'uploads/content/' . $file_name;
+                if (isset($_FILES['photo'])) {
+                    if ($_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                        $upload_dir = __DIR__ . '/../../uploads/content/';
+                        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+                        
+                        $file_ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+                        $file_name = uniqid('content_') . '.' . $file_ext;
+                        $target_file = $upload_dir . $file_name;
+                        
+                        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+                            $thumbnail = 'uploads/content/' . $file_name;
+                        }
+                    } elseif ($_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+                        $error_msg = 'Photo upload error: ' . $_FILES['photo']['error'];
+                        if ($_FILES['photo']['error'] === UPLOAD_ERR_INI_SIZE) $error_msg = 'Photo file is too large.';
+                        echo json_encode(['success' => false, 'message' => $error_msg]);
+                        exit;
                     }
                 }
             }
@@ -67,8 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => true, 'message' => 'Content added successfully']);
             } else {
                 // Edit logic
-                $sql = "UPDATE workout_content SET title = ?, content_body = ?, tags = ?";
-                $params = [$title, $content_body, $tags];
+                $sql = "UPDATE workout_content SET title = ?, content_body = ?, tags = ?, content_type = ?";
+                $params = [$title, $content_body, $tags, $content_type];
                 
                 if (!empty($file_path)) {
                     $sql .= ", file_path = ?";
