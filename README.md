@@ -56,145 +56,112 @@
 
 ```
 Web_Project/
+├── admin/                    # Admin portal pages
 ├── config/
 │   ├── database.php          # Database connection
 │   └── session.php           # Session management
-├── includes/
-│   ├── auth.php              # Authentication functions
-│   ├── db_functions.php      # Database helper functions
-│   ├── member_sidebar.php    # Member sidebar component
-│   ├── trainer_sidebar.php   # Trainer sidebar component
-│   └── admin_sidebar.php     # Admin sidebar component
-├── handlers/
-│   ├── login_handler.php     # Member/Trainer login
-│   ├── admin_login_handler.php  # Admin login
-│   ├── logout_handler.php    # Logout
-│   ├── member/               # Member-specific handlers
-│   ├── trainer/              # Trainer-specific handlers
-│   └── admin/                # Admin-specific handlers
+├── css/                      # Stylesheets (Vanilla CSS)
 ├── database/
 │   ├── schema.sql            # Database structure
 │   └── sample_data.sql       # Test data
-├── html/                     # Member pages
-├── trainer/                  # Trainer pages
-├── admin/                    # Admin pages
-├── css/                      # Stylesheets
-└── images/                   # Images and media
+├── handlers/
+│   ├── admin/                # Admin-specific logic
+│   ├── member/               # Member-specific logic (Reporting, Logs)
+│   ├── trainer/              # Trainer-specific logic (CMS, PDF Generation)
+│   ├── login_handler.php     # Unified login logic
+│   └── upload_profile_picture.php # Shared profile image handler
+├── html/                     # Member portal pages
+├── includes/
+│   ├── auth.php              # Authentication & Session security
+│   ├── db_functions.php      # Reusable database queries
+│   ├── fpdf.php              # PDF generation library
+│   ├── font/                 # Custom fonts for reports
+│   └── *_sidebar.php         # Role-specific navigation menus
+├── images/                   # Static assets & icons
+├── trainer/                  # Trainer portal pages
+├── uploads/                  # User-uploaded profile pictures
+└── utils/                    # Helper utilities
 ```
 
 ## Features Implemented
 
-### Authentication System
+### Authentication & Security
 
-- ✅ Separate login for Member/Trainer and Admin
-- ✅ Role-based access control
-- ✅ Session management with timeout
-- ✅ Secure password hashing
+- ✅ Role-based Access Control (Admin, Trainer, Member)
+- ✅ Secured Session Management with 30-minute timeout
+- ✅ CSRF protection and Input sanitization
+- ✅ Password Management (Change Password system)
+- ✅ Profile Management (Update info & Upload profile pictures)
+
+### Reporting & Analytics (New! 🚀)
+
+- ✅ **Trainer PDF Reports**: Generate comprehensive member progress reports in PDF format.
+- ✅ **Member CSV Exports**: Download routines and diet plans as CSV files for offline tracking.
+- ✅ Dynamic progress visualization for health metrics.
 
 ### Member Portal
 
-- ✅ Dashboard with dynamic data
-- ✅ View assigned routines
-- ✅ View diet plans
-- ✅ Track progress (weight, heart rate, sleep, mood)
-- ✅ Rate app and trainer
-- ✅ Calorie calculator for personal food tracking
+- ✅ Personal dashboard with real-time statistics.
+- ✅ **Health Tracking**: Log weight, heart rate, sleep duration, and mood.
+- ✅ **Diet & Rutines**: View trainer-assigned plans and track completion.
+- ✅ **Calorie Calculator**: Calculate and log personal food intake.
+- ✅ Class booking system and trainer/app rating.
 
 ### Trainer Portal
 
-- ✅ Dashboard with statistics
-- ✅ View assigned members
-- ✅ Create routines for members
-- ✅ Create diet plans with calorie/weight input
-- ✅ View member progress logs
-- ✅ Chat with members
+- ✅ **Content Management**: Upload and manage workout/educational content.
+- ✅ Member management dashboard.
+- ✅ Interactive diet and routine builders.
+- ✅ Direct messaging system with members.
+- ✅ Member progress audit via PDF report generation.
 
 ### Admin Portal
 
-- ✅ Dashboard with system statistics
-- ✅ Add new members
-- ✅ Add new trainers
-- ✅ Assign trainers to members
-- ✅ Manage profiles
+- ✅ System-wide statistics and user management.
+- ✅ Add/Modify Trainers and Members.
+- ✅ Trainer-Member assignment system.
+- ✅ Global profile and security settings.
 
 ## Database Tables
 
-- **users** - Unified authentication for all roles
-- **members** - Member profiles and details
-- **trainers** - Trainer profiles and specializations
-- **admins** - Admin profiles
-- **routines** - Workout routines assigned to members
-- **diet_plans** - Diet plans (trainer-created and member-created)
-- **progress_tracking** - Member health metrics tracking
-- **classes** - Available fitness classes
-- **class_bookings** - Member class reservations
-- **messages** - Chat system between members and trainers
-- **ratings** - App and trainer ratings
-- **routine_progress** - Exercise completion tracking
-- **workout_content** - Trainer's content library
+- **users** - Unified authentication table.
+- **members/trainers/admins** - Detailed profile information.
+- **routines / diet_plans** - Plan structures.
+- **progress_tracking** - Time-series health data.
+- **messages** - Real-time chat history.
+- **workout_content** - Trainer's digital asset library.
+- **ratings / routine_progress** - Feedback and completion metrics.
 
 ## Key Differences: Trainer vs Member (Calorie Logic)
 
 ### Trainer - Diet Plan Creation
 
-- Trainers can create diet plans for their assigned members
-- Input fields include: meal name, food items, **weight (grams)**, **calories**
-- Trainer sets these values for the member's diet plan
+- Trainers define the standard plan for members (Meal, Food, Weight, Calories).
 - Located in: `trainer/diet_plan.php`
 
 ### Member - Food Tracking
 
-- Members can view diet plans created by their trainer
-- Members can also add their own food items with calorie calculator
-- Input fields for personal tracking: food name, weight, calories
+- Members log actual consumption and can add non-plan items using the calculator.
 - Located in: `html/member_diet.php`
 
 ## Troubleshooting
 
-### Database Connection Error
+### Database Connection
 
-- Check if MySQL is running in XAMPP
-- Verify database name is `pranayom_db`
-- Check `config/database.php` for correct credentials
+- Verify `config/database.php` matches your local MySQL settings.
+- Ensure the database name is `pranayom_db`.
 
-### Login Not Working
+### PDF Rendering Issues
 
-- Ensure database is imported correctly
-- Clear browser cookies/cache
-- Check browser console for JavaScript errors
-
-### Page Not Found (404)
-
-- Ensure Apache is running
-- Check file paths in code match your directory structure
-- Verify `.php` extension is used, not `.html`
-
-### Session Issues
-
-- Clear browser cookies
-- Check PHP session settings in XAMPP
-- Restart Apache service
+- Ensure `includes/fpdf.php` and `includes/font/` directory are present.
+- Check write permissions for the `uploads/` directory for profile pictures.
 
 ## Development Notes
 
-- All passwords are hashed using PHP's `password_hash()` function
-- CSRF protection is implemented for forms
-- SQL injection protection via PDO prepared statements
-- Session timeout is set to 30 minutes
-- All user inputs are sanitized and validated
-
-## Next Steps
-
-1. Import the database schema and sample data
-2. Test login with provided credentials
-3. Explore different user roles (member, trainer, admin)
-4. Customize the application as needed
-5. Add your own data and users
-
-## Support
-
-For issues or questions, check the implementation plan document or review the code comments in each file.
+- **Language Stack**: PHP 8.x, MySQL, Vanilla JavaScript, Vanilla CSS.
+- **Reporting**: Uses FPDF for server-side document generation.
+- **Responsive Design**: All sidebars and dashboards are optimized for different screen sizes.
 
 ---
 
-**Note**: This is a development setup. For production use, ensure proper security measures including HTTPS, strong passwords, and secure server configuration.
+**Note**: This project is for educational/development purposes. Always implement SSL and production-grade environment variables before deploying to a live server.
