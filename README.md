@@ -54,34 +54,32 @@
 
 ## Project Structure
 
-```
+```text
 Web_Project/
-├── admin/                    # Admin portal pages
-├── config/
-│   ├── database.php          # Database connection
-│   └── session.php           # Session management
-├── css/                      # Stylesheets (Vanilla CSS)
-├── database/
-│   ├── schema.sql            # Database structure
-│   └── sample_data.sql       # Test data
-├── handlers/
-│   ├── admin/                # Admin-specific logic
-│   ├── member/               # Member-specific logic (Reporting, Logs)
-│   ├── trainer/              # Trainer-specific logic (CMS, PDF Generation)
-│   ├── login_handler.php     # Unified login logic
-│   └── upload_profile_picture.php # Shared profile image handler
-├── html/                     # Member portal pages
-├── includes/
-│   ├── auth.php              # Authentication & Session security
-│   ├── db_functions.php      # Reusable database queries
-│   ├── fpdf.php              # PDF generation library
-│   ├── font/                 # Custom fonts for reports
-│   └── *_sidebar.php         # Role-specific navigation menus
-├── images/                   # Static assets & icons
-├── trainer/                  # Trainer portal pages
-├── uploads/                  # User-uploaded profile pictures
-└── utils/                    # Helper utilities
+├── admin/                 # Admin Dashboard: Manage trainers, members, & system
+├── config/                # Configuration: Database and session settings
+├── css/                   # Styles: Vanilla CSS for all portals
+├── database/              # SQL: Schema and initial seed data
+├── handlers/              # Backend: PHP logic for all roles (CRUD, Login)
+├── html/                  # Member Portal: Dashboard, diet, routines, & classes
+├── includes/              # Shared: Sidebar templates, FPDF library, & core functions
+├── tests/                 # QA: Unit tests for authentication and database
+├── trainer/               # Trainer Portal: Client management & content creation
+├── uploads/               # Storage: User profile pictures & dynamic content
+└── utils/                 # Utilities: Password hashing & helper functions
 ```
+
+## 🚀 Important Files
+
+| Category     | File Path                    | Purpose                      |
+| :----------- | :--------------------------- | :--------------------------- |
+| **Database** | `database/schema.sql`        | Main database structure      |
+| **Config**   | `config/database.php`        | Database connection settings |
+| **Logic**    | `handlers/login_handler.php` | Core authentication engine   |
+| **Helper**   | `includes/db_functions.php`  | Reusable DB query functions  |
+| **Admin**    | `admin/dashboard.php`        | Main system oversight        |
+| **Trainer**  | `trainer/dashboard.php`      | Primary trainer interface    |
+| **Member**   | `html/member_dashboard.php`  | Main member experience       |
 
 ## Features Implemented
 
@@ -103,7 +101,7 @@ Web_Project/
 
 - ✅ Personal dashboard with real-time statistics.
 - ✅ **Health Tracking**: Log weight, heart rate, sleep duration, and mood.
-- ✅ **Diet & Rutines**: View trainer-assigned plans and track completion.
+- ✅ **Diet & Routines**: View trainer-assigned plans and track completion.
 - ✅ **Calorie Calculator**: Calculate and log personal food intake.
 - ✅ Class booking system and trainer/app rating.
 
