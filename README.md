@@ -62,6 +62,7 @@ Web_Project/
 ├── database/              # SQL: Schema and initial seed data
 ├── handlers/              # Backend: PHP logic for all roles (CRUD, Login)
 ├── html/                  # Member Portal: Dashboard, diet, routines, & classes
+├── images/                # Assets: Static images and icons
 ├── includes/              # Shared: Sidebar templates, FPDF library, & core functions
 ├── tests/                 # QA: Unit tests for authentication and database
 ├── trainer/               # Trainer Portal: Client management & content creation
