@@ -154,6 +154,11 @@ Web_Project/
 - Ensure `includes/fpdf.php` and `includes/font/` directory are present.
 - Check write permissions for the `uploads/` directory for profile pictures.
 
+## Development Team
+
+- **Afia Tasnim Ria** - [afiatasnimria@gmail.com](mailto:afiatasnimria@gmail.com)
+- **Salah Uddin** - [selimsalahuddin19@gmail.com](mailto:selimsalahuddin19@gmail.com)
+
 ## Development Notes
 
 - **Language Stack**: PHP 8.x, MySQL, Vanilla JavaScript, Vanilla CSS.
